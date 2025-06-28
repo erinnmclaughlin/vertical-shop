@@ -12,11 +12,12 @@ internal sealed class PostgresProductRepository : IProductRepository
         _unitOfWork = unitOfWork;
     }
 
+    /// <inheritdoc />
     public async Task CreateAsync(Product product, CancellationToken cancellationToken = default)
     {
         const string sql =
             """
-            INSERT INTO "products".products (id, name, slug)
+            INSERT INTO products.products (id, name, slug)
             VALUES (@id, @name, @slug)
             """;
         
@@ -44,14 +45,14 @@ internal sealed class PostgresProductRepository : IProductRepository
     /// <inheritdoc />
     public async Task<OneOf<Product, NotFound>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        const string sql = "SELECT * FROM \"products\".products WHERE id = @id";
+        const string sql = "SELECT * FROM products.products WHERE id = @id";
         return await GetAsync(sql, new { id }, cancellationToken);
     }
     
     /// <inheritdoc />
     public async Task<OneOf<Product, NotFound>> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
     {
-        const string getProductSql = "SELECT * FROM \"products\".products WHERE slug = @slug";
+        const string getProductSql = "SELECT * FROM products.products WHERE slug = @slug";
         return await GetAsync(getProductSql, new { slug }, cancellationToken);
     }
 

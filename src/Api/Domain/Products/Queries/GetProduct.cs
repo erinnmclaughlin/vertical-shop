@@ -7,11 +7,29 @@ using Result = Results<Ok<GetProduct.ProductDetail>, NotFoundResult>;
 
 public static class GetProduct
 {
+    /// <summary>
+    /// Represents the details of a product.
+    /// </summary>
     public sealed record ProductDetail
     {
+        /// <summary>
+        /// Gets the unique identifier of the product.
+        /// </summary>
         public required Guid Id { get; init; }
+
+        /// <summary>
+        /// Gets the unique URL-friendly identifier for a product.
+        /// </summary>
         public required string Slug { get; init; }
+
+        /// <summary>
+        /// Gets the name of the product.
+        /// </summary>
         public required string Name { get; init; }
+
+        /// <summary>
+        /// Gets the attributes associated with the product as key-value pairs.
+        /// </summary>
         public required IReadOnlyDictionary<string, string> Attributes { get; init; }
     }
 
@@ -23,13 +41,25 @@ public static class GetProduct
         {
             _productRepository = productRepository;
         }
-        
+
+        /// <summary>
+        /// Retrieves a product by its unique identifier.
+        /// </summary>
+        /// <param name="id">The unique identifier of the product to retrieve.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous operation, containing a result which could either be the product details if found, or a not found result.</returns>
         public async Task<Result> GetById(Guid id, CancellationToken cancellationToken = default)
         {
             var result = await _productRepository.GetByIdAsync(id, cancellationToken);
             return MapToHttpResult(result);
         }
 
+        /// <summary>
+        /// Retrieves a product by its unique slug.
+        /// </summary>
+        /// <param name="slug">The unique slug of the product to retrieve.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous operation, containing a result which could either be the product details if found, or a not found result.</returns>
         public async Task<Result> GetBySlug(string slug, CancellationToken cancellationToken = default)
         {
             var result = await _productRepository.GetBySlugAsync(slug, cancellationToken);
