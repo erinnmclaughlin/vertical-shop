@@ -19,4 +19,9 @@ public sealed class Product
     /// The product name.
     /// </summary>
     public required string Name { get; set; }
+
+    /// <summary>
+    /// A collection of attributes associated with the product, defining additional details or characteristics.
+    /// </summary>
+    public required Dictionary<string, string> Attributes { get; init; }
 }

@@ -19,6 +19,7 @@ public static class TestUtils
         
         validator.Validate(request).Returns(validationResult);
         validator.ValidateAsync(request, Arg.Any<CancellationToken>()).Returns(validationResult);
+        
         return validator;
     }
 }

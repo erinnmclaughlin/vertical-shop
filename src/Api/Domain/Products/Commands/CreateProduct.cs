@@ -22,8 +22,16 @@ public static class CreateProduct
         /// The product name.
         /// </summary>
         public required string Name { get; init; }
+
+        /// <summary>
+        /// A collection of key-value pairs representing additional attributes of the product.
+        /// </summary>
+        public IReadOnlyDictionary<string, string>? Attributes { get; init; }
     }
 
+    /// <summary>
+    /// Request validator for <see cref="Command"/>.
+    /// </summary>
     public sealed class CommandValidator : AbstractValidator<Command>
     {
         public CommandValidator(IProductRepository productRepository)
@@ -46,6 +54,9 @@ public static class CreateProduct
         }
     }
 
+    /// <summary>
+    /// Request handler for <see cref="Command"/>.
+    /// </summary>
     public sealed class CommandHandler
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -67,7 +78,8 @@ public static class CreateProduct
             var product = new Product
             {
                 Slug = command.Slug,
-                Name = command.Name
+                Name = command.Name,
+                Attributes = command.Attributes?.ToDictionary() ?? []
             };
 
             await _unitOfWork.Products.CreateAsync(product, cancellationToken);
