@@ -17,7 +17,7 @@ internal sealed class PostgresProductRepository : IProductRepository
     {
         const string sql =
             """
-            INSERT INTO products (id, name, slug)
+            INSERT INTO products.products (id, name, slug)
             VALUES (@id, @name, @slug)
             """;
         
@@ -27,7 +27,7 @@ internal sealed class PostgresProductRepository : IProductRepository
     /// <inheritdoc />
     public async Task<OneOf<Product, NotFound>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        const string sql = "SELECT * FROM products WHERE id = @id";
+        const string sql = "SELECT * FROM products.products WHERE id = @id";
         var product = await _unitOfWork.QuerySingleOrDefaultAsync<Product>(sql, new { id }, cancellationToken);
         return product is null ? new NotFound() : product;
     }
@@ -35,7 +35,7 @@ internal sealed class PostgresProductRepository : IProductRepository
     /// <inheritdoc />
     public async Task<OneOf<Product, NotFound>> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
     {
-        const string sql = "SELECT * FROM products WHERE slug = @slug";
+        const string sql = "SELECT * FROM products.products WHERE slug = @slug";
         var product = await _unitOfWork.QuerySingleOrDefaultAsync<Product>(sql, new { slug }, cancellationToken);
         return product is null ? new NotFound() : product;
     }

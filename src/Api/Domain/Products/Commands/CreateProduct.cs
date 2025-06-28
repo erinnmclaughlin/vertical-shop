@@ -26,22 +26,14 @@ public static class CreateProduct
 
     public sealed class CommandValidator : AbstractValidator<Command>
     {
-        private readonly IProductRepository _productRepository;
-
         public CommandValidator(IProductRepository productRepository)
-        {
-            _productRepository = productRepository;
-            ConfigureRules();
-        }
-
-        private void ConfigureRules()
         {
             RuleFor(x => x.Slug)
                 .NotEmpty()
                 .MaximumLength(200)
                 .CustomAsync(async (slug, context, ct) =>
                 {
-                    var result = await _productRepository.GetBySlugAsync(slug, ct);
+                    var result = await productRepository.GetBySlugAsync(slug, ct);
                     result.Switch(
                         _ => context.AddFailure($"A product with the slug '{slug}' already exists."),
                         _ => { }

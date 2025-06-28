@@ -21,6 +21,7 @@ public static class DependencyInjectionExtensions
         services.TryAddTransient(sp => sp.GetRequiredService<IUnitOfWork>().Products);
         
         services.TryAddTransient<CreateProduct.CommandHandler>();
+        services.TryAddTransient<GetProduct.QueryHandler>();
         
         return services;
     }

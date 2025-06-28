@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "src\Api\Api.csproj", "{3DB8DBF4-6246-40CE-9D4A-2036E2A81CD8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.IntegrationTests", "tests\Api.IntegrationTests\Api.IntegrationTests.csproj", "{A61B358C-ED67-4A7E-B387-A156517AAB84}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Tests", "tests\Api.Tests\Api.Tests.csproj", "{A61B358C-ED67-4A7E-B387-A156517AAB84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

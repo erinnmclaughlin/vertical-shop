@@ -43,3 +43,5 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+public sealed partial class Program;
