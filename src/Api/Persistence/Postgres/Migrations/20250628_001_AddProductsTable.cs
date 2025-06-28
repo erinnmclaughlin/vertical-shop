@@ -21,6 +21,8 @@ public sealed class AddProductsTable : Migration
 
     public override void Down()
     {
+        Delete.Index("idx_products_slug").OnTable("products").InSchema("products");
+        Delete.Index("idx_products_name").OnTable("products").InSchema("products");
         Delete.Table("products").InSchema("products");
     }
 }

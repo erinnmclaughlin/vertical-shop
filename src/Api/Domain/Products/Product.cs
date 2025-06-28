@@ -23,5 +23,5 @@ public sealed class Product
     /// <summary>
     /// A collection of attributes associated with the product, defining additional details or characteristics.
     /// </summary>
-    public required Dictionary<string, string> Attributes { get; init; }
+    public required Dictionary<string, string> Attributes { get; init; } = [];
 }

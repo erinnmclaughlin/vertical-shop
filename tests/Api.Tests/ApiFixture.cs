@@ -20,7 +20,7 @@ public sealed class ApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
     private readonly NpgsqlDataSource _dataSource;
     
     private DatabaseFixture Database { get; }
-    private IUnitOfWork UnitOfWork { get; }
+    public IUnitOfWork UnitOfWork { get; }
 
     public ApiFixture(DatabaseFixture database)
     {

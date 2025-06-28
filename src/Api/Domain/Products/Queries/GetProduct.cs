@@ -12,6 +12,7 @@ public static class GetProduct
         public required Guid Id { get; init; }
         public required string Slug { get; init; }
         public required string Name { get; init; }
+        public required IReadOnlyDictionary<string, string> Attributes { get; init; }
     }
 
     public sealed class QueryHandler
@@ -40,7 +41,8 @@ public static class GetProduct
             {
                 Id = p.Id,
                 Slug = p.Slug,
-                Name = p.Name
+                Name = p.Name,
+                Attributes = p.Attributes
             }),
             _ => TypedResults.NotFound()
         );

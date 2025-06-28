@@ -1,17 +1,21 @@
 ﻿using AutoBogus;
 using ContextDrivenDevelopment.Api.Domain.Products;
+using ContextDrivenDevelopment.Api.Persistence;
 using FluentValidation.TestHelper;
 using NSubstitute;
 using OneOf.Types;
 
 namespace ContextDrivenDevelopment.Api.Tests.Domain.Products.Commands.CreateProduct;
 
+using Command = Api.Domain.Products.Commands.CreateProduct.Command;
+using CommandValidator = Api.Domain.Products.Commands.CreateProduct.CommandValidator;
+
 public sealed class CreateProductValidatorTests
 {
     [Fact]
     public async Task ValidateAsync_ShouldReturnValidationResultWithNoErrors_WhenRequestIsValid()
     {
-        var command = new Api.Domain.Products.Commands.CreateProduct.Command
+        var command = new Command
         {
             Slug = "test-product",
             Name = "Test Product"
@@ -20,7 +24,7 @@ public sealed class CreateProductValidatorTests
         var productRepository = Substitute.For<IProductRepository>();
         productRepository.GetBySlugAsync(command.Slug, Arg.Any<CancellationToken>()).Returns(new NotFound());
         
-        var validator = new Api.Domain.Products.Commands.CreateProduct.CommandValidator(productRepository);
+        var validator = BuildTestSubject(productRepository);
         var validationResult = await validator.TestValidateAsync(command, null, TestContext.Current.CancellationToken);
         
         validationResult.ShouldNotHaveAnyValidationErrors();
@@ -29,7 +33,7 @@ public sealed class CreateProductValidatorTests
     [Fact]
     public async Task ValidateAsync_ShouldReturnErrorForSlug_WhenSlugIsAlreadyTaken()
     {
-        var command = new Api.Domain.Products.Commands.CreateProduct.Command
+        var command = new Command
         {
             Slug = "test-product",
             Name = "Test Product"
@@ -38,7 +42,7 @@ public sealed class CreateProductValidatorTests
         var productRepository = Substitute.For<IProductRepository>();
         productRepository.GetBySlugAsync(command.Slug, Arg.Any<CancellationToken>()).Returns(AutoFaker.Generate<Product>());
         
-        var validator = new Api.Domain.Products.Commands.CreateProduct.CommandValidator(productRepository);
+        var validator = BuildTestSubject(productRepository);
         var validationResult = await validator.TestValidateAsync(command, null, TestContext.Current.CancellationToken);
         
         validationResult.ShouldHaveValidationErrorFor(x => x.Slug);
@@ -47,7 +51,7 @@ public sealed class CreateProductValidatorTests
     [Fact]
     public async Task ValidateAsync_ShouldReturnErrorForSlug_WhenEmpty()
     {
-        var command = new Api.Domain.Products.Commands.CreateProduct.Command
+        var command = new Command
         {
             Slug = "",
             Name = "Test Product"
@@ -56,7 +60,7 @@ public sealed class CreateProductValidatorTests
         var productRepository = Substitute.For<IProductRepository>();
         productRepository.GetBySlugAsync(command.Slug, Arg.Any<CancellationToken>()).Returns(new NotFound());
         
-        var validator = new Api.Domain.Products.Commands.CreateProduct.CommandValidator(productRepository);
+        var validator = BuildTestSubject(productRepository);
         var validationResult = await validator.TestValidateAsync(command, null, TestContext.Current.CancellationToken);
         
         validationResult.ShouldHaveValidationErrorFor(x => x.Slug);
@@ -65,7 +69,7 @@ public sealed class CreateProductValidatorTests
     [Fact]
     public async Task ValidateAsync_ShouldReturnErrorForSlug_WhenTooLong()
     {
-        var command = new Api.Domain.Products.Commands.CreateProduct.Command
+        var command = new Command
         {
             Slug = new string('x', 201),
             Name = "Test Product"
@@ -74,7 +78,7 @@ public sealed class CreateProductValidatorTests
         var productRepository = Substitute.For<IProductRepository>();
         productRepository.GetBySlugAsync(command.Slug, Arg.Any<CancellationToken>()).Returns(new NotFound());
         
-        var validator = new Api.Domain.Products.Commands.CreateProduct.CommandValidator(productRepository);
+        var validator = BuildTestSubject(productRepository);
         var validationResult = await validator.TestValidateAsync(command, null, TestContext.Current.CancellationToken);
         
         validationResult.ShouldHaveValidationErrorFor(x => x.Slug);
@@ -83,7 +87,7 @@ public sealed class CreateProductValidatorTests
     [Fact]
     public async Task ValidateAsync_ShouldReturnErrorForName_WhenEmpty()
     {
-        var command = new Api.Domain.Products.Commands.CreateProduct.Command
+        var command = new Command
         {
             Slug = "test-product",
             Name = ""
@@ -92,7 +96,7 @@ public sealed class CreateProductValidatorTests
         var productRepository = Substitute.For<IProductRepository>();
         productRepository.GetBySlugAsync(command.Slug, Arg.Any<CancellationToken>()).Returns(new NotFound());
         
-        var validator = new Api.Domain.Products.Commands.CreateProduct.CommandValidator(productRepository);
+        var validator = BuildTestSubject(productRepository);
         var validationResult = await validator.TestValidateAsync(command, null, TestContext.Current.CancellationToken);
         
         validationResult.ShouldHaveValidationErrorFor(x => x.Name);
@@ -101,7 +105,7 @@ public sealed class CreateProductValidatorTests
     [Fact]
     public async Task ValidateAsync_ShouldReturnErrorForName_WhenTooLong()
     {
-        var command = new Api.Domain.Products.Commands.CreateProduct.Command
+        var command = new Command
         {
             Slug = "test-product",
             Name = new string('x', 201)
@@ -110,9 +114,16 @@ public sealed class CreateProductValidatorTests
         var productRepository = Substitute.For<IProductRepository>();
         productRepository.GetBySlugAsync(command.Slug, Arg.Any<CancellationToken>()).Returns(new NotFound());
         
-        var validator = new Api.Domain.Products.Commands.CreateProduct.CommandValidator(productRepository);
+        var validator = BuildTestSubject(productRepository);
         var validationResult = await validator.TestValidateAsync(command, null, TestContext.Current.CancellationToken);
         
         validationResult.ShouldHaveValidationErrorFor(x => x.Name);
+    }
+
+    private static CommandValidator BuildTestSubject(IProductRepository productRepository)
+    {
+        var unitOfWork = Substitute.For<IUnitOfWork>();
+        unitOfWork.Products.Returns(productRepository);
+        return new CommandValidator(unitOfWork);   
     }
 }
