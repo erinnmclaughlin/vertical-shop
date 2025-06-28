@@ -18,8 +18,7 @@ public static class DependencyInjectionExtensions
     /// </returns>
     public static IServiceCollection AddProductServices(this IServiceCollection services)
     {
-        services.TryAddTransient(sp => sp.GetRequiredService<IUnitOfWork>().Products);
-        
+        services.TryAddScoped(sp => sp.GetRequiredService<IUnitOfWork>().Products);
         services.TryAddTransient<CreateProduct.CommandHandler>();
         services.TryAddTransient<GetProduct.QueryHandler>();
         

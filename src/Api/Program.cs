@@ -15,7 +15,6 @@ builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
 builder.Services.AddProductServices();
 
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
