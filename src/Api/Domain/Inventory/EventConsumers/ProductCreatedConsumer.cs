@@ -4,7 +4,7 @@ using ContextDrivenDevelopment.Api.Persistence;
 
 namespace ContextDrivenDevelopment.Api.Domain.Inventory.EventConsumers;
 
-public sealed class ProductCreatedConsumer : IEventConsumer<ProductCreated>
+public sealed class ProductCreatedConsumer
 {
     private readonly IUnitOfWork _unitOfWork;
 

@@ -1,5 +1,6 @@
 using ContextDrivenDevelopment.Api.Domain.Inventory;
 using ContextDrivenDevelopment.Api.Domain.Products;
+using ContextDrivenDevelopment.Api.Messaging;
 using Npgsql;
 
 namespace ContextDrivenDevelopment.Api.Persistence.Postgres;
@@ -19,6 +20,10 @@ public sealed class PostgresUnitOfWork : IUnitOfWork
     internal NpgsqlTransaction Transaction => _transaction ??= Connection.BeginTransaction();
     
     // Public Properties
+    /// <inheritdoc />
+    public IOutbox Outbox { get; }
+    
+    /// <inheritdoc />
     public IInventoryRepository Inventory => _inventory ??= new PostgresInventoryRepository(this);
     private PostgresInventoryRepository? _inventory;
     
@@ -33,6 +38,7 @@ public sealed class PostgresUnitOfWork : IUnitOfWork
     public PostgresUnitOfWork(NpgsqlDataSource dataSource)
     {
         _dataSource = dataSource;
+        Outbox = new PostgresOutbox(this);
     }
 
     /// <inheritdoc />

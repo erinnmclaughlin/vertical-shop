@@ -1,4 +1,6 @@
 using ContextDrivenDevelopment.Api.Domain.Products;
+using ContextDrivenDevelopment.Api.Domain.Products.Events;
+using ContextDrivenDevelopment.Api.Messaging;
 using ContextDrivenDevelopment.Api.Persistence;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,14 +33,22 @@ public sealed class CreateProductHandlerTests(ApiFixture api) : IClassFixture<Ap
         var handler = scope.ServiceProvider.GetRequiredService<CommandHandler>();
         var result = await handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
-        // Assert
+        // Assert that the response type is correct
         Assert.IsType<Created>(result.Result);
+        
+        // Assert that the product was persisted to the database
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         var getResult = await unitOfWork.Products.GetBySlugAsync(slug, TestContext.Current.CancellationToken);
         var createdProduct = Assert.IsType<Product>(getResult.Value);
         Assert.Equal(command.Slug, createdProduct.Slug);
         Assert.Equal(command.Name, createdProduct.Name);
         Assert.Equal(command.Attributes, createdProduct.Attributes);
+        
+        // Assert that the "ProductCreated" event was published to the outbox
+        var outbox = scope.ServiceProvider.GetRequiredService<IOutbox>();
+        var message = await outbox.GetNextMessageOfType<ProductCreated>(TestContext.Current.CancellationToken);
+        Assert.NotNull(message);
+        Assert.Equivalent(new ProductCreated { ProductSlug = slug }, message.Message);
     }
 
     [Fact]

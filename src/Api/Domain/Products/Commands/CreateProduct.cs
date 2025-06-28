@@ -1,5 +1,4 @@
 ﻿using ContextDrivenDevelopment.Api.Domain.Products.Events;
-using ContextDrivenDevelopment.Api.Messaging;
 using ContextDrivenDevelopment.Api.Persistence;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -64,13 +63,11 @@ public static class CreateProduct
     /// </summary>
     public sealed class CommandHandler
     {
-        private readonly IEventPublisher<ProductCreated> _eventPublisher;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<Command> _validator;
         
-        public CommandHandler(IEventPublisher<ProductCreated> eventPublisher, IUnitOfWork unitOfWork, IValidator<Command> validator)
+        public CommandHandler(IUnitOfWork unitOfWork, IValidator<Command> validator)
         {
-            _eventPublisher = eventPublisher;
             _unitOfWork = unitOfWork;
             _validator = validator;
         }
@@ -90,8 +87,7 @@ public static class CreateProduct
             };
 
             await _unitOfWork.Products.CreateAsync(product, cancellationToken);
-            await _eventPublisher.PublishAsync(new ProductCreated { ProductSlug = product.Slug });
-            
+            await _unitOfWork.Outbox.InsertMessage(new ProductCreated { ProductSlug = product.Slug }, cancellationToken);
             await _unitOfWork.CommitAsync(cancellationToken);
             
             return TypedResults.Created();

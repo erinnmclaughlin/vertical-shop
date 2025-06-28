@@ -1,5 +1,6 @@
 ﻿using ContextDrivenDevelopment.Api.Domain.Inventory;
 using ContextDrivenDevelopment.Api.Domain.Products;
+using ContextDrivenDevelopment.Api.Messaging;
 
 namespace ContextDrivenDevelopment.Api.Persistence;
 
@@ -9,6 +10,11 @@ namespace ContextDrivenDevelopment.Api.Persistence;
 public interface IUnitOfWork : IAsyncDisposable
 {
     /// <summary>
+    /// Provides access to operations related to message processing and retrieval in the outbox pattern.
+    /// </summary>
+    IOutbox Outbox { get; }
+
+    /// <summary>
     /// Provides access to operations for managing product entities in a data store.
     /// </summary>
     IProductRepository Products { get; }
@@ -17,7 +23,7 @@ public interface IUnitOfWork : IAsyncDisposable
     /// Provides access to operations for managing inventory entities in a data store.
     /// </summary>
     IInventoryRepository Inventory { get; }
-    
+
     /// <summary>
     /// Commits all changes made within the unit of work to the database.
     /// </summary>

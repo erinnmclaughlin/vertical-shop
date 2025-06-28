@@ -29,6 +29,33 @@ public static class PostgresUnitOfWorkExtensions
     }
 
     /// <summary>
+    /// Executes a query asynchronously and returns the first result or a default value if no result is found,
+    /// within the specified unit of work.
+    /// </summary>
+    /// <typeparam name="T">The type of the result expected from the query.</typeparam>
+    /// <param name="unitOfWork">The unit of work that provides the database connection and transaction context.</param>
+    /// <param name="sql">The SQL query to be executed.</param>
+    /// <param name="parameters">The parameters to be used in the SQL query.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A task representing the asynchronous operation. The result contains the first record of the query
+    /// or the default value for type <typeparamref name="T"/> if no record is found.</returns>
+    public static Task<T?> QueryFirstOrDefaultAsync<T>(
+        this PostgresUnitOfWork unitOfWork,
+        string sql,
+        object? parameters,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new CommandDefinition(
+            commandText: sql,
+            parameters: parameters,
+            transaction: unitOfWork.Transaction,
+            cancellationToken: cancellationToken
+        );
+        
+        return unitOfWork.Connection.QueryFirstOrDefaultAsync<T>(command);
+    }
+    
+    /// <summary>
     /// Executes a SQL query asynchronously and returns a single entity of type <typeparamref name="T"/>, or the default value if no rows are returned.
     /// </summary>
     /// <param name="unitOfWork">The unit of work that provides the database connection and transaction context.</param>
