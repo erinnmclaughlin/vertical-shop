@@ -17,9 +17,10 @@ public sealed class CreateProductHandlerTests(ApiFixture api) : IClassFixture<Ap
     public async Task HandleAsync_WithValidCommand_ShouldCreateProduct()
     {
         // Arrange
+        var slug = ProductSlug.Parse("test-product");
         var command = new Command
         {
-            Slug = "test-product",
+            Slug = slug,
             Name = "Test Product",
             Attributes = new Dictionary<string, string>
             {
@@ -36,7 +37,7 @@ public sealed class CreateProductHandlerTests(ApiFixture api) : IClassFixture<Ap
         Assert.IsType<Created>(result.Result);
 
         // Assert
-        var getResult = await unitOfWork.Products.GetBySlugAsync(command.Slug, TestContext.Current.CancellationToken);
+        var getResult = await unitOfWork.Products.GetBySlugAsync(slug, TestContext.Current.CancellationToken);
         var createdProduct = Assert.IsType<Product>(getResult.Value);
         Assert.Equal(command.Slug, createdProduct.Slug);
         Assert.Equal(command.Name, createdProduct.Name);

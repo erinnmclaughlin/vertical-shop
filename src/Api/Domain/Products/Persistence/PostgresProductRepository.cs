@@ -20,14 +20,16 @@ internal sealed class PostgresProductRepository : IProductRepository
             INSERT INTO products.products (id, name, slug)
             VALUES (@id, @name, @slug)
             """;
-        
-        await _unitOfWork.ExecuteAsync(sql, product, cancellationToken);
+
+        var parameters = new { id = product.Id.Value, name = product.Name, slug = product.Slug.Value };
+        await _unitOfWork.ExecuteAsync(sql, parameters, cancellationToken);
 
         if (product.Attributes is { Count: > 0 } attributes)
         {
-            var productId = await _unitOfWork.QuerySingleAsync<Guid>(
+            
+            var productId = await _unitOfWork.QuerySingleAsync<string>(
                 "select id from products.products where slug = @slug",
-                new { product.Slug }, 
+                new { slug = product.Slug.Value }, 
                 cancellationToken
             );
 
@@ -43,40 +45,54 @@ internal sealed class PostgresProductRepository : IProductRepository
     }
     
     /// <inheritdoc />
-    public async Task<OneOf<Product, NotFound>> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<OneOf<Product, NotFound>> GetByIdAsync(ProductId id, CancellationToken cancellationToken = default)
     {
-        const string sql = "SELECT * FROM products.products WHERE id = @id";
-        return await GetAsync(sql, new { id }, cancellationToken);
+        const string sql = "SELECT name, slug FROM products.products WHERE id = @id";
+        var getProductResult = await _unitOfWork.QuerySingleOrDefaultAsync<dynamic>(sql, new { id = id.Value }, cancellationToken);
+        
+        if (getProductResult is null)
+            return new NotFound();
+
+        return new Product
+        {
+            Id = id,
+            Slug = getProductResult.slug,
+            Name = getProductResult.name,
+            Attributes = await GetAttributesAsync(id, cancellationToken)
+        };
     }
     
     /// <inheritdoc />
-    public async Task<OneOf<Product, NotFound>> GetBySlugAsync(string slug, CancellationToken cancellationToken = default)
+    public async Task<OneOf<Product, NotFound>> GetBySlugAsync(ProductSlug slug, CancellationToken cancellationToken = default)
     {
-        const string getProductSql = "SELECT * FROM products.products WHERE slug = @slug";
-        return await GetAsync(getProductSql, new { slug }, cancellationToken);
+        const string sql = "SELECT id, name FROM products.products WHERE slug = @slug";
+        var getProductResult = await _unitOfWork.QuerySingleOrDefaultAsync<dynamic>(sql, new { slug = slug.Value }, cancellationToken);
+        
+        if (getProductResult is null)
+            return new NotFound();
+
+        var productId = ProductId.Parse(getProductResult.id);
+        
+        return new Product
+        {
+            Id = productId,
+            Slug = slug,
+            Name = getProductResult.name,
+            Attributes = await GetAttributesAsync(productId, cancellationToken)
+        };
     }
 
-    private async Task<OneOf<Product, NotFound>> GetAsync(string sql, object parameters, CancellationToken cancellationToken = default)
+    private async Task<Dictionary<string, string>> GetAttributesAsync(ProductId productId, CancellationToken cancellationToken = default)
     {
-        var product = await _unitOfWork.QuerySingleOrDefaultAsync<Product>(sql, parameters, cancellationToken);
-        
-        if (product is null)
-            return new NotFound();
-        
         var productAttributes = await _unitOfWork.QueryListAsync(
             "SELECT name, value FROM products.product_attributes WHERE product_id = @id",
-            new { id = product.Id },
+            new { id = productId.Value },
             cancellationToken
         );
         
-        var attributes = productAttributes
+        return productAttributes
             .Select(x => new { Key = (string)x.name, Value = (string)x.value })
             .GroupBy(x => x.Key)
             .ToDictionary(x => x.Key, x => string.Join(", ", x.Select(v => v.Value)));
-        
-        foreach (var (key, value) in attributes)
-            product.Attributes.Add(key, value);
-        
-        return product;
     }
 }

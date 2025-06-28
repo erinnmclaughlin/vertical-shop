@@ -22,7 +22,7 @@ public sealed class CreateProductValidatorTests
         };
         
         var productRepository = Substitute.For<IProductRepository>();
-        productRepository.GetBySlugAsync(command.Slug, Arg.Any<CancellationToken>()).Returns(new NotFound());
+        productRepository.GetBySlugAsync(Arg.Any<ProductSlug>(), Arg.Any<CancellationToken>()).Returns(new NotFound());
         
         var validator = BuildTestSubject(productRepository);
         var validationResult = await validator.TestValidateAsync(command, null, TestContext.Current.CancellationToken);
@@ -40,7 +40,7 @@ public sealed class CreateProductValidatorTests
         };
         
         var productRepository = Substitute.For<IProductRepository>();
-        productRepository.GetBySlugAsync(command.Slug, Arg.Any<CancellationToken>()).Returns(AutoFaker.Generate<Product>());
+        productRepository.GetBySlugAsync(Arg.Any<ProductSlug>(), Arg.Any<CancellationToken>()).Returns(AutoFaker.Generate<Product>());
         
         var validator = BuildTestSubject(productRepository);
         var validationResult = await validator.TestValidateAsync(command, null, TestContext.Current.CancellationToken);
@@ -58,7 +58,7 @@ public sealed class CreateProductValidatorTests
         };
         
         var productRepository = Substitute.For<IProductRepository>();
-        productRepository.GetBySlugAsync(command.Slug, Arg.Any<CancellationToken>()).Returns(new NotFound());
+        productRepository.GetBySlugAsync(Arg.Any<ProductSlug>(), Arg.Any<CancellationToken>()).Returns(new NotFound());
         
         var validator = BuildTestSubject(productRepository);
         var validationResult = await validator.TestValidateAsync(command, null, TestContext.Current.CancellationToken);
@@ -76,7 +76,7 @@ public sealed class CreateProductValidatorTests
         };
         
         var productRepository = Substitute.For<IProductRepository>();
-        productRepository.GetBySlugAsync(command.Slug, Arg.Any<CancellationToken>()).Returns(new NotFound());
+        productRepository.GetBySlugAsync(Arg.Any<ProductSlug>(), Arg.Any<CancellationToken>()).Returns(new NotFound());
         
         var validator = BuildTestSubject(productRepository);
         var validationResult = await validator.TestValidateAsync(command, null, TestContext.Current.CancellationToken);
@@ -94,7 +94,7 @@ public sealed class CreateProductValidatorTests
         };
         
         var productRepository = Substitute.For<IProductRepository>();
-        productRepository.GetBySlugAsync(command.Slug, Arg.Any<CancellationToken>()).Returns(new NotFound());
+        productRepository.GetBySlugAsync(Arg.Any<ProductSlug>(), Arg.Any<CancellationToken>()).Returns(new NotFound());
         
         var validator = BuildTestSubject(productRepository);
         var validationResult = await validator.TestValidateAsync(command, null, TestContext.Current.CancellationToken);
@@ -112,7 +112,7 @@ public sealed class CreateProductValidatorTests
         };
         
         var productRepository = Substitute.For<IProductRepository>();
-        productRepository.GetBySlugAsync(command.Slug, Arg.Any<CancellationToken>()).Returns(new NotFound());
+        productRepository.GetBySlugAsync(Arg.Any<ProductSlug>(), Arg.Any<CancellationToken>()).Returns(new NotFound());
         
         var validator = BuildTestSubject(productRepository);
         var validationResult = await validator.TestValidateAsync(command, null, TestContext.Current.CancellationToken);

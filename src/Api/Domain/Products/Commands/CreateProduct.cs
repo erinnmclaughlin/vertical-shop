@@ -41,7 +41,7 @@ public static class CreateProduct
                 .MaximumLength(200)
                 .CustomAsync(async (slug, context, ct) =>
                 {
-                    var result = await unitOfWork.Products.GetBySlugAsync(slug, ct);
+                    var result = await unitOfWork.Products.GetBySlugAsync(ProductSlug.Parse(slug), ct);
                     result.Switch(
                         _ => context.AddFailure($"A product with the slug '{slug}' already exists."),
                         _ => { }
@@ -77,7 +77,7 @@ public static class CreateProduct
 
             var product = new Product
             {
-                Slug = command.Slug,
+                Slug = ProductSlug.Parse(command.Slug),
                 Name = command.Name,
                 Attributes = command.Attributes?.ToDictionary() ?? []
             };

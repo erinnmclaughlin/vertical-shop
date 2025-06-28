@@ -42,13 +42,13 @@ public static class DependencyInjectionExtensions
         ) => handler.HandleAsync(command, ct));
 
         productsApi.MapGet("/queries/getById", (
-            Guid id,
+            string id,
             GetProduct.QueryHandler handler
-        ) => handler.GetById(id));
+        ) => handler.GetById(ProductId.Parse(id)));
         
         productsApi.MapGet("/queries/getBySlug", (
             string slug,
             GetProduct.QueryHandler handler
-        ) => handler.GetBySlug(slug));
+        ) => handler.GetBySlug(ProductSlug.Parse(slug)));
     }
 }

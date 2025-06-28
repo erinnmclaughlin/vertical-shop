@@ -8,12 +8,12 @@ public sealed class Product
     /// <summary>
     /// The system-generated unique identifier for the product.
     /// </summary>
-    public Guid Id { get; init; } = Guid.NewGuid();
+    public ProductId Id { get; init; } = ProductId.CreateNew();
 
     /// <summary>
     /// A unique, URL-friendly identifier representing the product.
     /// </summary>
-    public required string Slug { get; init; }
+    public required ProductSlug Slug { get; init; }
     
     /// <summary>
     /// The product name.
@@ -23,5 +23,5 @@ public sealed class Product
     /// <summary>
     /// A collection of attributes associated with the product, defining additional details or characteristics.
     /// </summary>
-    public required Dictionary<string, string> Attributes { get; init; } = [];
+    public Dictionary<string, string> Attributes { get; init; } = [];
 }

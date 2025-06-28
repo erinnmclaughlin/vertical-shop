@@ -15,7 +15,7 @@ public static class GetProduct
         /// <summary>
         /// Gets the unique identifier of the product.
         /// </summary>
-        public required Guid Id { get; init; }
+        public required string Id { get; init; }
 
         /// <summary>
         /// Gets the unique URL-friendly identifier for a product.
@@ -48,7 +48,7 @@ public static class GetProduct
         /// <param name="id">The unique identifier of the product to retrieve.</param>
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
         /// <returns>A task representing the asynchronous operation, containing a result which could either be the product details if found, or a not found result.</returns>
-        public async Task<Result> GetById(Guid id, CancellationToken cancellationToken = default)
+        public async Task<Result> GetById(ProductId id, CancellationToken cancellationToken = default)
         {
             var result = await _productRepository.GetByIdAsync(id, cancellationToken);
             return MapToHttpResult(result);
@@ -60,7 +60,7 @@ public static class GetProduct
         /// <param name="slug">The unique slug of the product to retrieve.</param>
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
         /// <returns>A task representing the asynchronous operation, containing a result which could either be the product details if found, or a not found result.</returns>
-        public async Task<Result> GetBySlug(string slug, CancellationToken cancellationToken = default)
+        public async Task<Result> GetBySlug(ProductSlug slug, CancellationToken cancellationToken = default)
         {
             var result = await _productRepository.GetBySlugAsync(slug, cancellationToken);
             return MapToHttpResult(result);
