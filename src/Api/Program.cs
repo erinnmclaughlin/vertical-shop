@@ -1,4 +1,6 @@
+using ContextDrivenDevelopment.Api.Domain.Inventory;
 using ContextDrivenDevelopment.Api.Domain.Products;
+using ContextDrivenDevelopment.Api.Messaging;
 using ContextDrivenDevelopment.Api.Persistence.Postgres;
 using Dapper;
 using FluentMigrator.Runner;
@@ -11,8 +13,10 @@ builder.Services.AddOpenApi();
 
 var connectionString = builder.Configuration.GetConnectionString("Postgres");
 builder.Services.AddPostgresDatabase(connectionString);
+builder.Services.AddMessaging();
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
+builder.Services.AddInventoryServices();
 builder.Services.AddProductServices();
 
 var app = builder.Build();

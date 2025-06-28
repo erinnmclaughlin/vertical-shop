@@ -1,4 +1,5 @@
-﻿using ContextDrivenDevelopment.Api.Domain.Products;
+﻿using ContextDrivenDevelopment.Api.Domain.Inventory;
+using ContextDrivenDevelopment.Api.Domain.Products;
 
 namespace ContextDrivenDevelopment.Api.Persistence;
 
@@ -12,6 +13,11 @@ public interface IUnitOfWork : IAsyncDisposable
     /// </summary>
     IProductRepository Products { get; }
 
+    /// <summary>
+    /// Provides access to operations for managing inventory entities in a data store.
+    /// </summary>
+    IInventoryRepository Inventory { get; }
+    
     /// <summary>
     /// Commits all changes made within the unit of work to the database.
     /// </summary>

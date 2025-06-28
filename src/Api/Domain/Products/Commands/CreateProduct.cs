@@ -1,4 +1,6 @@
-﻿using ContextDrivenDevelopment.Api.Persistence;
+﻿using ContextDrivenDevelopment.Api.Domain.Products.Events;
+using ContextDrivenDevelopment.Api.Messaging;
+using ContextDrivenDevelopment.Api.Persistence;
 using FluentValidation;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -16,6 +18,9 @@ public static class CreateProduct
         /// <summary>
         /// The product slug.
         /// </summary>
+        /// <remarks>
+        /// Note that this value cannot be changed.
+        /// </remarks>
         public required string Slug { get; init; }
         
         /// <summary>
@@ -59,11 +64,13 @@ public static class CreateProduct
     /// </summary>
     public sealed class CommandHandler
     {
+        private readonly IEventPublisher<ProductCreated> _eventPublisher;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<Command> _validator;
         
-        public CommandHandler(IUnitOfWork unitOfWork, IValidator<Command> validator)
+        public CommandHandler(IEventPublisher<ProductCreated> eventPublisher, IUnitOfWork unitOfWork, IValidator<Command> validator)
         {
+            _eventPublisher = eventPublisher;
             _unitOfWork = unitOfWork;
             _validator = validator;
         }
@@ -83,6 +90,8 @@ public static class CreateProduct
             };
 
             await _unitOfWork.Products.CreateAsync(product, cancellationToken);
+            await _eventPublisher.PublishAsync(new ProductCreated { ProductSlug = product.Slug });
+            
             await _unitOfWork.CommitAsync(cancellationToken);
             
             return TypedResults.Created();

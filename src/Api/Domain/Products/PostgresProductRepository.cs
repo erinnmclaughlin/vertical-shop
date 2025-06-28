@@ -1,6 +1,6 @@
-using ContextDrivenDevelopment.Api.Persistence.Postgres;
+﻿using ContextDrivenDevelopment.Api.Persistence.Postgres;
 
-namespace ContextDrivenDevelopment.Api.Domain.Products.Persistence;
+namespace ContextDrivenDevelopment.Api.Domain.Products;
 
 /// <inheritdoc />
 internal sealed class PostgresProductRepository : IProductRepository

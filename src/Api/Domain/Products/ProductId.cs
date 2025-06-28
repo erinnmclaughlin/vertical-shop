@@ -1,7 +1,7 @@
 ﻿namespace ContextDrivenDevelopment.Api.Domain.Products;
 
 /// <summary>
-/// Represents a unique identifier for a product, encapsulating its creation, parsing, and conversion functionalities.
+/// A unique identifier for a product, encapsulating its creation, parsing, and conversion functionalities.
 /// </summary>
 public sealed record ProductId
 {

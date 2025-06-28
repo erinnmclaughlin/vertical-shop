@@ -1,8 +1,5 @@
 ﻿namespace ContextDrivenDevelopment.Api.Domain.Products;
 
-/// <summary>
-/// Represents a product.
-/// </summary>
 public sealed class Product
 {
     /// <summary>
@@ -13,6 +10,9 @@ public sealed class Product
     /// <summary>
     /// A unique, URL-friendly identifier representing the product.
     /// </summary>
+    /// <remarks>
+    /// Note that this value cannot be changed after the product is persisted.
+    /// </remarks>
     public required ProductSlug Slug { get; init; }
     
     /// <summary>

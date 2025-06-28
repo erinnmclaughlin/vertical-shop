@@ -1,5 +1,5 @@
+using ContextDrivenDevelopment.Api.Domain.Inventory;
 using ContextDrivenDevelopment.Api.Domain.Products;
-using ContextDrivenDevelopment.Api.Domain.Products.Persistence;
 using Npgsql;
 
 namespace ContextDrivenDevelopment.Api.Persistence.Postgres;
@@ -19,6 +19,9 @@ public sealed class PostgresUnitOfWork : IUnitOfWork
     internal NpgsqlTransaction Transaction => _transaction ??= Connection.BeginTransaction();
     
     // Public Properties
+    public IInventoryRepository Inventory => _inventory ??= new PostgresInventoryRepository(this);
+    private PostgresInventoryRepository? _inventory;
+    
     /// <inheritdoc />
     public IProductRepository Products => _products ??= new PostgresProductRepository(this);
     private PostgresProductRepository? _products;

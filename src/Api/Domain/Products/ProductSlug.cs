@@ -1,7 +1,7 @@
 ﻿namespace ContextDrivenDevelopment.Api.Domain.Products;
 
 /// <summary>
-/// Represents a unique identifier for a Product in the form of a slug.
+/// A unique identifier for a Product in the form of a slug.
 /// </summary>
 public sealed record ProductSlug
 {
