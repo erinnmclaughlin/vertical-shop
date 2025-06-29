@@ -8,22 +8,23 @@ namespace ContextDrivenDevelopment.Api.Persistence.Postgres;
 /// <inheritdoc />
 public sealed class PostgresUnitOfWork : IUnitOfWork
 {
-    // Injected Services
     private readonly NpgsqlDataSource _dataSource;
     
     private NpgsqlConnection? _connection;
-    internal NpgsqlConnection Connection => _connection ??= _dataSource.OpenConnection();
-    
-    /// <inheritdoc />
-    public IOutbox Outbox { get; }
-    
-    /// <inheritdoc />
-    public IInventoryRepository Inventory => _inventory ??= new PostgresInventoryRepository(this);
     private PostgresInventoryRepository? _inventory;
+    private PostgresOutbox? _outbox;
+    private PostgresProductRepository? _products;
+    
+    private NpgsqlConnection Connection => _connection ??= _dataSource.OpenConnection();
+
+    /// <inheritdoc />
+    public IOutbox Outbox => _outbox ??= new PostgresOutbox(Connection);
     
     /// <inheritdoc />
-    public IProductRepository Products => _products ??= new PostgresProductRepository(this);
-    private PostgresProductRepository? _products;
+    public IInventoryRepository Inventory => _inventory ??= new PostgresInventoryRepository(Connection);
+    
+    /// <inheritdoc />
+    public IProductRepository Products => _products ??= new PostgresProductRepository(Connection);
     
     /// <summary>
     /// Creates a new <see cref="PostgresUnitOfWork"/> instance.
@@ -32,7 +33,6 @@ public sealed class PostgresUnitOfWork : IUnitOfWork
     public PostgresUnitOfWork(NpgsqlDataSource dataSource)
     {
         _dataSource = dataSource;
-        Outbox = new PostgresOutbox(this);
     }
 
     /// <inheritdoc />
@@ -40,11 +40,6 @@ public sealed class PostgresUnitOfWork : IUnitOfWork
     
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
-    {
-        await DisposeConnectionAsync();
-    }
-
-    private async ValueTask DisposeConnectionAsync()
     {
         if (_connection is not null)
         {

@@ -20,6 +20,7 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddPostgresDatabase(this IServiceCollection services, string? connectionString)
     {
         services.TryAddSingleton(new NpgsqlDataSourceBuilder(connectionString).Build());
+        services.TryAddTransient(sp => sp.GetRequiredService<NpgsqlDataSource>().OpenConnection());
         services.TryAddScoped<IUnitOfWork, PostgresUnitOfWork>();
         services.TryAddTransient<PostgresDatabaseInitializer>();
         

@@ -5,16 +5,11 @@ namespace ContextDrivenDevelopment.Api.Domain.Inventory;
 /// <inheritdoc />
 internal sealed class PostgresInventoryRepository : IInventoryRepository
 {
-    private NpgsqlConnection Connection { get; }
+    private readonly NpgsqlConnection _connection;
 
-    public PostgresInventoryRepository(NpgsqlDataSource dataSource)
+    public PostgresInventoryRepository(NpgsqlConnection connection)
     {
-        Connection = dataSource.OpenConnection();
-    }
-    
-    public PostgresInventoryRepository(PostgresUnitOfWork unitOfWork)
-    {
-        Connection = unitOfWork.Connection;
+        _connection = connection;
     }
 
     /// <inheritdoc />
@@ -29,6 +24,6 @@ internal sealed class PostgresInventoryRepository : IInventoryRepository
         var parameters = new { productSlug = item.ProductSlug, quantity = item.QuantityAvailable };
         
         cancellationToken.ThrowIfCancellationRequested();
-        await Connection.ExecuteAsync(sql, parameters);
+        await _connection.ExecuteAsync(sql, parameters);
     }
 }

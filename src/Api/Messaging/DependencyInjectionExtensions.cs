@@ -10,8 +10,8 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddMessaging(this IServiceCollection services, string? connectionString)
     {
         services.AddHostedService<OutboxProcessor>();
-        
-        services.AddTransient(sp => sp.GetRequiredService<IUnitOfWork>().Outbox);
+
+        services.AddTransient<IOutbox, PostgresOutbox>();
         services.AddTransient<ISqlTransportDatabaseMigrator, PostgresDatabaseMigrator>();
         services.AddOptions<SqlTransportOptions>();
         
