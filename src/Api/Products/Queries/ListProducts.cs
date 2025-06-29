@@ -8,6 +8,7 @@ public static class ListProducts
     private const int DefaultLimit = 20;
 
     [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+    [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
     public sealed record Query
     {
         public int? Offset { get; init; } = DefaultOffset;
