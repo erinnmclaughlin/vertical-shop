@@ -2,7 +2,7 @@
 
 using Result = Results<NoContent, NotFoundResult>;
 
-public static class ReceiveInventory
+public static class RestockInventoryItem
 {
     public sealed record Command
     {
@@ -18,7 +18,7 @@ public static class ReceiveInventory
     }
 
     /// <summary>
-    /// Provides validation rules for the <see cref="ReceiveInventory.Command"/> class.
+    /// Provides validation rules for the <see cref="RestockInventoryItem.Command"/> class.
     /// </summary>
     public sealed class CommandValidator : AbstractValidator<Command>
     {
@@ -34,7 +34,7 @@ public static class ReceiveInventory
     }
 
     /// <summary>
-    /// Handles the execution of the <see cref="ReceiveInventory.Command"/>.
+    /// Handles the execution of the <see cref="RestockInventoryItem.Command"/>.
     /// </summary>
     public sealed class CommandHandler
     {

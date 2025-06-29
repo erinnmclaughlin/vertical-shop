@@ -13,7 +13,7 @@ public static class DependencyInjectionExtensions
     public static void AddInventoryServices(this WebApplicationBuilder builder)
     {
         builder.Services.TryAddScoped<IInventoryRepository, PostgresInventoryRepository>();
-        builder.Services.TryAddTransient<ReceiveInventory.CommandHandler>();
+        builder.Services.TryAddTransient<RestockInventoryItem.CommandHandler>();
         builder.Services.TryAddTransient<CheckQuantityInStock.QueryHandler>();
     }
 
@@ -25,9 +25,9 @@ public static class DependencyInjectionExtensions
     {
         var inventoryApi = builder.MapGroup("/inventory").WithTags("Inventory API");
         
-        inventoryApi.MapPost("/commands/receiveInventory", (
-            ReceiveInventory.Command command,
-            ReceiveInventory.CommandHandler handler,
+        inventoryApi.MapPost("/commands/restock", (
+            RestockInventoryItem.Command command,
+            RestockInventoryItem.CommandHandler handler,
             CancellationToken cancellationToken
         ) => handler.HandleAsync(command, cancellationToken));
 
