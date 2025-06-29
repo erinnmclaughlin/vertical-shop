@@ -22,7 +22,7 @@ public sealed class OutboxProcessor : BackgroundService
         {
             using var scope = _services.CreateScope();
             var dataSource = scope.ServiceProvider.GetRequiredService<NpgsqlDataSource>();
-            var publishEndpoint = scope.ServiceProvider.GetRequiredService<IPublishEndpoint>();
+            var bus = scope.ServiceProvider.GetRequiredService<IBus>();
             
             _logger.LogInformation("Processing outbox...");
             
@@ -42,13 +42,17 @@ public sealed class OutboxProcessor : BackgroundService
             
             foreach (var message in messages)
             {
+                Guid id = message.Id;
+                string type = message.Type;
+                string payload = message.Payload;
+                
                 try
                 {
-                    var messageType = typeof(Program).Assembly.GetType(message.Type);
-                    var deserializedMessage = JsonSerializer.Deserialize(message.Payload, messageType);
+                    var messageType = typeof(Program).Assembly.GetType(type)!;
+                    var deserializedMessage = JsonSerializer.Deserialize(payload, messageType)!;
 
                     // We should introduce retries here to improve reliability.
-                    await publishEndpoint.Publish(deserializedMessage);
+                    await bus.Publish(deserializedMessage, stoppingToken);
 
                     await connection.ExecuteAsync(
                         """
@@ -56,13 +60,12 @@ public sealed class OutboxProcessor : BackgroundService
                         SET processed_on_utc = @ProcessedOnUtc
                         WHERE id = @Id
                         """,
-                        new { ProcessedOnUtc = DateTimeOffset.UtcNow, message.Id },
+                        new { ProcessedOnUtc = DateTimeOffset.UtcNow, id },
                         transaction: transaction);
                 }
                 catch (Exception ex)
                 {
-                    string messageId = message.Id.ToString();
-                    _logger.LogError(ex, "Failed to process message with ID {OutboxMessageId}", messageId);
+                    _logger.LogError(ex, "Failed to process message with ID {OutboxMessageId}", id);
 
                     await connection.ExecuteAsync(
                         """
@@ -70,7 +73,7 @@ public sealed class OutboxProcessor : BackgroundService
                         SET processed_on_utc = @ProcessedOnUtc, error_message = @Error
                         WHERE id = @Id
                         """,
-                        new { ProcessedOnUtc = DateTimeOffset.UtcNow, Error = ex.Message, message.Id },
+                        new { ProcessedOnUtc = DateTimeOffset.UtcNow, Error = ex.Message, Id = id },
                         transaction: transaction);
                 }
             }

@@ -1,10 +1,10 @@
 ﻿using ContextDrivenDevelopment.Api.Domain.Products.Events;
-using ContextDrivenDevelopment.Api.Messaging;
 using ContextDrivenDevelopment.Api.Persistence;
+using MassTransit;
 
 namespace ContextDrivenDevelopment.Api.Domain.Inventory.EventConsumers;
 
-public sealed class ProductCreatedConsumer
+public sealed class ProductCreatedConsumer : IConsumer<ProductCreated>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -13,15 +13,14 @@ public sealed class ProductCreatedConsumer
         _unitOfWork = unitOfWork;
     }
 
-    public async Task ConsumeAsync(ProductCreated @event)
+    public async Task Consume(ConsumeContext<ProductCreated> context)
     {
         var item = new InventoryItem
         {
-            ProductSlug = @event.ProductSlug,
+            ProductSlug = context.Message.ProductSlug,
             QuantityAvailable = 0
         };
 
         await _unitOfWork.Inventory.UpsertAsync(item);
-        await _unitOfWork.CommitAsync();
     }
 }

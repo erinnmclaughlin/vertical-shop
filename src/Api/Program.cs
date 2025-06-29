@@ -31,8 +31,8 @@ builder.Services.AddOptions<SqlTransportOptions>().Configure(options =>
 builder.Services.AddPostgresMigrationHostedService();
 builder.Services.AddMassTransit(x =>
 {
-    // elided...
-
+    x.AddConsumers(typeof(Program).Assembly);
+    
     x.UsingPostgres((context,cfg) =>
     {
         cfg.ConfigureEndpoints(context);

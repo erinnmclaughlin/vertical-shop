@@ -13,7 +13,7 @@ internal sealed class PostgresInventoryRepository : IInventoryRepository
     }
 
     /// <inheritdoc />
-    public Task UpsertAsync(InventoryItem item, CancellationToken cancellationToken = default)
+    public async Task UpsertAsync(InventoryItem item, CancellationToken cancellationToken = default)
     {
         const string sql = """
                            insert into inventory.items (product_slug, quantity)
@@ -22,6 +22,7 @@ internal sealed class PostgresInventoryRepository : IInventoryRepository
                            """;
 
         var parameters = new { productSlug = item.ProductSlug, quantity = item.QuantityAvailable };
-        return _unitOfWork.ExecuteAsync(sql, parameters, cancellationToken);
+        await _unitOfWork.ExecuteAsync(sql, parameters, cancellationToken);
+        await _unitOfWork.CommitAsync(cancellationToken);
     }
 }
