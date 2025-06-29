@@ -81,7 +81,7 @@ internal sealed class PostgresProductRepository(IDatabaseContext dbContext) : IP
                 Id = firstResult.Id,
                 Slug = firstResult.Slug,
                 Name = firstResult.Name,
-                Attributes = results
+                Attributes = values
                     .Where(x => x.AttributeKey != null)
                     .GroupBy(x => (string)x.AttributeKey)
                     .ToDictionary(x => x.Key, x => string.Join(", ", x.Select(v => v.AttributeValue)))
