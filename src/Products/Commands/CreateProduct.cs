@@ -1,6 +1,9 @@
-﻿using VerticalShop.IntegrationEvents.Products;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using VerticalShop.IntegrationEvents.Products;
 
-namespace VerticalShop.Api.Products;
+namespace VerticalShop.Products;
 
 using Result = Results<Created, ValidationProblem>;
 
@@ -46,11 +49,11 @@ public static class CreateProduct
                 .MaximumLength(200)
                 .CustomAsync(async (slug, context, ct) =>
                 {
-                    var result = await productRepository.GetBySlugAsync(ProductSlug.Parse(slug), ct);
-                    result.Switch(
-                        _ => context.AddFailure($"A product with the slug '{slug}' already exists."),
-                        _ => { }
-                    );
+                    var product = await productRepository.GetBySlugAsync(ProductSlug.Parse(slug), ct);
+                    if (product is not null)
+                    {
+                        context.AddFailure($"A product with the slug '{slug}' already exists.");
+                    }
                 });
             
             RuleFor(x => x.Name)

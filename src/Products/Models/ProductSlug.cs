@@ -1,4 +1,4 @@
-﻿namespace VerticalShop.Api.Products;
+﻿namespace VerticalShop.Products;
 
 /// <summary>
 /// A unique identifier for a Product in the form of a slug.

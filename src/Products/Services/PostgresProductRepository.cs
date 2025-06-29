@@ -1,38 +1,37 @@
-﻿namespace VerticalShop.Api.Products;
+﻿using Dapper;
+
+namespace VerticalShop.Products;
 
 /// <inheritdoc />
-internal sealed class PostgresProductRepository : IProductRepository
+internal sealed class PostgresProductRepository(IDatabaseContext dbContext) : IProductRepository
 {
-    private readonly NpgsqlConnection _connection;
-
-    public PostgresProductRepository(NpgsqlConnection connection)
-    {
-        _connection = connection;
-    }
+    private readonly IDatabaseContext _dbContext = dbContext;
 
     /// <inheritdoc />
     public async Task CreateAsync(Product product, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         
-        await _connection.ExecuteAsync(
+        await _dbContext.Connection.ExecuteAsync(
             "insert into products.products (id, name, slug) values (@id, @name, @slug)", 
             new
             {
                 id = product.Id.Value, 
                 name = product.Name,
                 slug = product.Slug.Value
-            }
+            },
+            _dbContext.CurrentTransaction
         );
 
         if (product.Attributes is { Count: > 0 } attributes)
         {
-            var productId = await _connection.QuerySingleAsync<string>(
+            var productId = await _dbContext.Connection.QuerySingleAsync<string>(
                 "select id from products.products where slug = @slug",
-                new { slug = product.Slug.Value }
+                new { slug = product.Slug.Value },
+                _dbContext.CurrentTransaction
             );
             
-            await _connection.ExecuteAsync(
+            await _dbContext.Connection.ExecuteAsync(
                 "insert into products.product_attributes (id, product_id, name, value) values (@id, @productId, @name, @value)", 
                 attributes.Select(x => new
                 {
@@ -40,7 +39,8 @@ internal sealed class PostgresProductRepository : IProductRepository
                     productId, 
                     name = x.Key,
                     value = x.Value
-                })
+                }),
+                _dbContext.CurrentTransaction
             );
         }
     }
@@ -50,7 +50,7 @@ internal sealed class PostgresProductRepository : IProductRepository
     {
         cancellationToken.ThrowIfCancellationRequested();
         
-        var results = (await _connection.QueryAsync(
+        var results = (await _dbContext.Connection.QueryAsync(
             """
             select 
                 p.id as "Id", 
@@ -63,7 +63,8 @@ internal sealed class PostgresProductRepository : IProductRepository
             offset @offset
             limit @limit
             """,
-            new { offset, limit }
+            new { offset, limit },
+            _dbContext.CurrentTransaction
         )).ToList();
 
         if (results.Count == 0)
@@ -91,11 +92,11 @@ internal sealed class PostgresProductRepository : IProductRepository
     }
     
     /// <inheritdoc />
-    public async Task<OneOf<Product, NotFound>> GetByIdAsync(ProductId id, CancellationToken cancellationToken = default)
+    public async Task<Product?> GetByIdAsync(ProductId id, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         
-        var results = (await _connection.QueryAsync(
+        var results = (await _dbContext.Connection.QueryAsync(
             """
             select 
                 p.id as "Id", 
@@ -107,13 +108,14 @@ internal sealed class PostgresProductRepository : IProductRepository
             left join products.product_attributes pa on p.id = pa.product_id
             where p.id = @id
             """,
-            new { id = id.Value }
+            new { id = id.Value },
+            _dbContext.CurrentTransaction
         )).ToList();
 
         var firstResult = results.FirstOrDefault();
-        
+
         if (firstResult is null)
-            return new NotFound();
+            return null;
         
         return new Product
         {
@@ -128,11 +130,11 @@ internal sealed class PostgresProductRepository : IProductRepository
     }
     
     /// <inheritdoc />
-    public async Task<OneOf<Product, NotFound>> GetBySlugAsync(ProductSlug slug, CancellationToken cancellationToken = default)
+    public async Task<Product?> GetBySlugAsync(ProductSlug slug, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         
-        var results = (await _connection.QueryAsync(
+        var results = (await _dbContext.Connection.QueryAsync(
             """
             select 
                 p.id as "Id", 
@@ -144,13 +146,14 @@ internal sealed class PostgresProductRepository : IProductRepository
             left join products.product_attributes pa on p.id = pa.product_id
             where p.slug = @slug
             """,
-            new { slug = slug.Value }
+            new { slug = slug.Value },
+            _dbContext.CurrentTransaction
         )).ToList();
 
         var firstResult = results.FirstOrDefault();
-        
+
         if (firstResult is null)
-            return new NotFound();
+            return null;
         
         var attributes = results
             .Where(x => x.AttributeKey != null)

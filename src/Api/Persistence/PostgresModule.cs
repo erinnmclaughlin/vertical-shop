@@ -27,7 +27,7 @@ public static class PostgresModule
             {
                 rb.AddPostgres();
                 rb.WithGlobalConnectionString(builder.Configuration.GetConnectionString("vertical-shop-db"));
-                rb.ScanIn(assemblies).For.All();
+                rb.ScanIn([typeof(PostgresModule).Assembly, ..assemblies]).For.All();
             })
             .AddLogging(lb => lb.AddFluentMigratorConsole());
     }

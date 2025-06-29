@@ -1,6 +1,9 @@
-﻿namespace VerticalShop.Api.Products;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
-using Result = Results<Ok<ProductDto>, NotFoundResult>;
+namespace VerticalShop.Products;
+
+using Result = Results<Ok<ProductDto>, NotFound>;
 
 /// <summary>
 /// Provides functionality for handling product retrieval operations.
@@ -23,10 +26,7 @@ public static class GetProduct
         public async Task<Result> GetById(ProductId id, CancellationToken cancellationToken = default)
         {
             var result = await _products.GetByIdAsync(id, cancellationToken);
-            return result.Match<Result>(
-                p => TypedResults.Ok(ProductDto.FromProduct(p)),
-                _ => TypedResults.NotFound()
-            );
+            return result is null ? TypedResults.NotFound() : TypedResults.Ok(ProductDto.FromProduct(result));
         }
 
         /// <summary>
@@ -38,10 +38,7 @@ public static class GetProduct
         public async Task<Result> GetBySlug(ProductSlug slug, CancellationToken cancellationToken = default)
         {
             var result = await _products.GetBySlugAsync(slug, cancellationToken);
-            return result.Match<Result>(
-                p => TypedResults.Ok(ProductDto.FromProduct(p)),
-                _ => TypedResults.NotFound()
-            );
+            return result is null ? TypedResults.NotFound() : TypedResults.Ok(ProductDto.FromProduct(result));
         }
     }
 }

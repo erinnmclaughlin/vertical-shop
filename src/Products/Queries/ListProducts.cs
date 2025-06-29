@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace VerticalShop.Api.Products;
+namespace VerticalShop.Products;
 
 /// <summary>
 /// Provides functionality to query a list of products.

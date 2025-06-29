@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace VerticalShop.Api.Products;
+namespace VerticalShop.Products;
 
 /// <summary>
 /// Represents a Data Transfer Object (DTO) for a Product in the VerticalShop system.

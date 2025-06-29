@@ -1,8 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 
-namespace VerticalShop.Api.Products;
+namespace VerticalShop.Products;
 
 /// <summary>
 /// Provides extension methods for configuring product-related services and API endpoints
@@ -14,9 +18,9 @@ public static class ProductModule
     /// Adds product-related services to the dependency injection container.
     /// </summary>
     /// <param name="builder">
-    /// The <see cref="WebApplicationBuilder"/> used to configure the application's services.
+    /// The <see cref="IHostApplicationBuilder"/> used to configure the application's services.
     /// </param>
-    public static Assembly AddProductModule(this WebApplicationBuilder builder)
+    public static Assembly AddProductModule<T>(this T builder) where T : IHostApplicationBuilder
     {
         builder.Services.TryAddScoped<IProductRepository, PostgresProductRepository>();
         builder.Services.TryAddTransient<CreateProduct.CommandHandler>();

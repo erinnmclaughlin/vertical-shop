@@ -1,4 +1,4 @@
-﻿namespace VerticalShop.Api.Products;
+﻿namespace VerticalShop.Products;
 
 /// <summary>
 /// A unique identifier for a product, encapsulating its creation, parsing, and conversion functionalities.

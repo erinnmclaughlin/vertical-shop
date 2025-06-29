@@ -1,9 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using VerticalShop.Api.Messaging;
 using VerticalShop.Api.Persistence;
-using VerticalShop.Api.Products;
 using VerticalShop.Api.Validation;
 using VerticalShop.Inventory;
+using VerticalShop.Products;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,5 +46,6 @@ using (var scope = app.Services.CreateScope())
 app.Run();
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed partial class Program;
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
