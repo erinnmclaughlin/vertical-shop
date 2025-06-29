@@ -8,6 +8,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost", "src\AppHost\AppH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceDefaults", "src\ServiceDefaults\ServiceDefaults.csproj", "{36CEF726-3D3D-4179-B304-F69577D39713}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inventory", "src\Inventory\Inventory.csproj", "{26411E7D-959F-4829-A76F-834BDD515618}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel", "src\SharedKernel\SharedKernel.csproj", "{66180FAA-1ABE-4F7A-BED3-EAA7C5827A23}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +34,14 @@ Global
 		{36CEF726-3D3D-4179-B304-F69577D39713}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36CEF726-3D3D-4179-B304-F69577D39713}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36CEF726-3D3D-4179-B304-F69577D39713}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26411E7D-959F-4829-A76F-834BDD515618}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26411E7D-959F-4829-A76F-834BDD515618}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26411E7D-959F-4829-A76F-834BDD515618}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26411E7D-959F-4829-A76F-834BDD515618}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66180FAA-1ABE-4F7A-BED3-EAA7C5827A23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66180FAA-1ABE-4F7A-BED3-EAA7C5827A23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66180FAA-1ABE-4F7A-BED3-EAA7C5827A23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66180FAA-1ABE-4F7A-BED3-EAA7C5827A23}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

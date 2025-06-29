@@ -1,4 +1,4 @@
-﻿namespace VerticalShop.Api.Inventory;
+﻿namespace VerticalShop.Inventory;
 
 /// <summary>
 /// Represents an item in the inventory with a unique product identifier and available quantity.

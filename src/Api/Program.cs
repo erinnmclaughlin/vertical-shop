@@ -1,8 +1,8 @@
-using VerticalShop.Api.Inventory;
 using VerticalShop.Api.Messaging;
 using VerticalShop.Api.Persistence;
 using VerticalShop.Api.Products;
 using VerticalShop.Api.Validation;
+using VerticalShop.Inventory;
 
 var builder = WebApplication.CreateBuilder(args);
 

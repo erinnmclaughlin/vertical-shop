@@ -1,6 +1,7 @@
 using MassTransit;
 using MassTransit.SqlTransport;
 using MassTransit.SqlTransport.PostgreSql;
+using VerticalShop.Inventory;
 
 namespace VerticalShop.Api.Messaging;
 
@@ -22,6 +23,7 @@ public static class MessagingModule
         builder.Services.AddMassTransit(options =>
         {
             options.AddConsumers(typeof(Program).Assembly);
+            options.AddConsumers(typeof(InventoryModule).Assembly);
             options.UsingPostgres((context,o) =>
             {
                 o.ConfigureEndpoints(context);

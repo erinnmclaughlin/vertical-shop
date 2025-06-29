@@ -1,6 +1,9 @@
-﻿namespace VerticalShop.Api.Inventory.Queries;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
-using Result = Results<Ok<int>, NotFoundResult>;
+namespace VerticalShop.Inventory.Queries;
+
+using Result = Results<Ok<int>, NotFound>;
 
 /// <summary>
 /// Provides functionality to check the available quantity of a product in stock.
@@ -26,12 +29,7 @@ public static class CheckQuantityInStock
         public async Task<Result> Handle(string productSlug, CancellationToken cancellationToken = default)
         {
             var item = await _inventory.GetAsync(productSlug, cancellationToken);
-            
-            return item.Match<Result>(
-                ok => TypedResults.Ok(ok.QuantityAvailable),
-                _ => TypedResults.NotFound()
-            );
+            return item is null ? TypedResults.NotFound() : TypedResults.Ok(item.QuantityAvailable);
         }
-        
     }
 }

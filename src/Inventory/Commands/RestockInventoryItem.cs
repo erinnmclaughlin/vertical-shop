@@ -1,6 +1,11 @@
-﻿namespace VerticalShop.Api.Inventory.Commands;
+﻿using System.Diagnostics.CodeAnalysis;
+using FluentValidation;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
-using Result = Results<NoContent, NotFoundResult>;
+namespace VerticalShop.Inventory.Commands;
+
+using Result = Results<NoContent, NotFound>;
 
 /// <summary>
 /// Contains functionality for restocking inventory items, including request models,
@@ -11,6 +16,7 @@ public static class RestockInventoryItem
     /// <summary>
     /// Represents the body of the API request for restocking an inventory item.
     /// </summary>
+    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
     public sealed record RequestBody(int Quantity);
 
     /// <summary>
@@ -52,16 +58,11 @@ public static class RestockInventoryItem
         /// <returns>A result indicating the outcome of the command, either success with no content or a not-found result.</returns>
         public async Task<Result> HandleAsync(Command command, CancellationToken cancellationToken = default)
         {
-            var getItemResult = await _inventoryRepository.GetAsync(command.ProductSlug, cancellationToken);
+            var item = await _inventoryRepository.GetAsync(command.ProductSlug, cancellationToken);
 
-            return await getItemResult.Match<Task<Result>>(
-                item => Handle(command, item, cancellationToken),
-                _ => Task.FromResult<Result>(TypedResults.NotFound())
-            );
-        }
-
-        private async Task<Result> Handle(Command command, InventoryItem item, CancellationToken cancellationToken = default)
-        {
+            if (item is null)
+                return TypedResults.NotFound();
+            
             item.QuantityAvailable += command.Quantity;
             await _inventoryRepository.UpsertAsync(item, cancellationToken);
             return TypedResults.NoContent();

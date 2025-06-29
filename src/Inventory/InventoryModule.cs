@@ -1,8 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
-using VerticalShop.Api.Inventory.Commands;
-using VerticalShop.Api.Inventory.Queries;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+using VerticalShop.Inventory.Commands;
+using VerticalShop.Inventory.Queries;
 
-namespace VerticalShop.Api.Inventory;
+namespace VerticalShop.Inventory;
 
 /// <summary>
 /// Provides extension methods to add inventory services and map inventory API endpoints.
@@ -10,10 +14,10 @@ namespace VerticalShop.Api.Inventory;
 public static class InventoryModule
 {
     /// <summary>
-    /// Adds inventory-related services to the specified <see cref="WebApplicationBuilder"/> instance.
+    /// Adds inventory-related services to the specified <see cref="IHostApplicationBuilder"/> instance.
     /// </summary>
-    /// <param name="builder">The <see cref="WebApplicationBuilder"/> to which the inventory services will be added.</param>
-    public static void AddInventoryServices(this WebApplicationBuilder builder)
+    /// <param name="builder">The <see cref="IHostApplicationBuilder"/> to which the inventory services will be added.</param>
+    public static void AddInventoryServices<T>(this T builder) where T : IHostApplicationBuilder
     {
         builder.Services.TryAddScoped<IInventoryRepository, PostgresInventoryRepository>();
         builder.Services.TryAddTransient<RestockInventoryItem.CommandHandler>();

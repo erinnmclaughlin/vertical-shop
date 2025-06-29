@@ -1,6 +1,6 @@
 ﻿using System.Data.Common;
 
-namespace VerticalShop.Api.Persistence;
+namespace VerticalShop;
 
 /// <summary>
 /// Defines the contract for a unit of work that manages the lifecycle of a transaction.

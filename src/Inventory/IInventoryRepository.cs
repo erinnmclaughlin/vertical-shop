@@ -1,4 +1,4 @@
-﻿namespace VerticalShop.Api.Inventory;
+﻿namespace VerticalShop.Inventory;
 
 /// <summary>
 /// Provides abstraction for inventory repository operations.
@@ -11,7 +11,7 @@ public interface IInventoryRepository
     /// <param name="productSlug">The unique slug identifying the product.</param>
     /// <param name="cancellationToken">The cancellation token to observe during the operation.</param>
     /// <returns>A task containing the result, which is either the inventory item or a not found indication.</returns>
-    Task<OneOf<InventoryItem, NotFound>> GetAsync(string productSlug, CancellationToken cancellationToken = default);
+    Task<InventoryItem?> GetAsync(string productSlug, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Updates an existing inventory item if it exists, otherwise inserts a new inventory item.

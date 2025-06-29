@@ -1,6 +1,6 @@
-﻿using VerticalShop.Api.Persistence;
+﻿using Dapper;
 
-namespace VerticalShop.Api.Inventory;
+namespace VerticalShop.Inventory;
 
 /// <inheritdoc />
 internal sealed class PostgresInventoryRepository(IDatabaseContext dbContext) : IInventoryRepository
@@ -8,11 +8,11 @@ internal sealed class PostgresInventoryRepository(IDatabaseContext dbContext) : 
     private readonly IDatabaseContext _dbContext = dbContext;
 
     /// <inheritdoc />
-    public async Task<OneOf<InventoryItem, NotFound>> GetAsync(string productSlug, CancellationToken cancellationToken = default)
+    public async Task<InventoryItem?> GetAsync(string productSlug, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var item = await _dbContext.Connection.QuerySingleOrDefaultAsync<InventoryItem>(
+        return await _dbContext.Connection.QuerySingleOrDefaultAsync<InventoryItem>(
             """
             select 
                 product_slug as "ProductSlug",
@@ -22,8 +22,6 @@ internal sealed class PostgresInventoryRepository(IDatabaseContext dbContext) : 
             """,
             new { productSlug }
         );
-        
-        return item is null ? new NotFound() : item;
     }
 
     /// <inheritdoc />
