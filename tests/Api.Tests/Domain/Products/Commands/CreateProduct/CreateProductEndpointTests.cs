@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace ContextDrivenDevelopment.Api.Tests.Domain.Products.Commands.CreateProduct;
 
-using Command = Api.Domain.Products.Commands.CreateProduct.Command;
+using Command = Api.Products.Commands.CreateProduct.Command;
 
 public sealed class CreateProductEndpointTests(ApiFixture api) : IClassFixture<ApiFixture>
 {

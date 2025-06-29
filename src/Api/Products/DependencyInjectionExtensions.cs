@@ -1,8 +1,8 @@
-﻿using ContextDrivenDevelopment.Api.Domain.Products.Commands;
-using ContextDrivenDevelopment.Api.Domain.Products.Queries;
+﻿using ContextDrivenDevelopment.Api.Products.Commands;
+using ContextDrivenDevelopment.Api.Products.Queries;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace ContextDrivenDevelopment.Api.Domain.Products;
+namespace ContextDrivenDevelopment.Api.Products;
 
 public static class DependencyInjectionExtensions
 {

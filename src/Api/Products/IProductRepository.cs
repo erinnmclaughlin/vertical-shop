@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Domain.Products;
+﻿namespace ContextDrivenDevelopment.Api.Products;
 
 /// <summary>
 /// Defines the contract for a data store that manages product entities.

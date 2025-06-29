@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Domain.Inventory;
+﻿namespace ContextDrivenDevelopment.Api.Inventory;
 
 public sealed class InventoryItem
 {

@@ -1,12 +1,12 @@
-using ContextDrivenDevelopment.Api.Domain.Products;
-using ContextDrivenDevelopment.Api.Domain.Products.Events;
 using ContextDrivenDevelopment.Api.Messaging;
 using ContextDrivenDevelopment.Api.Persistence;
+using ContextDrivenDevelopment.Api.Products;
+using ContextDrivenDevelopment.Api.Products.Events;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
 
-using Command = ContextDrivenDevelopment.Api.Domain.Products.Commands.CreateProduct.Command;
-using CommandHandler = ContextDrivenDevelopment.Api.Domain.Products.Commands.CreateProduct.CommandHandler;
+using Command = ContextDrivenDevelopment.Api.Products.Commands.CreateProduct.Command;
+using CommandHandler = ContextDrivenDevelopment.Api.Products.Commands.CreateProduct.CommandHandler;
 
 namespace ContextDrivenDevelopment.Api.Tests.Domain.Products.Commands.CreateProduct;
 
@@ -37,8 +37,8 @@ public sealed class CreateProductHandlerTests(ApiFixture api) : IClassFixture<Ap
         Assert.IsType<Created>(result.Result);
         
         // Assert that the product was persisted to the database
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
-        var getResult = await unitOfWork.Products.GetBySlugAsync(slug, TestContext.Current.CancellationToken);
+        var productRepository = scope.ServiceProvider.GetRequiredService<IProductRepository>();
+        var getResult = await productRepository.GetBySlugAsync(slug, TestContext.Current.CancellationToken);
         var createdProduct = Assert.IsType<Product>(getResult.Value);
         Assert.Equal(command.Slug, createdProduct.Slug);
         Assert.Equal(command.Name, createdProduct.Name);

@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Domain.Products.Queries;
+﻿namespace ContextDrivenDevelopment.Api.Products.Queries;
 
 using Result = Results<Ok<GetProduct.ProductDetail>, NotFoundResult>;
 

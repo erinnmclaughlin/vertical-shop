@@ -1,7 +1,7 @@
-using ContextDrivenDevelopment.Api.Domain.Inventory;
-using ContextDrivenDevelopment.Api.Domain.Products;
+using ContextDrivenDevelopment.Api.Inventory;
 using ContextDrivenDevelopment.Api.Messaging;
 using ContextDrivenDevelopment.Api.Persistence.Postgres;
+using ContextDrivenDevelopment.Api.Products;
 
 var builder = WebApplication.CreateBuilder(args);
 

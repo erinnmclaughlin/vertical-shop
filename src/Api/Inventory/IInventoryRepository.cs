@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Domain.Inventory;
+﻿namespace ContextDrivenDevelopment.Api.Inventory;
 
 /// <summary>
 /// Provides abstraction for inventory repository operations.

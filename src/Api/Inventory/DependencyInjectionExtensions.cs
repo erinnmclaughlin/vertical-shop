@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace ContextDrivenDevelopment.Api.Domain.Inventory;
+namespace ContextDrivenDevelopment.Api.Inventory;
 
 public static class DependencyInjectionExtensions
 {

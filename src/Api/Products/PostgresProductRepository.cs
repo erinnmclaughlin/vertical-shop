@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Domain.Products;
+﻿namespace ContextDrivenDevelopment.Api.Products;
 
 /// <inheritdoc />
 internal sealed class PostgresProductRepository : IProductRepository

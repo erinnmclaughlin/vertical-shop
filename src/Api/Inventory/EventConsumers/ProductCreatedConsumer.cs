@@ -1,7 +1,7 @@
-﻿using ContextDrivenDevelopment.Api.Domain.Products.Events;
+﻿using ContextDrivenDevelopment.Api.Products.Events;
 using MassTransit;
 
-namespace ContextDrivenDevelopment.Api.Domain.Inventory.EventConsumers;
+namespace ContextDrivenDevelopment.Api.Inventory.EventConsumers;
 
 public sealed class ProductCreatedConsumer : IConsumer<ProductCreated>
 {

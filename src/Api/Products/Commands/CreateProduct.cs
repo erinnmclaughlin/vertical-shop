@@ -1,7 +1,7 @@
-﻿using ContextDrivenDevelopment.Api.Domain.Products.Events;
-using ContextDrivenDevelopment.Api.Persistence;
+﻿using ContextDrivenDevelopment.Api.Persistence;
+using ContextDrivenDevelopment.Api.Products.Events;
 
-namespace ContextDrivenDevelopment.Api.Domain.Products.Commands;
+namespace ContextDrivenDevelopment.Api.Products.Commands;
 
 using Result = Results<Created, ValidationProblem>;
 

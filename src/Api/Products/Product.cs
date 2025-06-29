@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Domain.Products;
+﻿namespace ContextDrivenDevelopment.Api.Products;
 
 public sealed class Product
 {

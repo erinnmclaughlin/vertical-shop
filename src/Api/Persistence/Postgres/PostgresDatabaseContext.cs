@@ -1,7 +1,7 @@
 using System.Data.Common;
-using ContextDrivenDevelopment.Api.Domain.Inventory;
-using ContextDrivenDevelopment.Api.Domain.Products;
+using ContextDrivenDevelopment.Api.Inventory;
 using ContextDrivenDevelopment.Api.Messaging;
+using ContextDrivenDevelopment.Api.Products;
 
 namespace ContextDrivenDevelopment.Api.Persistence.Postgres;
 

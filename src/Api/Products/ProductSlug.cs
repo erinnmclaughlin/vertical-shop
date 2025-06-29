@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Domain.Products;
+﻿namespace ContextDrivenDevelopment.Api.Products;
 
 /// <summary>
 /// A unique identifier for a Product in the form of a slug.

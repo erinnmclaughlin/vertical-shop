@@ -1,14 +1,14 @@
 ﻿using AutoBogus;
-using ContextDrivenDevelopment.Api.Domain.Products;
 using ContextDrivenDevelopment.Api.Persistence;
+using ContextDrivenDevelopment.Api.Products;
 using FluentValidation.TestHelper;
 using NSubstitute;
 using OneOf.Types;
 
 namespace ContextDrivenDevelopment.Api.Tests.Domain.Products.Commands.CreateProduct;
 
-using Command = Api.Domain.Products.Commands.CreateProduct.Command;
-using CommandValidator = Api.Domain.Products.Commands.CreateProduct.CommandValidator;
+using Command = Api.Products.Commands.CreateProduct.Command;
+using CommandValidator = Api.Products.Commands.CreateProduct.CommandValidator;
 
 public sealed class CreateProductValidatorTests
 {

@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Domain.Products.Events;
+﻿namespace ContextDrivenDevelopment.Api.Products.Events;
 
 /// <summary>
 /// An integration event that is published when a new product is created.

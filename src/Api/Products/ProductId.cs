@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Domain.Products;
+﻿namespace ContextDrivenDevelopment.Api.Products;
 
 /// <summary>
 /// A unique identifier for a product, encapsulating its creation, parsing, and conversion functionalities.
