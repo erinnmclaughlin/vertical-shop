@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace VerticalShop.Api.Persistence;
 
-public sealed class PostgresDatabaseInitializer(
+internal sealed class PostgresDatabaseInitializer(
     IMigrationRunner migrationRunner, 
     ISqlTransportDatabaseMigrator massTransitMigrator,
     IOptions<SqlTransportOptions> massTransitOptions

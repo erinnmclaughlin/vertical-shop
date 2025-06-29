@@ -15,7 +15,7 @@ var api = builder
     .WaitFor(verticalShopDatabase)
     .WithExternalHttpEndpoints();
 
-var scalar = builder.AddScalarApiReference()
+_ = builder.AddScalarApiReference()
     .WithApiReference(api);
 
 builder.Build().Run();

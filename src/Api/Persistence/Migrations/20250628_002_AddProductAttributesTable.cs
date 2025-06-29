@@ -2,9 +2,11 @@
 
 namespace VerticalShop.Api.Persistence.Migrations;
 
+/// <inheritdoc />
 [Migration(20250628_002)]
 public sealed class AddProductAttributesTable : Migration
 {
+    /// <inheritdoc />
     public override void Up()
     {
         Create.Table("product_attributes")
@@ -25,6 +27,7 @@ public sealed class AddProductAttributesTable : Migration
             .PrimaryColumn("id");
     }
 
+    /// <inheritdoc />
     public override void Down()
     {
         Delete.ForeignKey().FromTable("product_attributes").InSchema("products").ForeignColumn("product_id");

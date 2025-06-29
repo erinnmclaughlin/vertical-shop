@@ -2,9 +2,11 @@
 
 namespace VerticalShop.Api.Persistence.Migrations;
 
+/// <inheritdoc />
 [Migration(20250628_005)]
 public sealed class AddOutboxTable : Migration
 {
+    /// <inheritdoc />
     public override void Up()
     {
         Create.Table("outbox_messages")
@@ -16,6 +18,7 @@ public sealed class AddOutboxTable : Migration
             .WithColumn("error_message").AsString().Nullable();
     }
 
+    /// <inheritdoc />
     public override void Down()
     {
         Delete.Table("outbox_messages");

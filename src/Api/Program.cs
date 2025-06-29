@@ -41,4 +41,6 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 public sealed partial class Program;
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

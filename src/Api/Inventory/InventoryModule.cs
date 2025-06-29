@@ -4,6 +4,9 @@ using VerticalShop.Api.Inventory.Queries;
 
 namespace VerticalShop.Api.Inventory;
 
+/// <summary>
+/// Provides extension methods to add inventory services and map inventory API endpoints.
+/// </summary>
 public static class InventoryModule
 {
     /// <summary>

@@ -3,7 +3,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace VerticalShop.Api.Persistence;
 
-public static class DependencyInjectionExtensions
+/// <summary>
+/// Provides functionality to register and configure services for Postgres database integration.
+/// </summary>
+public static class PostgresModule
 {
     /// <summary>
     /// Configures and registers services for integrating with a Postgres database.

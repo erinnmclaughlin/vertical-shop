@@ -1,9 +1,12 @@
-﻿namespace VerticalShop.Api.Products;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace VerticalShop.Api.Products;
 
 /// <summary>
 /// An integration event that is published when a new product is created.
 /// </summary>
 /// <param name="ProductSlug">The product slug.</param>
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
 public sealed record ProductCreated(string ProductId, string ProductSlug, string ProductName)
 {
     /// <summary>

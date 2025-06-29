@@ -2,17 +2,27 @@
 
 using Result = Results<Ok<int>, NotFoundResult>;
 
+/// <summary>
+/// Provides functionality to check the available quantity of a product in stock.
+/// </summary>
 public static class CheckQuantityInStock
 {
-    public sealed class QueryHandler
+    /// <summary>
+    /// Handles the process of querying the inventory for available quantity of a product.
+    /// </summary>
+    public sealed class QueryHandler(IInventoryRepository inventory)
     {
-        private readonly IInventoryRepository _inventory;
-        
-        public QueryHandler(IInventoryRepository inventory)
-        {
-            _inventory = inventory;
-        }
+        private readonly IInventoryRepository _inventory = inventory;
 
+        /// <summary>
+        /// Handles the process of retrieving the quantity of a product available in inventory.
+        /// </summary>
+        /// <param name="productSlug">The unique identifier or slug of the product to check in the inventory.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel the operation if necessary.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation.
+        /// The task result is a <c>Result</c> object containing an <c>Ok</c> result with the quantity available if the product is found, or a <c>NotFound</c> result otherwise.
+        /// </returns>
         public async Task<Result> Handle(string productSlug, CancellationToken cancellationToken = default)
         {
             var item = await _inventory.GetAsync(productSlug, cancellationToken);

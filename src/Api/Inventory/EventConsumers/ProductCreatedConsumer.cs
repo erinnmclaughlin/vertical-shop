@@ -7,14 +7,9 @@ namespace VerticalShop.Api.Inventory.EventConsumers;
 /// A consumer responsible for handling the <see cref="ProductCreated"/> event
 /// and performing actions related to inventory management.
 /// </summary>
-public sealed class ProductCreatedConsumer : IConsumer<ProductCreated>
+public sealed class ProductCreatedConsumer(IInventoryRepository inventory) : IConsumer<ProductCreated>
 {
-    private readonly IInventoryRepository _inventory;
-
-    public ProductCreatedConsumer(IInventoryRepository inventory)
-    {
-        _inventory = inventory;
-    }
+    private readonly IInventoryRepository _inventory = inventory;
 
     /// <inheritdoc />
     public async Task Consume(ConsumeContext<ProductCreated> context)

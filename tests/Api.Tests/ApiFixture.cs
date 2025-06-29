@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
-using VerticalShop.Api.Persistence;
 
 namespace VerticalShop.Api.Tests;
 
@@ -30,9 +29,6 @@ public sealed class ApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
             services
                 .RemoveAll<NpgsqlDataSource>()
                 .AddSingleton(new NpgsqlDataSourceBuilder(Database.GetConnectionString()).Build());
-                
-            services
-                .RemoveAll<PostgresDatabaseInitializer>();
             
             services
                 .ConfigureRunner(rb => rb.WithGlobalConnectionString(Database.GetConnectionString()))

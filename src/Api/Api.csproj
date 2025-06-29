@@ -7,6 +7,10 @@
         <RootNamespace>VerticalShop.Api</RootNamespace>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile>bin\Debug\Api.xml</DocumentationFile>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="Aspire.Npgsql" Version="9.3.1" />
         <PackageReference Include="Dapper" Version="2.1.66" />

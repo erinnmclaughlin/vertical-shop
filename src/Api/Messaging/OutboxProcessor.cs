@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 
 namespace VerticalShop.Api.Messaging;
 
-public sealed class OutboxProcessor : BackgroundService
+internal sealed class OutboxProcessor : BackgroundService
 {
     private readonly ILogger<OutboxProcessor> _logger;
     private readonly IOptionsMonitor<OutboxOptions> _optionsMonitor;

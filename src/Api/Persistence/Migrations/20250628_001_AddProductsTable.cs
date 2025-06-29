@@ -2,9 +2,11 @@
 
 namespace VerticalShop.Api.Persistence.Migrations;
 
+/// <inheritdoc />
 [Migration(20250628_001)]
 public sealed class AddProductsTable : Migration
 {
+    /// <inheritdoc />
     public override void Up()
     {
         Create.Schema("products");
@@ -19,6 +21,7 @@ public sealed class AddProductsTable : Migration
         Create.Index("idx_products_slug").OnTable("products").InSchema("products").OnColumn("slug").Unique();
     }
 
+    /// <inheritdoc />
     public override void Down()
     {
         Delete.Index("idx_products_slug").OnTable("products").InSchema("products");

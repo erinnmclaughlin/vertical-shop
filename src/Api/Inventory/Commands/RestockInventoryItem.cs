@@ -2,6 +2,10 @@
 
 using Result = Results<NoContent, NotFoundResult>;
 
+/// <summary>
+/// Contains functionality for restocking inventory items, including request models,
+/// validation logic, and command handling.
+/// </summary>
 public static class RestockInventoryItem
 {
     /// <summary>
@@ -21,6 +25,7 @@ public static class RestockInventoryItem
     /// </summary>
     public sealed class CommandValidator : AbstractValidator<Command>
     {
+        /// <inheritdoc />
         public CommandValidator()
         {
             RuleFor(x => x.ProductSlug)
@@ -35,15 +40,16 @@ public static class RestockInventoryItem
     /// <summary>
     /// Handles the execution of the <see cref="RestockInventoryItem.Command"/>.
     /// </summary>
-    public sealed class CommandHandler
+    public sealed class CommandHandler(IInventoryRepository inventoryRepository)
     {
-        private readonly IInventoryRepository _inventoryRepository;
-        
-        public CommandHandler(IInventoryRepository inventoryRepository)
-        {
-            _inventoryRepository = inventoryRepository;
-        }
-        
+        private readonly IInventoryRepository _inventoryRepository = inventoryRepository;
+
+        /// <summary>
+        /// Handles the execution of the given command by performing inventory operations.
+        /// </summary>
+        /// <param name="command">The command containing the details of the inventory operation to be performed.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A result indicating the outcome of the command, either success with no content or a not-found result.</returns>
         public async Task<Result> HandleAsync(Command command, CancellationToken cancellationToken = default)
         {
             var getItemResult = await _inventoryRepository.GetAsync(command.ProductSlug, cancellationToken);

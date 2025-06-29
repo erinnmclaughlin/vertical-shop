@@ -3,6 +3,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace VerticalShop.Api.Products;
 
+/// <summary>
+/// Provides extension methods for configuring product-related services and API endpoints
+/// within the application.
+/// </summary>
 public static class ProductModule
 {
     /// <summary>

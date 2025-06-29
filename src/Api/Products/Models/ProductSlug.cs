@@ -20,15 +20,15 @@ public sealed record ProductSlug
     }
 
     /// <summary>
-    /// Creates a new instance of the ProductSlug class with a unique value.
+    /// Creates a new instance of the <see cref="ProductSlug"/> class with a unique value.
     /// </summary>
-    /// <returns>A new instance of ProductSlug with a generated unique identifier.</returns>
+    /// <returns>A new instance of <see cref="ProductSlug"/> with a generated unique identifier.</returns>
     public static ProductSlug CreateNew() => new();
 
     /// <summary>
-    /// Parses the provided string and creates a new instance of the ProductSlug class with the specified value.
+    /// Parses the provided string and creates a new instance of the <see cref="ProductSlug"/> class with the specified value.
     /// </summary>
-    /// <param name="value">The string representation of the product slug to parse.</param>
+    /// <param name="value">The value to parse.</param>
     /// <returns>A new instance of ProductSlug initialized with the specified value.</returns>
     public static ProductSlug Parse(string value)
     {
@@ -37,22 +37,22 @@ public sealed record ProductSlug
     }
 
     /// <summary>
-    /// Defines an implicit conversion operator to convert a ProductSlug instance to its string representation.
+    /// Defines an implicit conversion operator to convert a <see cref="ProductSlug"/> instance to its string representation.
     /// </summary>
-    /// <param name="slug">The ProductSlug instance to be converted to a string.</param>
+    /// <param name="slug">The <see cref="ProductSlug"/> instance to be converted to a string.</param>
     /// <returns>The string representation of the product slug.</returns>
     public static implicit operator string(ProductSlug slug) => slug.Value;
 
     /// <summary>
-    /// Defines an implicit conversion operator to convert a string to a ProductSlug instance.
+    /// Defines an implicit conversion operator to convert a string to a <see cref="ProductSlug"/> instance.
     /// </summary>
-    /// <param name="slug">The string to be converted into a ProductSlug instance.</param>
-    /// <returns>A ProductSlug initialized with the specified string value.</returns>
+    /// <param name="slug">The string to be converted into a <see cref="ProductSlug"/> instance.</param>
+    /// <returns>A <see cref="ProductSlug"/> initialized with the specified string value.</returns>
     public static implicit operator ProductSlug(string slug) => Parse(slug);
 
     /// <summary>
-    /// Returns the string representation of the ProductSlug instance.
+    /// Returns the string representation of the <see cref="ProductSlug"/> instance.
     /// </summary>
-    /// <returns>The string value of the ProductSlug.</returns>
+    /// <returns>The string value of the <see cref="ProductSlug"/>.</returns>
     public override string ToString() => Value;
 }

@@ -2,16 +2,17 @@
 
 using Result = Results<Ok<ProductDto>, NotFoundResult>;
 
+/// <summary>
+/// Provides functionality for handling product retrieval operations.
+/// </summary>
 public static class GetProduct
 {
-    public sealed class QueryHandler
+    /// <summary>
+    /// Handles queries related to product retrieval operations.
+    /// </summary>
+    public sealed class QueryHandler(IProductRepository products)
     {
-        private readonly IProductRepository _products;
-        
-        public QueryHandler(IProductRepository products)
-        {
-            _products = products;
-        }
+        private readonly IProductRepository _products = products;
 
         /// <summary>
         /// Retrieves a product by its unique identifier.

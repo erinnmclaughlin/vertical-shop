@@ -5,6 +5,9 @@ namespace VerticalShop.Api.Products;
 
 using Result = Results<Created, ValidationProblem>;
 
+/// <summary>
+/// Provides the implementation for creating a new product within the application.
+/// </summary>
 public static class CreateProduct
 {
     /// <summary>
@@ -36,6 +39,7 @@ public static class CreateProduct
     /// </summary>
     public sealed class CommandValidator : AbstractValidator<Command>
     {
+        /// <inheritdoc />
         public CommandValidator(IProductRepository productRepository)
         {
             RuleFor(x => x.Slug)
@@ -69,7 +73,16 @@ public static class CreateProduct
         private readonly IOutbox _outbox = outbox;
         private readonly IProductRepository _productRepository = productRepository;
         private readonly IValidator<Command> _validator = validator;
-        
+
+        /// <summary>
+        /// Handles the asynchronous execution of a product creation command.
+        /// </summary>
+        /// <param name="command">The <see cref="CreateProduct.Command"/> containing product creation details.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
+        /// <returns>
+        /// A <see cref="Task{TResult}"/> representing the asynchronous operation, with a result of type <see cref="Result"/>.
+        /// The result may represent a successful product creation or validation errors.
+        /// </returns>
         public async Task<Result> HandleAsync(Command command, CancellationToken cancellationToken = default)
         {
             // validate the request

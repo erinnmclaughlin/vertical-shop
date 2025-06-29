@@ -4,8 +4,15 @@ using MassTransit.SqlTransport.PostgreSql;
 
 namespace VerticalShop.Api.Messaging;
 
-public static class DependencyInjectionExtensions
+/// <summary>
+/// Provides methods to configure messaging services in the application.
+/// </summary>
+public static class MessagingModule
 {
+    /// <summary>
+    /// Configures and adds messaging services to the application.
+    /// </summary>
+    /// <param name="builder">An instance of <see cref="WebApplicationBuilder"/> used to configure the application services.</param>
     public static void AddMessaging(this WebApplicationBuilder builder)
     {
         builder.ConfigureMassTransitDatabaseOptions();

@@ -1,5 +1,8 @@
 ﻿namespace VerticalShop.Api.Products;
 
+/// <summary>
+/// Represents a product entity in the VerticalShop system.
+/// </summary>
 public sealed class Product
 {
     /// <summary>

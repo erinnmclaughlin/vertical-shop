@@ -2,9 +2,11 @@
 
 namespace VerticalShop.Api.Persistence.Migrations;
 
+/// <inheritdoc />
 [Migration(20250628_003)]
 public class UpdateIdColumnTypes : Migration
 {
+    /// <inheritdoc />
     public override void Up()
     {
         Delete.ForeignKey()
@@ -34,6 +36,7 @@ public class UpdateIdColumnTypes : Migration
             .PrimaryColumn("id");
     }
 
+    /// <inheritdoc />
     public override void Down()
     {
         Alter.Column("id")

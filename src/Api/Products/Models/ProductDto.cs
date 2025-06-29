@@ -2,6 +2,11 @@
 
 namespace VerticalShop.Api.Products;
 
+/// <summary>
+/// Represents a Data Transfer Object (DTO) for a Product in the VerticalShop system.
+/// Provides a simplified representation of a product for API consumers,
+/// containing only the fields that are relevant for external interactions.
+/// </summary>
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public sealed record ProductDto
 {

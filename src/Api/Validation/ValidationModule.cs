@@ -1,6 +1,9 @@
 ﻿namespace VerticalShop.Api.Validation;
 
-public static class DependencyInjectionExtensions
+/// <summary>
+/// Provides methods to register validation services for the application.
+/// </summary>
+public static class ValidationModule
 {
     /// <summary>
     /// Registers validation services by adding validators from the application's assembly.
