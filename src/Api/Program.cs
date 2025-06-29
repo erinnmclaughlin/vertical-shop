@@ -1,4 +1,3 @@
-using Scalar.AspNetCore;
 using VerticalShop.Api.Inventory;
 using VerticalShop.Api.Messaging;
 using VerticalShop.Api.Persistence;
@@ -9,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Core infrastructure services
 builder.Services.AddOpenApi();
+builder.AddServiceDefaults();
 builder.AddPostgres();
 builder.AddMessaging();
 builder.AddValidation();
@@ -22,10 +22,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
+
+app.MapDefaultEndpoints();
 app.MapInventoryApi();
 app.MapProductApi();
 
