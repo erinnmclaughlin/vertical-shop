@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using FluentMigrator.Runner;
 using FluentMigrator.Runner.VersionTableInfo;
+using FluentValidation;
 using MassTransit;
 using MassTransit.SqlTransport;
 using MassTransit.SqlTransport.PostgreSql;
