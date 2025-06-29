@@ -8,14 +8,12 @@ public static class DependencyInjectionExtensions
 {
     public static void AddMessaging(this WebApplicationBuilder builder)
     {
+        builder.ConfigureMassTransitDatabaseOptions();
         builder.Services.AddOptions<OutboxOptions>();
         builder.Services.AddHostedService<OutboxProcessor>();
-
         builder.Services.AddTransient<IOutbox, PostgresOutbox>();
         builder.Services.AddTransient<ISqlTransportDatabaseMigrator, PostgresDatabaseMigrator>();
         builder.Services.AddOptions<SqlTransportOptions>();
-        
-        builder.ConfigureMassTransitDatabaseOptions();
         builder.Services.AddMassTransit(options =>
         {
             options.AddConsumers(typeof(Program).Assembly);
