@@ -39,12 +39,9 @@ public sealed class PostgresDatabaseContext : IDatabaseContext
     public DbTransaction BeginTransaction() => Connection.BeginTransaction();
     
     /// <inheritdoc />
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
-        if (_connection is not null)
-        {
-            await _connection.DisposeAsync();
-            _connection = null;
-        }
+        _connection?.Dispose();
+        _connection = null;
     }
 }

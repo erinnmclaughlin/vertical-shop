@@ -1,14 +1,11 @@
-﻿using ContextDrivenDevelopment.Api.Persistence;
-using ContextDrivenDevelopment.Api.Persistence.Postgres;
+﻿using ContextDrivenDevelopment.Api.Persistence.Postgres;
 using FluentMigrator.Runner;
-using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
-using NSubstitute;
 
 namespace ContextDrivenDevelopment.Api.Tests;
 
@@ -19,19 +16,11 @@ namespace ContextDrivenDevelopment.Api.Tests;
 /// </summary>
 public sealed class ApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly NpgsqlDataSource _dataSource;
-
-    private IBus Bus { get; }
     private DatabaseFixture Database { get; }
-    public IDatabaseContext DatabaseContext { get; }
 
     public ApiFixture(DatabaseFixture database)
     {
-        _dataSource = new NpgsqlDataSourceBuilder(database.GetConnectionString()).Build();
-        
-        Bus = Substitute.For<IBus>();
         Database = database;
-        DatabaseContext = new PostgresDatabaseContext(_dataSource);
     }
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -40,12 +29,8 @@ public sealed class ApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
         {
             services
                 .RemoveAll<NpgsqlDataSource>()
-                .AddSingleton(_dataSource);
-
-            services
-                .RemoveAll<IDatabaseContext>()
-                .AddSingleton(DatabaseContext);
-
+                .AddSingleton(new NpgsqlDataSourceBuilder(Database.GetConnectionString()).Build());
+                
             services
                 .RemoveAll<PostgresDatabaseInitializer>();
             

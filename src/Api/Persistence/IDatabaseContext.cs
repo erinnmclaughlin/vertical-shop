@@ -8,7 +8,7 @@ namespace ContextDrivenDevelopment.Api.Persistence;
 /// <summary>
 /// Defines the contract for a unit of work that manages the lifecycle of a transaction.
 /// </summary>
-public interface IDatabaseContext : IAsyncDisposable
+public interface IDatabaseContext : IDisposable
 {
     /// <summary>
     /// Provides access to operations related to message processing and retrieval in the outbox pattern.
