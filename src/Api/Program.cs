@@ -40,7 +40,4 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-namespace ContextDrivenDevelopment.Api
-{
-    public sealed partial class Program;
-}
+public sealed partial class Program;
