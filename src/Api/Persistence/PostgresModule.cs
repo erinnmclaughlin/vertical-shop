@@ -1,4 +1,5 @@
 ﻿using FluentMigrator.Runner;
+using FluentMigrator.Runner.VersionTableInfo;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace VerticalShop.Api.Persistence;
@@ -18,11 +19,13 @@ public static class PostgresModule
         builder.Services.TryAddTransient(sp => sp.GetRequiredService<NpgsqlDataSource>().OpenConnection());
         builder.Services.TryAddScoped<IDatabaseContext, PostgresDatabaseContext>();
         builder.Services.TryAddTransient<PostgresDatabaseInitializer>();
+        builder.Services.AddScoped<IVersionTableMetaData, CustomVersionTableMetaData>();
         builder.Services
             .AddFluentMigratorCore()
             .ConfigureRunner(rb =>
             {
-                rb.AddPostgres().WithGlobalConnectionString(builder.Configuration.GetConnectionString("vertical-shop-db"));
+                rb.AddPostgres();
+                rb.WithGlobalConnectionString(builder.Configuration.GetConnectionString("vertical-shop-db"));
                 rb.ScanIn(typeof(Program).Assembly).For.All();
             })
             .AddLogging(lb => lb.AddFluentMigratorConsole());

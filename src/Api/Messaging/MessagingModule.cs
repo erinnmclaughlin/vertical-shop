@@ -34,21 +34,11 @@ public static class MessagingModule
     private static void ConfigureMassTransitDatabaseOptions(this WebApplicationBuilder builder)
     {
         var connectionString = builder.Configuration.GetConnectionString("vertical-shop-db");
-        var connectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
         
         builder.Services.AddOptions<SqlTransportOptions>().Configure(options =>
         {
-            options.Host = connectionStringBuilder.Host;
-            options.Port = connectionStringBuilder.Port;
-            options.Database = connectionStringBuilder.Database;
+            options.ConnectionString = connectionString;
             options.Schema = "transport";
-            options.Role = "transport";
-            options.Username = "masstransit";
-            options.Password = "H4rd2Gu3ss!";
-
-            // credentials to run migrations
-            options.AdminUsername = connectionStringBuilder.Username;
-            options.AdminPassword = connectionStringBuilder.Password;
         });
     }
 }

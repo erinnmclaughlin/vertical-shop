@@ -4,7 +4,8 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var postgresServer = builder
     .AddPostgres("postgres")
-    .WithDataVolume(isReadOnly: false);
+    .WithDataVolume()
+    .WithPgWeb();
 
 var verticalShopDatabase = postgresServer
     .AddDatabase("vertical-shop-db");
