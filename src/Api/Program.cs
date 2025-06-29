@@ -6,9 +6,40 @@ using ContextDrivenDevelopment.Api.Persistence.Postgres;
 using Dapper;
 using FluentMigrator.Runner;
 using FluentValidation;
+using MassTransit;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOptions<SqlTransportOptions>().Configure(options =>
+{
+    var connectionString = new NpgsqlConnectionStringBuilder(builder.Configuration.GetConnectionString("Postgres"));
+
+    options.Host = connectionString.Host;
+    options.Port = connectionString.Port;
+    options.Database = connectionString.Database;
+    options.Schema = "transport";
+    options.Role = "transport";
+    options.Username = "masstransit";
+    options.Password = "H4rd2Gu3ss!";
+
+    // credentials to run migrations
+    options.AdminUsername = connectionString.Username;
+    options.AdminPassword = connectionString.Password;
+});
+// MassTransit will run the migrations on start up
+builder.Services.AddPostgresMigrationHostedService();
+builder.Services.AddMassTransit(x =>
+{
+    // elided...
+
+    x.UsingPostgres((context,cfg) =>
+    {
+        cfg.ConfigureEndpoints(context);
+    });
+});
+
+builder.Services.AddHostedService<OutboxProcessor>();
 
 builder.Services.AddOpenApi();
 

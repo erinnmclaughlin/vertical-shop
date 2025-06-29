@@ -11,7 +11,9 @@ public sealed class AddOutboxTable : Migration
             .WithColumn("id").AsGuid().PrimaryKey().NotNullable()
             .WithColumn("type").AsString(200).NotNullable()
             .WithColumn("payload").AsCustom("jsonb").NotNullable()
-            .WithColumn("created_at").AsDateTimeOffset().WithDefault(SystemMethods.CurrentDateTimeOffset);
+            .WithColumn("created_on_utc").AsDateTimeOffset().NotNullable().WithDefault(SystemMethods.CurrentDateTimeOffset)
+            .WithColumn("processed_on_utc").AsDateTimeOffset().Nullable()
+            .WithColumn("error_message").AsString().Nullable();
     }
 
     public override void Down()
