@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Products;
+﻿namespace VerticalShop.Api.Products;
 
 /// <summary>
 /// A unique identifier for a Product in the form of a slug.

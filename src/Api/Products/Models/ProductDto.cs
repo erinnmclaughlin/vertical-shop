@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace ContextDrivenDevelopment.Api.Products;
+namespace VerticalShop.Api.Products;
 
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public sealed record ProductDto

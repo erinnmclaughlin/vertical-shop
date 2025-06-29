@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Messaging;
+﻿namespace VerticalShop.Api.Messaging;
 
 public interface IOutbox
 {

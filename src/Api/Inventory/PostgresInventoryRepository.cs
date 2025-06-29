@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Inventory;
+﻿namespace VerticalShop.Api.Inventory;
 
 /// <inheritdoc />
 internal sealed class PostgresInventoryRepository : IInventoryRepository

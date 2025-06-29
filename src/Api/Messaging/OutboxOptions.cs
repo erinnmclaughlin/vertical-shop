@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Messaging;
+﻿namespace VerticalShop.Api.Messaging;
 
 /// <summary>
 /// Configuration options for outbox processing.

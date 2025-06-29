@@ -2,7 +2,7 @@ using MassTransit;
 using MassTransit.SqlTransport;
 using MassTransit.SqlTransport.PostgreSql;
 
-namespace ContextDrivenDevelopment.Api.Messaging;
+namespace VerticalShop.Api.Messaging;
 
 public static class DependencyInjectionExtensions
 {

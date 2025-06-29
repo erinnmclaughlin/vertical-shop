@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Products;
+﻿namespace VerticalShop.Api.Products;
 
 /// <summary>
 /// An integration event that is published when a new product is created.

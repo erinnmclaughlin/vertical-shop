@@ -1,6 +1,6 @@
 ﻿using FluentMigrator;
 
-namespace ContextDrivenDevelopment.Api.Persistence.Postgres.Migrations;
+namespace VerticalShop.Api.Persistence.Migrations;
 
 [Migration(20250628_003)]
 public class UpdateIdColumnTypes : Migration

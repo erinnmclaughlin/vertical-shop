@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Products;
+﻿namespace VerticalShop.Api.Products;
 
 using Result = Results<Ok<ProductDto>, NotFoundResult>;
 

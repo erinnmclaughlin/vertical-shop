@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Products;
+﻿namespace VerticalShop.Api.Products;
 
 /// <summary>
 /// Defines the contract for a data store that manages product entities.

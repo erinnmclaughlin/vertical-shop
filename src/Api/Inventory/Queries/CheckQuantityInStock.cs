@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Inventory.Queries;
+﻿namespace VerticalShop.Api.Inventory.Queries;
 
 using Result = Results<Ok<int>, NotFoundResult>;
 

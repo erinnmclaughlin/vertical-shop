@@ -1,7 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Options;
 
-namespace ContextDrivenDevelopment.Api.Messaging;
+namespace VerticalShop.Api.Messaging;
 
 public sealed class OutboxProcessor : BackgroundService
 {

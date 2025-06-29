@@ -1,9 +1,9 @@
-using ContextDrivenDevelopment.Api.Inventory;
-using ContextDrivenDevelopment.Api.Messaging;
-using ContextDrivenDevelopment.Api.Persistence.Postgres;
-using ContextDrivenDevelopment.Api.Products;
-using ContextDrivenDevelopment.Api.Validation;
 using Scalar.AspNetCore;
+using VerticalShop.Api.Inventory;
+using VerticalShop.Api.Messaging;
+using VerticalShop.Api.Persistence;
+using VerticalShop.Api.Products;
+using VerticalShop.Api.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 

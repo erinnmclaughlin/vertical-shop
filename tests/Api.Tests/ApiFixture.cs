@@ -1,13 +1,13 @@
-﻿using ContextDrivenDevelopment.Api.Persistence.Postgres;
-using FluentMigrator.Runner;
+﻿using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
+using VerticalShop.Api.Persistence;
 
-namespace ContextDrivenDevelopment.Api.Tests;
+namespace VerticalShop.Api.Tests;
 
 /// <summary>
 /// Provides a fixture for setting up and configuring the test environment for API integration tests.

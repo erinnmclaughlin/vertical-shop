@@ -3,7 +3,7 @@ using MassTransit;
 using MassTransit.SqlTransport;
 using Microsoft.Extensions.Options;
 
-namespace ContextDrivenDevelopment.Api.Persistence.Postgres;
+namespace VerticalShop.Api.Persistence;
 
 public sealed class PostgresDatabaseInitializer(
     IMigrationRunner migrationRunner, 

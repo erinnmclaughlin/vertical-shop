@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace ContextDrivenDevelopment.Api.Inventory.Commands;
+﻿namespace VerticalShop.Api.Inventory.Commands;
 
 using Result = Results<NoContent, NotFoundResult>;
 

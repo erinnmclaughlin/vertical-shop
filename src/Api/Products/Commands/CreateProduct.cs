@@ -1,7 +1,7 @@
-﻿using ContextDrivenDevelopment.Api.Messaging;
-using ContextDrivenDevelopment.Api.Persistence;
+﻿using VerticalShop.Api.Messaging;
+using VerticalShop.Api.Persistence;
 
-namespace ContextDrivenDevelopment.Api.Products;
+namespace VerticalShop.Api.Products;
 
 using Result = Results<Created, ValidationProblem>;
 

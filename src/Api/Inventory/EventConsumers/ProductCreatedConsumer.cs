@@ -1,7 +1,7 @@
-﻿using ContextDrivenDevelopment.Api.Products;
-using MassTransit;
+﻿using MassTransit;
+using VerticalShop.Api.Products;
 
-namespace ContextDrivenDevelopment.Api.Inventory.EventConsumers;
+namespace VerticalShop.Api.Inventory.EventConsumers;
 
 /// <summary>
 /// A consumer responsible for handling the <see cref="ProductCreated"/> event

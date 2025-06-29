@@ -4,7 +4,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <OutputType>Exe</OutputType>
-        <RootNamespace>ContextDrivenDevelopment.Api.Tests</RootNamespace>
+        <RootNamespace>VerticalShop.Api.Tests</RootNamespace>
         <TargetFramework>net9.0</TargetFramework>
         <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
         <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>

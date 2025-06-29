@@ -1,9 +1,9 @@
 using System.Data.Common;
-using ContextDrivenDevelopment.Api.Inventory;
-using ContextDrivenDevelopment.Api.Messaging;
-using ContextDrivenDevelopment.Api.Products;
+using VerticalShop.Api.Inventory;
+using VerticalShop.Api.Messaging;
+using VerticalShop.Api.Products;
 
-namespace ContextDrivenDevelopment.Api.Persistence.Postgres;
+namespace VerticalShop.Api.Persistence;
 
 /// <inheritdoc />
 public sealed class PostgresDatabaseContext : IDatabaseContext
@@ -11,21 +11,8 @@ public sealed class PostgresDatabaseContext : IDatabaseContext
     private readonly NpgsqlDataSource _dataSource;
     
     private NpgsqlConnection? _connection;
-    private PostgresInventoryRepository? _inventory;
-    private PostgresOutbox? _outbox;
-    private PostgresProductRepository? _products;
-    
     private NpgsqlConnection Connection => _connection ??= _dataSource.OpenConnection();
 
-    /// <inheritdoc />
-    public IOutbox Outbox => _outbox ??= new PostgresOutbox(Connection);
-    
-    /// <inheritdoc />
-    public IInventoryRepository Inventory => _inventory ??= new PostgresInventoryRepository(Connection);
-    
-    /// <inheritdoc />
-    public IProductRepository Products => _products ??= new PostgresProductRepository(Connection);
-    
     /// <summary>
     /// Creates a new <see cref="PostgresDatabaseContext"/> instance.
     /// </summary>

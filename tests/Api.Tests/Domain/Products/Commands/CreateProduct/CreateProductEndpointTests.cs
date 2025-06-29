@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 
-namespace ContextDrivenDevelopment.Api.Tests.Domain.Products.Commands.CreateProduct;
+namespace VerticalShop.Api.Tests.Domain.Products.Commands.CreateProduct;
 
 using Command = Api.Products.CreateProduct.Command;
 

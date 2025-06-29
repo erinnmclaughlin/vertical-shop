@@ -1,12 +1,11 @@
-using ContextDrivenDevelopment.Api.Messaging;
-using ContextDrivenDevelopment.Api.Products;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
+using VerticalShop.Api.Messaging;
+using VerticalShop.Api.Products;
+using Command = VerticalShop.Api.Products.CreateProduct.Command;
+using CommandHandler = VerticalShop.Api.Products.CreateProduct.CommandHandler;
 
-using Command = ContextDrivenDevelopment.Api.Products.CreateProduct.Command;
-using CommandHandler = ContextDrivenDevelopment.Api.Products.CreateProduct.CommandHandler;
-
-namespace ContextDrivenDevelopment.Api.Tests.Domain.Products.Commands.CreateProduct;
+namespace VerticalShop.Api.Tests.Domain.Products.Commands.CreateProduct;
 
 public sealed class CreateProductHandlerTests(ApiFixture api) : IClassFixture<ApiFixture>
 {

@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Products;
+﻿namespace VerticalShop.Api.Products;
 
 /// <summary>
 /// A unique identifier for a product, encapsulating its creation, parsing, and conversion functionalities.

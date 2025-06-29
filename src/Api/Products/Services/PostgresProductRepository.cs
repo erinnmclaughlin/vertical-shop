@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Products;
+﻿namespace VerticalShop.Api.Products;
 
 /// <inheritdoc />
 internal sealed class PostgresProductRepository : IProductRepository

@@ -2,7 +2,7 @@
 using FluentValidation.Results;
 using NSubstitute;
 
-namespace ContextDrivenDevelopment.Api.Tests;
+namespace VerticalShop.Api.Tests;
 
 public static class TestUtils
 {

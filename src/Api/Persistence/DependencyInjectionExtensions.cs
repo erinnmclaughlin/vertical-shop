@@ -1,7 +1,7 @@
 ﻿using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace ContextDrivenDevelopment.Api.Persistence.Postgres;
+namespace VerticalShop.Api.Persistence;
 
 public static class DependencyInjectionExtensions
 {

@@ -1,4 +1,4 @@
-﻿namespace ContextDrivenDevelopment.Api.Validation;
+﻿namespace VerticalShop.Api.Validation;
 
 public static class DependencyInjectionExtensions
 {

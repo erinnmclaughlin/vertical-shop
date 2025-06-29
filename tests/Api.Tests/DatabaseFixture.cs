@@ -1,10 +1,10 @@
-﻿using ContextDrivenDevelopment.Api.Tests;
-using Dapper;
+﻿using Dapper;
 using Npgsql;
 using Testcontainers.PostgreSql;
+using VerticalShop.Api.Tests;
 
 [assembly: AssemblyFixture(typeof(DatabaseFixture))]
-namespace ContextDrivenDevelopment.Api.Tests;
+namespace VerticalShop.Api.Tests;
 
 /// <summary>
 /// Provides a fixture for managing the lifecycle of a PostgreSQL container to be used in integration tests.

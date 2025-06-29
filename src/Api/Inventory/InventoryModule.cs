@@ -1,8 +1,8 @@
-﻿using ContextDrivenDevelopment.Api.Inventory.Commands;
-using ContextDrivenDevelopment.Api.Inventory.Queries;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using VerticalShop.Api.Inventory.Commands;
+using VerticalShop.Api.Inventory.Queries;
 
-namespace ContextDrivenDevelopment.Api.Inventory;
+namespace VerticalShop.Api.Inventory;
 
 public static class InventoryModule
 {

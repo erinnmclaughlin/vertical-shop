@@ -1,10 +1,10 @@
 ﻿using AutoBogus;
-using ContextDrivenDevelopment.Api.Products;
 using FluentValidation.TestHelper;
 using NSubstitute;
 using OneOf.Types;
+using VerticalShop.Api.Products;
 
-namespace ContextDrivenDevelopment.Api.Tests.Domain.Products.Commands.CreateProduct;
+namespace VerticalShop.Api.Tests.Domain.Products.Commands.CreateProduct;
 
 using Command = Api.Products.CreateProduct.Command;
 using CommandValidator = Api.Products.CreateProduct.CommandValidator;

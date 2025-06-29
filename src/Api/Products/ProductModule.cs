@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace ContextDrivenDevelopment.Api.Products;
+namespace VerticalShop.Api.Products;
 
 public static class ProductModule
 {
