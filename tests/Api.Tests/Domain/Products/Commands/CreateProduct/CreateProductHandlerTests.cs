@@ -74,8 +74,8 @@ public sealed class CreateProductHandlerTests(ApiFixture api) : IClassFixture<Ap
 
         // Assert  
         Assert.IsType<ValidationProblem>(result.Result); 
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
-        var getResult = await unitOfWork.Products.GetBySlugAsync(slug, TestContext.Current.CancellationToken);
+        var productRepository = scope.ServiceProvider.GetRequiredService<IProductRepository>();
+        var getResult = await productRepository.GetBySlugAsync(slug, TestContext.Current.CancellationToken);
         Assert.IsType<OneOf.Types.NotFound>(getResult.Value);
     }
 } 

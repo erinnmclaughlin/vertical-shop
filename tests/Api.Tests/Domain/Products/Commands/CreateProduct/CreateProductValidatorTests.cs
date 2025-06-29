@@ -1,5 +1,4 @@
 ﻿using AutoBogus;
-using ContextDrivenDevelopment.Api.Persistence;
 using ContextDrivenDevelopment.Api.Products;
 using FluentValidation.TestHelper;
 using NSubstitute;
@@ -122,8 +121,6 @@ public sealed class CreateProductValidatorTests
 
     private static CommandValidator BuildTestSubject(IProductRepository productRepository)
     {
-        var unitOfWork = Substitute.For<IDatabaseContext>();
-        unitOfWork.Products.Returns(productRepository);
-        return new CommandValidator(unitOfWork);   
+        return new CommandValidator(productRepository);   
     }
 }

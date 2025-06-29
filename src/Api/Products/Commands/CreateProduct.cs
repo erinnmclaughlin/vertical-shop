@@ -1,4 +1,5 @@
-﻿using ContextDrivenDevelopment.Api.Persistence;
+﻿using ContextDrivenDevelopment.Api.Messaging;
+using ContextDrivenDevelopment.Api.Persistence;
 using ContextDrivenDevelopment.Api.Products.Events;
 
 namespace ContextDrivenDevelopment.Api.Products.Commands;
@@ -36,14 +37,14 @@ public static class CreateProduct
     /// </summary>
     public sealed class CommandValidator : AbstractValidator<Command>
     {
-        public CommandValidator(IDatabaseContext databaseContext)
+        public CommandValidator(IProductRepository productRepository)
         {
             RuleFor(x => x.Slug)
                 .NotEmpty()
                 .MaximumLength(200)
                 .CustomAsync(async (slug, context, ct) =>
                 {
-                    var result = await databaseContext.Products.GetBySlugAsync(ProductSlug.Parse(slug), ct);
+                    var result = await productRepository.GetBySlugAsync(ProductSlug.Parse(slug), ct);
                     result.Switch(
                         _ => context.AddFailure($"A product with the slug '{slug}' already exists."),
                         _ => { }
@@ -59,16 +60,16 @@ public static class CreateProduct
     /// <summary>
     /// Request handler for <see cref="Command"/>.
     /// </summary>
-    public sealed class CommandHandler
+    public sealed class CommandHandler(
+        IDatabaseContext databaseContext,
+        IOutbox outbox,
+        IProductRepository productRepository, 
+        IValidator<Command> validator)
     {
-        private readonly IDatabaseContext _databaseContext;
-        private readonly IValidator<Command> _validator;
-        
-        public CommandHandler(IDatabaseContext databaseContext, IValidator<Command> validator)
-        {
-            _databaseContext = databaseContext;
-            _validator = validator;
-        }
+        private readonly IDatabaseContext _databaseContext = databaseContext;
+        private readonly IOutbox _outbox = outbox;
+        private readonly IProductRepository _productRepository = productRepository;
+        private readonly IValidator<Command> _validator = validator;
         
         public async Task<Result> HandleAsync(Command command, CancellationToken cancellationToken = default)
         {
@@ -90,10 +91,10 @@ public static class CreateProduct
             await using var transaction = _databaseContext.BeginTransaction();
 
             // persist the product to the database
-            await _databaseContext.Products.CreateAsync(product, cancellationToken);
+            await _productRepository.CreateAsync(product, cancellationToken);
             
             // insert an outbox message to notify other services about the product creation
-            await _databaseContext.Outbox.InsertMessage(new ProductCreated(product.Slug), cancellationToken);
+            await _outbox.InsertMessage(new ProductCreated(product.Slug), cancellationToken);
             
             // commit the changes
             await transaction.CommitAsync(cancellationToken);
