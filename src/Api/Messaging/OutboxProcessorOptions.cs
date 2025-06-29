@@ -1,9 +1,12 @@
-﻿namespace VerticalShop.Api.Messaging;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace VerticalShop.Api.Messaging;
 
 /// <summary>
 /// Configuration options for outbox processing.
 /// </summary>
-public sealed class OutboxOptions
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+public sealed class OutboxProcessorOptions
 {
     /// <summary>
     /// Defines the maximum number of outbox messages to process in a single batch.

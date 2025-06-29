@@ -16,7 +16,6 @@ public static class PostgresModule
     public static void AddPostgres(this WebApplicationBuilder builder)
     {
         builder.AddNpgsqlDataSource("vertical-shop-db");
-        builder.Services.TryAddTransient(sp => sp.GetRequiredService<NpgsqlDataSource>().OpenConnection());
         builder.Services.TryAddScoped<IDatabaseContext, PostgresDatabaseContext>();
         builder.Services.TryAddTransient<PostgresDatabaseInitializer>();
         builder.Services.AddScoped<IVersionTableMetaData, CustomVersionTableMetaData>();

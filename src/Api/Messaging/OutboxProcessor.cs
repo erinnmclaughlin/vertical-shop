@@ -1,15 +1,16 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Options;
+using VerticalShop.Api.Persistence;
 
 namespace VerticalShop.Api.Messaging;
 
 internal sealed class OutboxProcessor : BackgroundService
 {
     private readonly ILogger<OutboxProcessor> _logger;
-    private readonly IOptionsMonitor<OutboxOptions> _optionsMonitor;
+    private readonly IOptionsMonitor<OutboxProcessorOptions> _optionsMonitor;
     private readonly IServiceProvider _services;
 
-    public OutboxProcessor(ILogger<OutboxProcessor> logger, IOptionsMonitor<OutboxOptions> optionsMonitor, IServiceProvider services)
+    public OutboxProcessor(ILogger<OutboxProcessor> logger, IOptionsMonitor<OutboxProcessorOptions> optionsMonitor, IServiceProvider services)
     {
         _logger = logger;
         _optionsMonitor = optionsMonitor;
@@ -21,16 +22,15 @@ internal sealed class OutboxProcessor : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             using var scope = _services.CreateScope();
-            var dataSource = scope.ServiceProvider.GetRequiredService<NpgsqlDataSource>();
+            var dbContext = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
             var bus = scope.ServiceProvider.GetRequiredService<IBus>();
             var options = _optionsMonitor.CurrentValue;
             
             _logger.LogInformation("Processing outbox...");
             
-            await using var connection = await dataSource.OpenConnectionAsync(stoppingToken);
-            await using var transaction = await connection.BeginTransactionAsync(stoppingToken);
+            await using var transaction = await dbContext.BeginTransactionAsync(stoppingToken);
         
-            var messages = (await connection.QueryAsync(
+            var messages = (await dbContext.Connection.QueryAsync(
                 """
                 select id as "Id", type as "Type", payload as "Payload"
                 from outbox_messages
@@ -38,7 +38,7 @@ internal sealed class OutboxProcessor : BackgroundService
                 order by created_on_utc limit @limit
                 """,
                 new { limit = options.BatchSize },
-                transaction: transaction)).ToList();
+                transaction)).ToList();
         
             _logger.LogInformation("Found {MessageCount} messages to process.", messages.Count);
             
@@ -56,27 +56,27 @@ internal sealed class OutboxProcessor : BackgroundService
                     // We should introduce retries here to improve reliability.
                     await bus.Publish(deserializedMessage, stoppingToken);
 
-                    await connection.ExecuteAsync(
+                    await dbContext.Connection.ExecuteAsync(
                         """
                         UPDATE outbox_messages
                         SET processed_on_utc = @ProcessedOnUtc
                         WHERE id = @Id
                         """,
                         new { ProcessedOnUtc = DateTimeOffset.UtcNow, id },
-                        transaction: transaction);
+                        transaction);
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Failed to process message with ID {OutboxMessageId}", id);
 
-                    await connection.ExecuteAsync(
+                    await dbContext.Connection.ExecuteAsync(
                         """
                         UPDATE outbox_messages
                         SET processed_on_utc = @ProcessedOnUtc, error_message = @Error
                         WHERE id = @Id
                         """,
                         new { ProcessedOnUtc = DateTimeOffset.UtcNow, Error = ex.Message, Id = id },
-                        transaction: transaction);
+                        transaction);
                 }
             }
 

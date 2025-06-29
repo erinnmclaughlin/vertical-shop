@@ -16,14 +16,12 @@ public static class MessagingModule
     public static void AddMessaging(this WebApplicationBuilder builder)
     {
         builder.ConfigureMassTransitDatabaseOptions();
-        builder.Services.AddOptions<OutboxOptions>();
+        builder.Services.AddOptions<OutboxProcessorOptions>();
         builder.Services.AddHostedService<OutboxProcessor>();
-        builder.Services.AddTransient<IOutboxPublisher, PostgresOutboxPublisher>();
         builder.Services.AddTransient<ISqlTransportDatabaseMigrator, PostgresDatabaseMigrator>();
         builder.Services.AddMassTransit(options =>
         {
             options.AddConsumers(typeof(Program).Assembly);
-    
             options.UsingPostgres((context,o) =>
             {
                 o.ConfigureEndpoints(context);

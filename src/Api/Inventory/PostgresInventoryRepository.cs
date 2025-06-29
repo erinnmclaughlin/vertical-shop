@@ -1,21 +1,18 @@
-﻿namespace VerticalShop.Api.Inventory;
+﻿using VerticalShop.Api.Persistence;
+
+namespace VerticalShop.Api.Inventory;
 
 /// <inheritdoc />
-internal sealed class PostgresInventoryRepository : IInventoryRepository
+internal sealed class PostgresInventoryRepository(IDatabaseContext dbContext) : IInventoryRepository
 {
-    private readonly NpgsqlConnection _connection;
-
-    public PostgresInventoryRepository(NpgsqlConnection connection)
-    {
-        _connection = connection;
-    }
+    private readonly IDatabaseContext _dbContext = dbContext;
 
     /// <inheritdoc />
     public async Task<OneOf<InventoryItem, NotFound>> GetAsync(string productSlug, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var item = await _connection.QuerySingleOrDefaultAsync<InventoryItem>(
+        var item = await _dbContext.Connection.QuerySingleOrDefaultAsync<InventoryItem>(
             """
             select 
                 product_slug as "ProductSlug",
@@ -34,7 +31,7 @@ internal sealed class PostgresInventoryRepository : IInventoryRepository
     {
         cancellationToken.ThrowIfCancellationRequested();
         
-        await _connection.ExecuteAsync(
+        await _dbContext.Connection.ExecuteAsync(
             """
             insert into inventory.items (product_slug, quantity)
             values (@slug, @quantity)

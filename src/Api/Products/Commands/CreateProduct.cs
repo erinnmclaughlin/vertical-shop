@@ -1,5 +1,4 @@
-﻿using VerticalShop.Api.Messaging;
-using VerticalShop.Api.Persistence;
+﻿using VerticalShop.Api.Persistence;
 
 namespace VerticalShop.Api.Products;
 
@@ -65,12 +64,10 @@ public static class CreateProduct
     /// </summary>
     public sealed class CommandHandler(
         IDatabaseContext databaseContext,
-        IOutboxPublisher outboxPublisher,
         IProductRepository productRepository, 
         IValidator<Command> validator)
     {
         private readonly IDatabaseContext _databaseContext = databaseContext;
-        private readonly IOutboxPublisher _outboxPublisher = outboxPublisher;
         private readonly IProductRepository _productRepository = productRepository;
         private readonly IValidator<Command> _validator = validator;
 
@@ -100,16 +97,16 @@ public static class CreateProduct
             };
             
             // start a database transaction
-            await using var transaction = _databaseContext.BeginTransaction();
+            await _databaseContext.BeginTransactionAsync(cancellationToken);
 
             // persist the product to the database
             await _productRepository.CreateAsync(product, cancellationToken);
             
             // insert an outbox message to notify other services about the product creation
-            await _outboxPublisher.InsertMessage(ProductCreated.FromProduct(product), cancellationToken);
+            await _databaseContext.InsertOutboxMessageAsync(ProductCreated.FromProduct(product), cancellationToken);
             
             // commit the changes
-            await transaction.CommitAsync(cancellationToken);
+            await _databaseContext.CommitTransactionAsync(cancellationToken);
             
             return TypedResults.Created();
         }
