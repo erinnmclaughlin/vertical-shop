@@ -6,7 +6,7 @@ using ContextDrivenDevelopment.Api.Messaging;
 namespace ContextDrivenDevelopment.Api.Persistence.Postgres;
 
 /// <inheritdoc />
-public sealed class PostgresUnitOfWork : IUnitOfWork
+public sealed class PostgresDatabaseContext : IDatabaseContext
 {
     private readonly NpgsqlDataSource _dataSource;
     
@@ -27,10 +27,10 @@ public sealed class PostgresUnitOfWork : IUnitOfWork
     public IProductRepository Products => _products ??= new PostgresProductRepository(Connection);
     
     /// <summary>
-    /// Creates a new <see cref="PostgresUnitOfWork"/> instance.
+    /// Creates a new <see cref="PostgresDatabaseContext"/> instance.
     /// </summary>
     /// <param name="dataSource">The <see cref="NpgsqlDataSource"/> used to open a connection to the database.</param>
-    public PostgresUnitOfWork(NpgsqlDataSource dataSource)
+    public PostgresDatabaseContext(NpgsqlDataSource dataSource)
     {
         _dataSource = dataSource;
     }

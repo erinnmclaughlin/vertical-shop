@@ -23,7 +23,7 @@ public sealed class ApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
 
     private IBus Bus { get; }
     private DatabaseFixture Database { get; }
-    public IUnitOfWork UnitOfWork { get; }
+    public IDatabaseContext DatabaseContext { get; }
 
     public ApiFixture(DatabaseFixture database)
     {
@@ -31,7 +31,7 @@ public sealed class ApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
         
         Bus = Substitute.For<IBus>();
         Database = database;
-        UnitOfWork = new PostgresUnitOfWork(_dataSource);
+        DatabaseContext = new PostgresDatabaseContext(_dataSource);
     }
     
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -43,8 +43,8 @@ public sealed class ApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
                 .AddSingleton(_dataSource);
 
             services
-                .RemoveAll<IUnitOfWork>()
-                .AddSingleton(UnitOfWork);
+                .RemoveAll<IDatabaseContext>()
+                .AddSingleton(DatabaseContext);
 
             services
                 .RemoveAll<PostgresDatabaseInitializer>();

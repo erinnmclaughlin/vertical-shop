@@ -37,7 +37,7 @@ public sealed class CreateProductHandlerTests(ApiFixture api) : IClassFixture<Ap
         Assert.IsType<Created>(result.Result);
         
         // Assert that the product was persisted to the database
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
         var getResult = await unitOfWork.Products.GetBySlugAsync(slug, TestContext.Current.CancellationToken);
         var createdProduct = Assert.IsType<Product>(getResult.Value);
         Assert.Equal(command.Slug, createdProduct.Slug);
@@ -74,7 +74,7 @@ public sealed class CreateProductHandlerTests(ApiFixture api) : IClassFixture<Ap
 
         // Assert  
         Assert.IsType<ValidationProblem>(result.Result); 
-        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IDatabaseContext>();
         var getResult = await unitOfWork.Products.GetBySlugAsync(slug, TestContext.Current.CancellationToken);
         Assert.IsType<OneOf.Types.NotFound>(getResult.Value);
     }

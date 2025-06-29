@@ -122,7 +122,7 @@ public sealed class CreateProductValidatorTests
 
     private static CommandValidator BuildTestSubject(IProductRepository productRepository)
     {
-        var unitOfWork = Substitute.For<IUnitOfWork>();
+        var unitOfWork = Substitute.For<IDatabaseContext>();
         unitOfWork.Products.Returns(productRepository);
         return new CommandValidator(unitOfWork);   
     }

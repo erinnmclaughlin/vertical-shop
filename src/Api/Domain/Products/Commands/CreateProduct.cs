@@ -36,14 +36,14 @@ public static class CreateProduct
     /// </summary>
     public sealed class CommandValidator : AbstractValidator<Command>
     {
-        public CommandValidator(IUnitOfWork unitOfWork)
+        public CommandValidator(IDatabaseContext databaseContext)
         {
             RuleFor(x => x.Slug)
                 .NotEmpty()
                 .MaximumLength(200)
                 .CustomAsync(async (slug, context, ct) =>
                 {
-                    var result = await unitOfWork.Products.GetBySlugAsync(ProductSlug.Parse(slug), ct);
+                    var result = await databaseContext.Products.GetBySlugAsync(ProductSlug.Parse(slug), ct);
                     result.Switch(
                         _ => context.AddFailure($"A product with the slug '{slug}' already exists."),
                         _ => { }
@@ -61,12 +61,12 @@ public static class CreateProduct
     /// </summary>
     public sealed class CommandHandler
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IDatabaseContext _databaseContext;
         private readonly IValidator<Command> _validator;
         
-        public CommandHandler(IUnitOfWork unitOfWork, IValidator<Command> validator)
+        public CommandHandler(IDatabaseContext databaseContext, IValidator<Command> validator)
         {
-            _unitOfWork = unitOfWork;
+            _databaseContext = databaseContext;
             _validator = validator;
         }
         
@@ -87,13 +87,13 @@ public static class CreateProduct
             };
             
             // start a database transaction
-            await using var transaction = _unitOfWork.BeginTransaction();
+            await using var transaction = _databaseContext.BeginTransaction();
 
             // persist the product to the database
-            await _unitOfWork.Products.CreateAsync(product, cancellationToken);
+            await _databaseContext.Products.CreateAsync(product, cancellationToken);
             
             // insert an outbox message to notify other services about the product creation
-            await _unitOfWork.Outbox.InsertMessage(new ProductCreated(product.Slug), cancellationToken);
+            await _databaseContext.Outbox.InsertMessage(new ProductCreated(product.Slug), cancellationToken);
             
             // commit the changes
             await transaction.CommitAsync(cancellationToken);
