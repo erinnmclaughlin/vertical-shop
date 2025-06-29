@@ -7,16 +7,14 @@ namespace ContextDrivenDevelopment.Api.Inventory;
 public static class DependencyInjectionExtensions
 {
     /// <summary>
-    /// Adds inventory-related services to the dependency injection container.
+    /// Adds inventory-related services to the specified <see cref="WebApplicationBuilder"/> instance.
     /// </summary>
-    /// <param name="services">The collection of service descriptors to which inventory services will be added.</param>
-    /// <returns>An updated service collection with inventory services registered.</returns>
-    public static IServiceCollection AddInventoryServices(this IServiceCollection services)
+    /// <param name="builder">The <see cref="WebApplicationBuilder"/> to which the inventory services will be added.</param>
+    public static void AddInventoryServices(this WebApplicationBuilder builder)
     {
-        services.TryAddScoped<IInventoryRepository, PostgresInventoryRepository>();
-        services.TryAddTransient<ReceiveInventory.CommandHandler>();
-        services.TryAddTransient<CheckQuantityInStock.QueryHandler>();
-        return services;
+        builder.Services.TryAddScoped<IInventoryRepository, PostgresInventoryRepository>();
+        builder.Services.TryAddTransient<ReceiveInventory.CommandHandler>();
+        builder.Services.TryAddTransient<CheckQuantityInStock.QueryHandler>();
     }
 
     /// <summary>

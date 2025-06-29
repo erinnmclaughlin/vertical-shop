@@ -1,15 +1,18 @@
 ﻿using MassTransit;
+using Microsoft.Extensions.Options;
 
 namespace ContextDrivenDevelopment.Api.Messaging;
 
 public sealed class OutboxProcessor : BackgroundService
 {
     private readonly ILogger<OutboxProcessor> _logger;
+    private readonly IOptionsMonitor<OutboxOptions> _optionsMonitor;
     private readonly IServiceProvider _services;
 
-    public OutboxProcessor(ILogger<OutboxProcessor> logger, IServiceProvider services)
+    public OutboxProcessor(ILogger<OutboxProcessor> logger, IOptionsMonitor<OutboxOptions> optionsMonitor, IServiceProvider services)
     {
         _logger = logger;
+        _optionsMonitor = optionsMonitor;
         _services = services;
     }
     
@@ -20,6 +23,7 @@ public sealed class OutboxProcessor : BackgroundService
             using var scope = _services.CreateScope();
             var dataSource = scope.ServiceProvider.GetRequiredService<NpgsqlDataSource>();
             var bus = scope.ServiceProvider.GetRequiredService<IBus>();
+            var options = _optionsMonitor.CurrentValue;
             
             _logger.LogInformation("Processing outbox...");
             
@@ -31,8 +35,9 @@ public sealed class OutboxProcessor : BackgroundService
                 select id as "Id", type as "Type", payload as "Payload"
                 from outbox_messages
                 where processed_on_utc is null
-                order by created_on_utc limit 100
+                order by created_on_utc limit @limit
                 """,
+                new { limit = options.BatchSize },
                 transaction: transaction)).ToList();
         
             _logger.LogInformation("Found {MessageCount} messages to process.", messages.Count);
@@ -79,7 +84,7 @@ public sealed class OutboxProcessor : BackgroundService
 
             _logger.LogInformation("Finished processing outbox.");
             
-            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+            await Task.Delay(options.Delay, stoppingToken);
         }
     }
 }

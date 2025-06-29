@@ -2,38 +2,36 @@ using ContextDrivenDevelopment.Api.Inventory;
 using ContextDrivenDevelopment.Api.Messaging;
 using ContextDrivenDevelopment.Api.Persistence.Postgres;
 using ContextDrivenDevelopment.Api.Products;
+using ContextDrivenDevelopment.Api.Validation;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Core infrastructure services
 builder.Services.AddOpenApi();
+builder.AddPostgres();
+builder.AddMessaging();
+builder.AddValidation();
 
-var connectionString = builder.Configuration.GetConnectionString("Postgres");
-builder.Services.AddPostgresDatabase(connectionString);
-builder.Services.AddMessaging(connectionString);
-builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
-
-builder.Services.AddInventoryServices();
-builder.Services.AddProductServices();
+// Application services
+builder.AddInventoryServices();
+builder.AddProductServices();
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
-{
     app.MapOpenApi();
-}
 
 app.UseHttpsRedirection();
-
 app.MapInventoryApi();
 app.MapProductApi();
 
+// For now, just ensure the database is created during startup.
+// This will change when we move to Aspire:
 using (var scope = app.Services.CreateScope())
 {
     var dbInitializer = scope.ServiceProvider.GetService<PostgresDatabaseInitializer>();
     if (dbInitializer is not null)
-    {
-        await dbInitializer.InitializeAsync(connectionString);
-    }
+        await dbInitializer.InitializeAsync(builder.Configuration.GetConnectionString("Postgres"));
 }
 
 app.Run();

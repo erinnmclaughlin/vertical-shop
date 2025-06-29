@@ -9,19 +9,14 @@ public static class DependencyInjectionExtensions
     /// <summary>
     /// Adds product-related services to the dependency injection container.
     /// </summary>
-    /// <param name="services">
-    /// An instance of <see cref="IServiceCollection"/> to register services with.
+    /// <param name="builder">
+    /// The <see cref="WebApplicationBuilder"/> used to configure the application's services.
     /// </param>
-    /// <returns>
-    /// The same instance of the <paramref name="services"/> parameter for chaining.
-    /// </returns>
-    public static IServiceCollection AddProductServices(this IServiceCollection services)
+    public static void AddProductServices(this WebApplicationBuilder builder)
     {
-        services.TryAddScoped<IProductRepository, PostgresProductRepository>();
-        services.TryAddTransient<CreateProduct.CommandHandler>();
-        services.TryAddTransient<GetProduct.QueryHandler>();
-        
-        return services;
+        builder.Services.TryAddScoped<IProductRepository, PostgresProductRepository>();
+        builder.Services.TryAddTransient<CreateProduct.CommandHandler>();
+        builder.Services.TryAddTransient<GetProduct.QueryHandler>();
     }
 
     /// <summary>

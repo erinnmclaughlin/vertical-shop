@@ -1,4 +1,3 @@
-using ContextDrivenDevelopment.Api.Persistence;
 using MassTransit;
 using MassTransit.SqlTransport;
 using MassTransit.SqlTransport.PostgreSql;
@@ -7,16 +6,17 @@ namespace ContextDrivenDevelopment.Api.Messaging;
 
 public static class DependencyInjectionExtensions
 {
-    public static IServiceCollection AddMessaging(this IServiceCollection services, string? connectionString)
+    public static void AddMessaging(this WebApplicationBuilder builder)
     {
-        services.AddHostedService<OutboxProcessor>();
+        builder.Services.AddOptions<OutboxOptions>();
+        builder.Services.AddHostedService<OutboxProcessor>();
 
-        services.AddTransient<IOutbox, PostgresOutbox>();
-        services.AddTransient<ISqlTransportDatabaseMigrator, PostgresDatabaseMigrator>();
-        services.AddOptions<SqlTransportOptions>();
+        builder.Services.AddTransient<IOutbox, PostgresOutbox>();
+        builder.Services.AddTransient<ISqlTransportDatabaseMigrator, PostgresDatabaseMigrator>();
+        builder.Services.AddOptions<SqlTransportOptions>();
         
-        services.ConfigureMassTransitDatabaseOptions(connectionString);
-        services.AddMassTransit(options =>
+        builder.ConfigureMassTransitDatabaseOptions();
+        builder.Services.AddMassTransit(options =>
         {
             options.AddConsumers(typeof(Program).Assembly);
     
@@ -25,15 +25,14 @@ public static class DependencyInjectionExtensions
                 o.ConfigureEndpoints(context);
             });
         });
-        
-        return services;
     }
 
-    private static void ConfigureMassTransitDatabaseOptions(this IServiceCollection services, string? connectionString)
+    private static void ConfigureMassTransitDatabaseOptions(this WebApplicationBuilder builder)
     {
+        var connectionString = builder.Configuration.GetConnectionString("Postgres");
         var connectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
         
-        services.AddOptions<SqlTransportOptions>().Configure(options =>
+        builder.Services.AddOptions<SqlTransportOptions>().Configure(options =>
         {
             options.Host = connectionStringBuilder.Host;
             options.Port = connectionStringBuilder.Port;

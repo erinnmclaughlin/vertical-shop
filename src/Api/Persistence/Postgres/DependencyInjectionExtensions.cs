@@ -6,25 +6,17 @@ namespace ContextDrivenDevelopment.Api.Persistence.Postgres;
 public static class DependencyInjectionExtensions
 {
     /// <summary>
-    /// Adds Postgres-related services to the dependency injection container.
+    /// Configures and registers services for integrating with a Postgres database.
     /// </summary>
-    /// <param name="services">
-    /// An instance of <see cref="IServiceCollection"/> to register services with.
-    /// </param>
-    /// <param name="connectionString">
-    /// The connection string required to connect to the Postgres database.
-    /// </param>
-    /// <returns>
-    /// The modified <see cref="IServiceCollection"/> instance with the Postgres database services registered.
-    /// </returns>
-    public static IServiceCollection AddPostgresDatabase(this IServiceCollection services, string? connectionString)
+    /// <param name="builder">The WebApplicationBuilder used to configure the application's services and settings.</param>
+    public static void AddPostgres(this WebApplicationBuilder builder)
     {
-        services.TryAddSingleton(new NpgsqlDataSourceBuilder(connectionString).Build());
-        services.TryAddTransient(sp => sp.GetRequiredService<NpgsqlDataSource>().OpenConnection());
-        services.TryAddScoped<IDatabaseContext, PostgresDatabaseContext>();
-        services.TryAddTransient<PostgresDatabaseInitializer>();
-        
-        services
+        var connectionString = builder.Configuration.GetConnectionString("Postgres");
+        builder.Services.TryAddSingleton(new NpgsqlDataSourceBuilder(connectionString).Build());
+        builder.Services.TryAddTransient(sp => sp.GetRequiredService<NpgsqlDataSource>().OpenConnection());
+        builder.Services.TryAddScoped<IDatabaseContext, PostgresDatabaseContext>();
+        builder.Services.TryAddTransient<PostgresDatabaseInitializer>();
+        builder.Services
             .AddFluentMigratorCore()
             .ConfigureRunner(rb =>
             {
@@ -32,7 +24,5 @@ public static class DependencyInjectionExtensions
                 rb.ScanIn(typeof(Program).Assembly).For.All();
             })
             .AddLogging(lb => lb.AddFluentMigratorConsole());
-        
-        return services;
     }
 }
