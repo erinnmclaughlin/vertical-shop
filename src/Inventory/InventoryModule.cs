@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using VerticalShop.Inventory.Commands;
-using VerticalShop.Inventory.Queries;
 
 namespace VerticalShop.Inventory;
 
@@ -20,7 +18,7 @@ public static class InventoryModule
     /// <param name="builder">The <see cref="IHostApplicationBuilder"/> to which the inventory services will be added.</param>
     public static Assembly AddInventoryModule<T>(this T builder) where T : IHostApplicationBuilder
     {
-        builder.Services.TryAddScoped<IInventoryRepository, PostgresInventoryRepository>();
+        builder.Services.TryAddScoped<IInventoryRepository, InventoryRepository>();
         builder.Services.TryAddTransient<RestockInventoryItem.CommandHandler>();
         builder.Services.TryAddTransient<CheckQuantityInStock.QueryHandler>();
         return typeof(InventoryModule).Assembly;

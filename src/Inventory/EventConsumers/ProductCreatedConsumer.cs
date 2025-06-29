@@ -3,7 +3,7 @@ using MassTransit;
 using Microsoft.Extensions.Logging;
 using VerticalShop.IntegrationEvents.Products;
 
-namespace VerticalShop.Inventory.EventConsumers;
+namespace VerticalShop.Inventory;
 
 /// <summary>
 /// A consumer responsible for handling the <see cref="ProductCreated"/> event

@@ -1,8 +1,5 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using VerticalShop.Api.Messaging;
-using VerticalShop.Api.Persistence;
-using VerticalShop.Api.Validation;
+using VerticalShop.Api;
 using VerticalShop.Inventory;
 using VerticalShop.Products;
 
@@ -14,7 +11,6 @@ Assembly[] moduleAssemblies =
     builder.AddInventoryModule()
 ];
 
-// Core infrastructure services
 builder.Services.AddOpenApi();
 builder.AddServiceDefaults();
 builder.AddPostgres(moduleAssemblies);
@@ -38,7 +34,7 @@ app.MapProductApi();
 // This will change when we move to Aspire:
 using (var scope = app.Services.CreateScope())
 {
-    var dbInitializer = scope.ServiceProvider.GetService<PostgresDatabaseInitializer>();
+    var dbInitializer = scope.ServiceProvider.GetService<DatabaseInitializer>();
     if (dbInitializer is not null)
         await dbInitializer.InitializeAsync();
 }
@@ -46,6 +42,5 @@ using (var scope = app.Services.CreateScope())
 app.Run();
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed partial class Program;
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

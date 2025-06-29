@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace VerticalShop.Inventory.Queries;
+namespace VerticalShop.Inventory;
 
 using Result = Results<Ok<int>, NotFound>;
 

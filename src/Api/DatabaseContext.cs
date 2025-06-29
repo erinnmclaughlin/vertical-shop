@@ -1,9 +1,9 @@
 using System.Data.Common;
 
-namespace VerticalShop.Api.Persistence;
+namespace VerticalShop.Api;
 
 /// <inheritdoc />
-public sealed class PostgresDatabaseContext : IDatabaseContext
+public sealed class DatabaseContext : IDatabaseContext
 {
     private readonly NpgsqlDataSource _dataSource;
     
@@ -16,10 +16,10 @@ public sealed class PostgresDatabaseContext : IDatabaseContext
     public DbTransaction? CurrentTransaction { get; private set; }
     
     /// <summary>
-    /// Creates a new <see cref="PostgresDatabaseContext"/> instance.
+    /// Creates a new <see cref="DatabaseContext"/> instance.
     /// </summary>
     /// <param name="dataSource">The <see cref="NpgsqlDataSource"/> used to open a connection to the database.</param>
-    public PostgresDatabaseContext(NpgsqlDataSource dataSource)
+    public DatabaseContext(NpgsqlDataSource dataSource)
     {
         _dataSource = dataSource;
     }

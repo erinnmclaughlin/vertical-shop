@@ -1,10 +1,10 @@
 ﻿using FluentMigrator;
 
-namespace VerticalShop.Api.Persistence.Migrations;
+namespace VerticalShop.Api.Migrations;
 
 /// <inheritdoc />
 [Migration(20250628_003)]
-public class UpdateIdColumnTypes : Migration
+public sealed class UpdateIdColumnTypes : Migration
 {
     /// <inheritdoc />
     public override void Up()

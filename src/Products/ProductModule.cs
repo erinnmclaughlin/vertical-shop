@@ -22,7 +22,7 @@ public static class ProductModule
     /// </param>
     public static Assembly AddProductModule<T>(this T builder) where T : IHostApplicationBuilder
     {
-        builder.Services.TryAddScoped<IProductRepository, PostgresProductRepository>();
+        builder.Services.TryAddScoped<IProductRepository, ProductRepository>();
         builder.Services.TryAddTransient<CreateProduct.CommandHandler>();
         builder.Services.TryAddTransient<GetProduct.QueryHandler>();
         builder.Services.TryAddTransient<ListProducts.QueryHandler>();

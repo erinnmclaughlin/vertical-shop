@@ -1,7 +1,25 @@
-﻿using MassTransit;
+﻿using System.Diagnostics.CodeAnalysis;
+using MassTransit;
 using Microsoft.Extensions.Options;
 
-namespace VerticalShop.Api.Messaging;
+namespace VerticalShop.Api;
+
+/// <summary>
+/// Configuration options for outbox processing.
+/// </summary>
+[SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
+public sealed class OutboxProcessorOptions
+{
+    /// <summary>
+    /// Defines the maximum number of outbox messages to process in a single batch.
+    /// </summary>
+    public int BatchSize { get; set; } = 100;
+
+    /// <summary>
+    /// Specifies the duration to wait between consecutive attempts to process outbox messages.
+    /// </summary>
+    public TimeSpan Delay { get; set; } = TimeSpan.FromSeconds(10);
+}
 
 internal sealed class OutboxProcessor : BackgroundService
 {

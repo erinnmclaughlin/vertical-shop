@@ -3,7 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace VerticalShop.Inventory.Commands;
+namespace VerticalShop.Inventory;
 
 using Result = Results<NoContent, NotFound>;
 

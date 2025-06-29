@@ -1,6 +1,6 @@
 ﻿using FluentMigrator;
 
-namespace VerticalShop.Api.Persistence.Migrations;
+namespace VerticalShop.Api.Migrations;
 
 /// <inheritdoc />
 [Migration(20250628_005)]
