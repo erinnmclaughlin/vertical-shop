@@ -12,7 +12,16 @@ public interface IProductRepository
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     Task CreateAsync(Product product, CancellationToken cancellationToken = default);
-    
+
+    /// <summary>
+    /// Retrieves a paginated list of products from the data store.
+    /// </summary>
+    /// <param name="offset">The number of products to skip before starting to collect the result set.</param>
+    /// <param name="limit">The maximum number of products to retrieve.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a list of products.</returns>
+    Task<List<Product>> ListAsync(int offset, int limit, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Retrieves a product by its unique identifier.
     /// </summary>

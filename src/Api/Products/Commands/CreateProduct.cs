@@ -1,15 +1,14 @@
 ﻿using ContextDrivenDevelopment.Api.Messaging;
 using ContextDrivenDevelopment.Api.Persistence;
-using ContextDrivenDevelopment.Api.Products.Events;
 
-namespace ContextDrivenDevelopment.Api.Products.Commands;
+namespace ContextDrivenDevelopment.Api.Products;
 
 using Result = Results<Created, ValidationProblem>;
 
 public static class CreateProduct
 {
     /// <summary>
-    /// Represents a command to create a new <see cref="Product"/>.
+    /// Represents a request to create a new <see cref="Product"/>.
     /// </summary>
     public sealed record Command
     {
@@ -94,7 +93,7 @@ public static class CreateProduct
             await _productRepository.CreateAsync(product, cancellationToken);
             
             // insert an outbox message to notify other services about the product creation
-            await _outbox.InsertMessage(new ProductCreated(product.Slug), cancellationToken);
+            await _outbox.InsertMessage(ProductCreated.FromProduct(product), cancellationToken);
             
             // commit the changes
             await transaction.CommitAsync(cancellationToken);

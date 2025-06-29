@@ -6,8 +6,8 @@ using OneOf.Types;
 
 namespace ContextDrivenDevelopment.Api.Tests.Domain.Products.Commands.CreateProduct;
 
-using Command = Api.Products.Commands.CreateProduct.Command;
-using CommandValidator = Api.Products.Commands.CreateProduct.CommandValidator;
+using Command = Api.Products.CreateProduct.Command;
+using CommandValidator = Api.Products.CreateProduct.CommandValidator;
 
 public sealed class CreateProductValidatorTests
 {

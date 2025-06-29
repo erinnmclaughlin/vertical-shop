@@ -1,4 +1,4 @@
-﻿using ContextDrivenDevelopment.Api.Products.Events;
+﻿using ContextDrivenDevelopment.Api.Products;
 using MassTransit;
 
 namespace ContextDrivenDevelopment.Api.Inventory.EventConsumers;

@@ -36,6 +36,13 @@ public sealed record ProductId
     public static implicit operator string(ProductId id) => id.Value;
 
     /// <summary>
+    /// Performs an implicit conversion from a string to a <see cref="ProductId"/>.
+    /// </summary>
+    /// <param name="id">The string representation of the product ID to convert.</param>
+    /// <returns>A new <see cref="ProductId"/> instance created from the specified string.</returns>
+    public static implicit operator ProductId(string id) => Parse(id);
+    
+    /// <summary>
     /// Returns the string representation of the <see cref="ProductId"/>.
     /// </summary>
     /// <returns>The unique identifier as a string.</returns>

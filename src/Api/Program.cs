@@ -3,6 +3,7 @@ using ContextDrivenDevelopment.Api.Messaging;
 using ContextDrivenDevelopment.Api.Persistence.Postgres;
 using ContextDrivenDevelopment.Api.Products;
 using ContextDrivenDevelopment.Api.Validation;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,10 @@ builder.AddProductServices();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
+{
     app.MapOpenApi();
+    app.MapScalarApiReference();
+}
 
 app.UseHttpsRedirection();
 app.MapInventoryApi();
@@ -36,4 +40,7 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-public sealed partial class Program;
+namespace ContextDrivenDevelopment.Api
+{
+    public sealed partial class Program;
+}

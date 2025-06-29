@@ -10,9 +10,13 @@ public sealed record ProductSlug
     /// </summary>
     public string Value { get; private init; }
 
-    private ProductSlug()
+    private ProductSlug() : this(Guid.CreateVersion7().ToString())
     {
-        Value = Guid.CreateVersion7().ToString();
+    }
+    
+    private ProductSlug(string value)
+    {
+        Value = value;
     }
 
     /// <summary>
@@ -26,7 +30,11 @@ public sealed record ProductSlug
     /// </summary>
     /// <param name="value">The string representation of the product slug to parse.</param>
     /// <returns>A new instance of ProductSlug initialized with the specified value.</returns>
-    public static ProductSlug Parse(string value) => new() { Value = value };
+    public static ProductSlug Parse(string value)
+    {
+        // TODO: Validate slug format
+        return new ProductSlug(value);
+    }
 
     /// <summary>
     /// Defines an implicit conversion operator to convert a ProductSlug instance to its string representation.
@@ -34,6 +42,13 @@ public sealed record ProductSlug
     /// <param name="slug">The ProductSlug instance to be converted to a string.</param>
     /// <returns>The string representation of the product slug.</returns>
     public static implicit operator string(ProductSlug slug) => slug.Value;
+
+    /// <summary>
+    /// Defines an implicit conversion operator to convert a string to a ProductSlug instance.
+    /// </summary>
+    /// <param name="slug">The string to be converted into a ProductSlug instance.</param>
+    /// <returns>A ProductSlug initialized with the specified string value.</returns>
+    public static implicit operator ProductSlug(string slug) => Parse(slug);
 
     /// <summary>
     /// Returns the string representation of the ProductSlug instance.

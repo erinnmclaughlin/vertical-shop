@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace ContextDrivenDevelopment.Api.Inventory;
 
-public static class DependencyInjectionExtensions
+public static class InventoryModule
 {
     /// <summary>
     /// Adds inventory-related services to the specified <see cref="WebApplicationBuilder"/> instance.
@@ -23,18 +23,29 @@ public static class DependencyInjectionExtensions
     /// <param name="builder">The endpoint route builder to which the inventory API endpoints will be mapped.</param>
     public static void MapInventoryApi(this IEndpointRouteBuilder builder)
     {
-        var inventoryApi = builder.MapGroup("/inventory").WithTags("Inventory API");
+        var inventoryApi = builder
+            .MapGroup("/inventory")
+            .WithTags("Inventory API");
         
-        inventoryApi.MapPost("/commands/restock", (
-            RestockInventoryItem.Command command,
-            RestockInventoryItem.CommandHandler handler,
-            CancellationToken cancellationToken
-        ) => handler.HandleAsync(command, cancellationToken));
+        inventoryApi
+            .MapPost("/items/{productSlug}/restock", (
+                string productSlug,
+                RestockInventoryItem.RequestBody body,
+                RestockInventoryItem.CommandHandler handler, 
+                CancellationToken cancellationToken) 
+                => handler.HandleAsync(
+                    new RestockInventoryItem.Command(productSlug, body.Quantity), 
+                    cancellationToken)
+            )
+            .WithSummary("Restock Inventory Item");
 
-        inventoryApi.MapGet("/queries/checkQuantityInStock", (
-            string productSlug,
-            CheckQuantityInStock.QueryHandler handler,
-            CancellationToken cancellationToken
-        ) => handler.Handle(productSlug, cancellationToken));
+        inventoryApi
+            .MapGet("/items/{productSlug}/quantity", (
+                string productSlug,
+                CheckQuantityInStock.QueryHandler handler,
+                CancellationToken cancellationToken) 
+                => handler.Handle(productSlug, cancellationToken)
+            )
+            .WithSummary("Check Quantity In Stock");
     }
 }

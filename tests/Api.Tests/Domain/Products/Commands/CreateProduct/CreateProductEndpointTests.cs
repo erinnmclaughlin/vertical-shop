@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace ContextDrivenDevelopment.Api.Tests.Domain.Products.Commands.CreateProduct;
 
-using Command = Api.Products.Commands.CreateProduct.Command;
+using Command = Api.Products.CreateProduct.Command;
 
 public sealed class CreateProductEndpointTests(ApiFixture api) : IClassFixture<ApiFixture>
 {
@@ -34,6 +34,6 @@ public sealed class CreateProductEndpointTests(ApiFixture api) : IClassFixture<A
     private async Task<HttpResponseMessage> SendRequest(Command command)
     { 
         using var httpClient = api.CreateClient();
-        return await httpClient.PostAsJsonAsync("products/commands/createProduct", command, TestContext.Current.CancellationToken);
+        return await httpClient.PostAsJsonAsync("products", command, TestContext.Current.CancellationToken);
     }
 }

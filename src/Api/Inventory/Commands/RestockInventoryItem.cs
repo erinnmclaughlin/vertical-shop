@@ -1,21 +1,22 @@
-﻿namespace ContextDrivenDevelopment.Api.Inventory.Commands;
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace ContextDrivenDevelopment.Api.Inventory.Commands;
 
 using Result = Results<NoContent, NotFoundResult>;
 
 public static class RestockInventoryItem
 {
-    public sealed record Command
-    {
-        /// <summary>
-        /// The unique identifier, typically in a slug format, representing the product in the inventory system.
-        /// </summary>
-        public required string ProductSlug { get; init; }
+    /// <summary>
+    /// Represents the body of the API request for restocking an inventory item.
+    /// </summary>
+    public sealed record RequestBody(int Quantity);
 
-        /// <summary>
-        ///The quantity of the product that has been received and is to be added to the inventory.
-        /// </summary>
-        public required int QuantityReceived { get; init; }
-    }
+    /// <summary>
+    /// Represents the command to restock an inventory item, including details about the product and quantity.
+    /// </summary>
+    /// <param name="ProductSlug">The unique slug identifier representing the product in the inventory system.</param>
+    /// <param name="Quantity">The quantity of the product to be restocked.</param>
+    public sealed record Command(string ProductSlug, int Quantity);
 
     /// <summary>
     /// Provides validation rules for the <see cref="RestockInventoryItem.Command"/> class.
@@ -28,7 +29,7 @@ public static class RestockInventoryItem
                 .NotEmpty()
                 .MaximumLength(200);
             
-            RuleFor(x => x.QuantityReceived)
+            RuleFor(x => x.Quantity)
                 .GreaterThanOrEqualTo(0);
         }
     }
@@ -57,7 +58,7 @@ public static class RestockInventoryItem
 
         private async Task<Result> Handle(Command command, InventoryItem item, CancellationToken cancellationToken = default)
         {
-            item.QuantityAvailable += command.QuantityReceived;
+            item.QuantityAvailable += command.Quantity;
             await _inventoryRepository.UpsertAsync(item, cancellationToken);
             return TypedResults.NoContent();
         }
