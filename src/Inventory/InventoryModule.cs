@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -17,11 +18,12 @@ public static class InventoryModule
     /// Adds inventory-related services to the specified <see cref="IHostApplicationBuilder"/> instance.
     /// </summary>
     /// <param name="builder">The <see cref="IHostApplicationBuilder"/> to which the inventory services will be added.</param>
-    public static void AddInventoryServices<T>(this T builder) where T : IHostApplicationBuilder
+    public static Assembly AddInventoryModule<T>(this T builder) where T : IHostApplicationBuilder
     {
         builder.Services.TryAddScoped<IInventoryRepository, PostgresInventoryRepository>();
         builder.Services.TryAddTransient<RestockInventoryItem.CommandHandler>();
         builder.Services.TryAddTransient<CheckQuantityInStock.QueryHandler>();
+        return typeof(InventoryModule).Assembly;
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using FluentMigrator.Runner;
+﻿using System.Reflection;
+using FluentMigrator.Runner;
 using FluentMigrator.Runner.VersionTableInfo;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -10,10 +11,11 @@ namespace VerticalShop.Api.Persistence;
 public static class PostgresModule
 {
     /// <summary>
-    /// Configures and registers services for integrating with a Postgres database.
+    /// Configures and registers the necessary services for PostgreSQL database integration.
     /// </summary>
-    /// <param name="builder">The WebApplicationBuilder used to configure the application's services and settings.</param>
-    public static void AddPostgres(this WebApplicationBuilder builder)
+    /// <param name="builder">The <see cref="WebApplicationBuilder"/> instance to configure.</param>
+    /// <param name="assemblies">An array of assemblies to scan for FluentMigrator migrations.</param>
+    public static void AddPostgres(this WebApplicationBuilder builder, Assembly[] assemblies)
     {
         builder.AddNpgsqlDataSource("vertical-shop-db");
         builder.Services.TryAddScoped<IDatabaseContext, PostgresDatabaseContext>();
@@ -25,7 +27,7 @@ public static class PostgresModule
             {
                 rb.AddPostgres();
                 rb.WithGlobalConnectionString(builder.Configuration.GetConnectionString("vertical-shop-db"));
-                rb.ScanIn(typeof(Program).Assembly).For.All();
+                rb.ScanIn(assemblies).For.All();
             })
             .AddLogging(lb => lb.AddFluentMigratorConsole());
     }

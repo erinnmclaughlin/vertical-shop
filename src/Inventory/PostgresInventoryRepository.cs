@@ -20,7 +20,8 @@ internal sealed class PostgresInventoryRepository(IDatabaseContext dbContext) : 
             from inventory.items
             where product_slug = @productSlug
             """,
-            new { productSlug }
+            new { productSlug },
+            _dbContext.CurrentTransaction
         );
     }
 
@@ -35,6 +36,7 @@ internal sealed class PostgresInventoryRepository(IDatabaseContext dbContext) : 
             values (@slug, @quantity)
             on conflict (product_slug) do update set quantity = @quantity;
             """, 
-            new { slug = item.ProductSlug, quantity = item.QuantityAvailable });
+            new { slug = item.ProductSlug, quantity = item.QuantityAvailable },
+            _dbContext.CurrentTransaction);
     }
 }

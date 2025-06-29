@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace VerticalShop.Api.Products;
@@ -15,12 +16,13 @@ public static class ProductModule
     /// <param name="builder">
     /// The <see cref="WebApplicationBuilder"/> used to configure the application's services.
     /// </param>
-    public static void AddProductServices(this WebApplicationBuilder builder)
+    public static Assembly AddProductModule(this WebApplicationBuilder builder)
     {
         builder.Services.TryAddScoped<IProductRepository, PostgresProductRepository>();
         builder.Services.TryAddTransient<CreateProduct.CommandHandler>();
         builder.Services.TryAddTransient<GetProduct.QueryHandler>();
         builder.Services.TryAddTransient<ListProducts.QueryHandler>();
+        return typeof(ProductModule).Assembly;       
     }
 
     /// <summary>

@@ -1,4 +1,4 @@
-﻿using VerticalShop.Api.Persistence;
+﻿using VerticalShop.IntegrationEvents.Products;
 
 namespace VerticalShop.Api.Products;
 
@@ -103,7 +103,8 @@ public static class CreateProduct
             await _productRepository.CreateAsync(product, cancellationToken);
             
             // insert an outbox message to notify other services about the product creation
-            await _databaseContext.InsertOutboxMessageAsync(ProductCreated.FromProduct(product), cancellationToken);
+            var message = new ProductCreated(product.Id, product.Slug, product.Name);
+            await _databaseContext.InsertOutboxMessageAsync(message, cancellationToken);
             
             // commit the changes
             await _databaseContext.CommitTransactionAsync(cancellationToken);

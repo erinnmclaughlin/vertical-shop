@@ -1,7 +1,7 @@
+using System.Reflection;
 using MassTransit;
 using MassTransit.SqlTransport;
 using MassTransit.SqlTransport.PostgreSql;
-using VerticalShop.Inventory;
 
 namespace VerticalShop.Api.Messaging;
 
@@ -11,10 +11,16 @@ namespace VerticalShop.Api.Messaging;
 public static class MessagingModule
 {
     /// <summary>
-    /// Configures and adds messaging services to the application.
+    /// Configures messaging services for the application, including MassTransit setup and
+    /// the configuration of database options for outbox processing.
     /// </summary>
-    /// <param name="builder">An instance of <see cref="WebApplicationBuilder"/> used to configure the application services.</param>
-    public static void AddMessaging(this WebApplicationBuilder builder)
+    /// <param name="builder">
+    /// The <see cref="WebApplicationBuilder"/> instance used to configure application services.
+    /// </param>
+    /// <param name="assemblies">
+    /// An array of assemblies to scan for consumers, sagas, and other MassTransit components.
+    /// </param>
+    public static void AddMessaging(this WebApplicationBuilder builder, Assembly[] assemblies)
     {
         builder.ConfigureMassTransitDatabaseOptions();
         builder.Services.AddOptions<OutboxProcessorOptions>();
@@ -22,12 +28,8 @@ public static class MessagingModule
         builder.Services.AddTransient<ISqlTransportDatabaseMigrator, PostgresDatabaseMigrator>();
         builder.Services.AddMassTransit(options =>
         {
-            options.AddConsumers(typeof(Program).Assembly);
-            options.AddConsumers(typeof(InventoryModule).Assembly);
-            options.UsingPostgres((context,o) =>
-            {
-                o.ConfigureEndpoints(context);
-            });
+            options.AddConsumers(assemblies);
+            options.UsingPostgres((context,o) => o.ConfigureEndpoints(context));
         });
     }
 

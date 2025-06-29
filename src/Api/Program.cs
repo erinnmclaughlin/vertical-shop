@@ -1,3 +1,4 @@
+using System.Reflection;
 using VerticalShop.Api.Messaging;
 using VerticalShop.Api.Persistence;
 using VerticalShop.Api.Products;
@@ -6,16 +7,18 @@ using VerticalShop.Inventory;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Assembly[] moduleAssemblies = 
+[
+    builder.AddProductModule(),
+    builder.AddInventoryModule()
+];
+
 // Core infrastructure services
 builder.Services.AddOpenApi();
 builder.AddServiceDefaults();
-builder.AddPostgres();
-builder.AddMessaging();
-builder.AddValidation();
-
-// Application services
-builder.AddInventoryServices();
-builder.AddProductServices();
+builder.AddPostgres(moduleAssemblies);
+builder.AddMessaging(moduleAssemblies);
+builder.AddValidation(moduleAssemblies);
 
 var app = builder.Build();
 

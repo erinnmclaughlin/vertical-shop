@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Inventory", "src\Inventory\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedKernel", "src\SharedKernel\SharedKernel.csproj", "{66180FAA-1ABE-4F7A-BED3-EAA7C5827A23}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aspire", "aspire", "{22679ABB-EC75-4C0C-A9C3-CBB510F661F4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B1048655-A1B7-4C34-A393-6E5390349483}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,5 +48,8 @@ Global
 		{66180FAA-1ABE-4F7A-BED3-EAA7C5827A23}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{DFE79566-11B8-4BA8-94EB-758BEC8A58E0} = {22679ABB-EC75-4C0C-A9C3-CBB510F661F4}
+		{36CEF726-3D3D-4179-B304-F69577D39713} = {22679ABB-EC75-4C0C-A9C3-CBB510F661F4}
+		{A61B358C-ED67-4A7E-B387-A156517AAB84} = {B1048655-A1B7-4C34-A393-6E5390349483}
 	EndGlobalSection
 EndGlobal

@@ -1,6 +1,5 @@
 ﻿using MassTransit;
 using Microsoft.Extensions.Options;
-using VerticalShop.Api.Persistence;
 
 namespace VerticalShop.Api.Messaging;
 
@@ -50,10 +49,9 @@ internal sealed class OutboxProcessor : BackgroundService
                 
                 try
                 {
-                    var messageType = typeof(Program).Assembly.GetType(type)!;
+                    var messageType = typeof(SharedKernel).Assembly.GetType(type)!;
                     var deserializedMessage = JsonSerializer.Deserialize(payload, messageType)!;
 
-                    // We should introduce retries here to improve reliability.
                     await bus.Publish(deserializedMessage, stoppingToken);
 
                     await dbContext.Connection.ExecuteAsync(
