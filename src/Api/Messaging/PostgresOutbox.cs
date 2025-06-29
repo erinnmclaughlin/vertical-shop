@@ -12,39 +12,32 @@ public sealed class PostgresOutbox : IOutbox
     /// <inheritdoc />
     public async Task InsertMessage<T>(T message, CancellationToken cancellationToken = default)
     {
-        const string sql = """
-                           insert into outbox_messages(id, type, payload)
-                           values (@id, @type, @payload::jsonb)
-                           """;
-
-        var parameters = new
-        {
-            id = Guid.CreateVersion7(),
-            type = typeof(T).FullName,
-            payload = JsonSerializer.Serialize(message)
-        };
-        
-        await _connection.ExecuteAsync(sql, parameters);
+        await _connection.ExecuteAsync(
+            "insert into outbox_messages(id, type, payload) values (@id, @type, @payload::jsonb)", 
+            new
+            {
+                id = Guid.CreateVersion7(),
+                type = typeof(T).FullName,
+                payload = JsonSerializer.Serialize(message)
+            }
+        );
     }
     
     /// <inheritdoc />
     public async Task<OutboxMessage<T>?> GetNextMessageOfType<T>(CancellationToken cancellationToken = default)
     {
-        const string sql = """
-                           select id, type, payload, created_on_utc
-                           from outbox_messages 
-                           where type = @type limit 1
-                           """;
-        
-        var result = await _connection.QueryFirstOrDefaultAsync<dynamic>(sql, new { type = typeof(T).FullName });
+        var result = await _connection.QueryFirstOrDefaultAsync(
+            """
+            select id, payload, created_on_utc
+            from outbox_messages 
+            where type = @type limit 1
+            """,
+            new { type = typeof(T).FullName }
+        );
 
-        if (result is null)
-            return null;
-
-        return new OutboxMessage<T>
+        return result is null ? null : new OutboxMessage<T>
         {
             Id = result.id,
-            Type = result.type,
             Message = JsonSerializer.Deserialize<T>(result.payload),
             CreatedAt = result.created_on_utc
         };
