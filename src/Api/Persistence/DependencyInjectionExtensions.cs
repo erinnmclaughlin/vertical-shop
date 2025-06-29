@@ -11,8 +11,7 @@ public static class DependencyInjectionExtensions
     /// <param name="builder">The WebApplicationBuilder used to configure the application's services and settings.</param>
     public static void AddPostgres(this WebApplicationBuilder builder)
     {
-        var connectionString = builder.Configuration.GetConnectionString("Postgres");
-        builder.Services.TryAddSingleton(new NpgsqlDataSourceBuilder(connectionString).Build());
+        builder.AddNpgsqlDataSource("vertical-shop-db");
         builder.Services.TryAddTransient(sp => sp.GetRequiredService<NpgsqlDataSource>().OpenConnection());
         builder.Services.TryAddScoped<IDatabaseContext, PostgresDatabaseContext>();
         builder.Services.TryAddTransient<PostgresDatabaseInitializer>();
@@ -20,7 +19,7 @@ public static class DependencyInjectionExtensions
             .AddFluentMigratorCore()
             .ConfigureRunner(rb =>
             {
-                rb.AddPostgres().WithGlobalConnectionString(connectionString);
+                rb.AddPostgres().WithGlobalConnectionString(builder.Configuration.GetConnectionString("vertical-shop-db"));
                 rb.ScanIn(typeof(Program).Assembly).For.All();
             })
             .AddLogging(lb => lb.AddFluentMigratorConsole());

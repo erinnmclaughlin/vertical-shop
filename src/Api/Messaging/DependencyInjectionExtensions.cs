@@ -13,7 +13,6 @@ public static class DependencyInjectionExtensions
         builder.Services.AddHostedService<OutboxProcessor>();
         builder.Services.AddTransient<IOutbox, PostgresOutbox>();
         builder.Services.AddTransient<ISqlTransportDatabaseMigrator, PostgresDatabaseMigrator>();
-        builder.Services.AddOptions<SqlTransportOptions>();
         builder.Services.AddMassTransit(options =>
         {
             options.AddConsumers(typeof(Program).Assembly);
@@ -27,7 +26,7 @@ public static class DependencyInjectionExtensions
 
     private static void ConfigureMassTransitDatabaseOptions(this WebApplicationBuilder builder)
     {
-        var connectionString = builder.Configuration.GetConnectionString("Postgres");
+        var connectionString = builder.Configuration.GetConnectionString("vertical-shop-db");
         var connectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionString);
         
         builder.Services.AddOptions<SqlTransportOptions>().Configure(options =>

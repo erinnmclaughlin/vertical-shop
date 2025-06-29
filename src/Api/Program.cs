@@ -36,7 +36,7 @@ using (var scope = app.Services.CreateScope())
 {
     var dbInitializer = scope.ServiceProvider.GetService<PostgresDatabaseInitializer>();
     if (dbInitializer is not null)
-        await dbInitializer.InitializeAsync(builder.Configuration.GetConnectionString("Postgres"));
+        await dbInitializer.InitializeAsync();
 }
 
 app.Run();

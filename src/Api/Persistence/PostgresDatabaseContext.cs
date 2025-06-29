@@ -1,7 +1,4 @@
 using System.Data.Common;
-using VerticalShop.Api.Inventory;
-using VerticalShop.Api.Messaging;
-using VerticalShop.Api.Products;
 
 namespace VerticalShop.Api.Persistence;
 
