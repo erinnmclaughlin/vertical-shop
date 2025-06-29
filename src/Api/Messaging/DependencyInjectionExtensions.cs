@@ -1,5 +1,7 @@
 using ContextDrivenDevelopment.Api.Persistence;
 using MassTransit;
+using MassTransit.SqlTransport;
+using MassTransit.SqlTransport.PostgreSql;
 
 namespace ContextDrivenDevelopment.Api.Messaging;
 
@@ -8,9 +10,11 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddMessaging(this IServiceCollection services, string? connectionString)
     {
         services.AddHostedService<OutboxProcessor>();
-        services.AddTransient(sp => sp.GetRequiredService<IUnitOfWork>().Outbox);
         
-        services.AddPostgresMigrationHostedService();
+        services.AddTransient(sp => sp.GetRequiredService<IUnitOfWork>().Outbox);
+        services.AddTransient<ISqlTransportDatabaseMigrator, PostgresDatabaseMigrator>();
+        services.AddOptions<SqlTransportOptions>();
+        
         services.ConfigureMassTransitDatabaseOptions(connectionString);
         services.AddMassTransit(options =>
         {
