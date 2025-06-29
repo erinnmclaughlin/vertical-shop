@@ -3,7 +3,7 @@
 /// <summary>
 /// Provides functionality for managing and processing messages in an outbox pattern.
 /// </summary>
-public interface IOutbox
+public interface IOutboxPublisher
 {
     /// <summary>
     /// Inserts an outbox message into the data store for eventual processing or dispatch.

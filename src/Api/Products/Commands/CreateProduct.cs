@@ -65,12 +65,12 @@ public static class CreateProduct
     /// </summary>
     public sealed class CommandHandler(
         IDatabaseContext databaseContext,
-        IOutbox outbox,
+        IOutboxPublisher outboxPublisher,
         IProductRepository productRepository, 
         IValidator<Command> validator)
     {
         private readonly IDatabaseContext _databaseContext = databaseContext;
-        private readonly IOutbox _outbox = outbox;
+        private readonly IOutboxPublisher _outboxPublisher = outboxPublisher;
         private readonly IProductRepository _productRepository = productRepository;
         private readonly IValidator<Command> _validator = validator;
 
@@ -106,7 +106,7 @@ public static class CreateProduct
             await _productRepository.CreateAsync(product, cancellationToken);
             
             // insert an outbox message to notify other services about the product creation
-            await _outbox.InsertMessage(ProductCreated.FromProduct(product), cancellationToken);
+            await _outboxPublisher.InsertMessage(ProductCreated.FromProduct(product), cancellationToken);
             
             // commit the changes
             await transaction.CommitAsync(cancellationToken);

@@ -1,10 +1,10 @@
 ﻿namespace VerticalShop.Api.Messaging;
 
-internal sealed class PostgresOutbox : IOutbox
+internal sealed class PostgresOutboxPublisher : IOutboxPublisher
 {
     private readonly NpgsqlConnection _connection;
     
-    public PostgresOutbox(NpgsqlConnection connection)
+    public PostgresOutboxPublisher(NpgsqlConnection connection)
     {
         _connection = connection;
     }

@@ -18,7 +18,7 @@ public static class MessagingModule
         builder.ConfigureMassTransitDatabaseOptions();
         builder.Services.AddOptions<OutboxOptions>();
         builder.Services.AddHostedService<OutboxProcessor>();
-        builder.Services.AddTransient<IOutbox, PostgresOutbox>();
+        builder.Services.AddTransient<IOutboxPublisher, PostgresOutboxPublisher>();
         builder.Services.AddTransient<ISqlTransportDatabaseMigrator, PostgresDatabaseMigrator>();
         builder.Services.AddMassTransit(options =>
         {
