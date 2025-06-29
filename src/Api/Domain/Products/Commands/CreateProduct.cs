@@ -1,7 +1,5 @@
 ﻿using ContextDrivenDevelopment.Api.Domain.Products.Events;
 using ContextDrivenDevelopment.Api.Persistence;
-using FluentValidation;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace ContextDrivenDevelopment.Api.Domain.Products.Commands;
 
@@ -74,21 +72,31 @@ public static class CreateProduct
         
         public async Task<Result> HandleAsync(Command command, CancellationToken cancellationToken = default)
         {
+            // validate the request
             if (await _validator.ValidateAsync(command, cancellationToken) is { IsValid: false } error)
             {
                 return TypedResults.ValidationProblem(error.ToDictionary());
             }
 
+            // build the product entity from the command
             var product = new Product
             {
                 Slug = ProductSlug.Parse(command.Slug),
                 Name = command.Name,
                 Attributes = command.Attributes?.ToDictionary() ?? []
             };
+            
+            // start a database transaction
+            await using var transaction = _unitOfWork.BeginTransaction();
 
+            // persist the product to the database
             await _unitOfWork.Products.CreateAsync(product, cancellationToken);
-            await _unitOfWork.Outbox.InsertMessage(new ProductCreated { ProductSlug = product.Slug }, cancellationToken);
-            await _unitOfWork.CommitAsync(cancellationToken);
+            
+            // insert an outbox message to notify other services about the product creation
+            await _unitOfWork.Outbox.InsertMessage(new ProductCreated(product.Slug), cancellationToken);
+            
+            // commit the changes
+            await transaction.CommitAsync(cancellationToken);
             
             return TypedResults.Created();
         }

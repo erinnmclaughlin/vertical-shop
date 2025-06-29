@@ -1,7 +1,4 @@
-﻿using System.Text.Json;
-using Dapper;
-using MassTransit;
-using Npgsql;
+﻿using MassTransit;
 
 namespace ContextDrivenDevelopment.Api.Messaging;
 

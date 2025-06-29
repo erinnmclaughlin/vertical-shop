@@ -1,7 +1,7 @@
+using System.Data.Common;
 using ContextDrivenDevelopment.Api.Domain.Inventory;
 using ContextDrivenDevelopment.Api.Domain.Products;
 using ContextDrivenDevelopment.Api.Messaging;
-using Npgsql;
 
 namespace ContextDrivenDevelopment.Api.Persistence.Postgres;
 
@@ -11,15 +11,9 @@ public sealed class PostgresUnitOfWork : IUnitOfWork
     // Injected Services
     private readonly NpgsqlDataSource _dataSource;
     
-    // Backing fields
     private NpgsqlConnection? _connection;
-    private NpgsqlTransaction? _transaction;
-    
-    // Internal Properties
     internal NpgsqlConnection Connection => _connection ??= _dataSource.OpenConnection();
-    internal NpgsqlTransaction Transaction => _transaction ??= Connection.BeginTransaction();
     
-    // Public Properties
     /// <inheritdoc />
     public IOutbox Outbox { get; }
     
@@ -42,16 +36,11 @@ public sealed class PostgresUnitOfWork : IUnitOfWork
     }
 
     /// <inheritdoc />
-    public async Task CommitAsync(CancellationToken cancellationToken = default)
-    {
-        await Transaction.CommitAsync(cancellationToken);
-        await DisposeTransactionAsync();
-    }
+    public DbTransaction BeginTransaction() => Connection.BeginTransaction();
     
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-        await DisposeTransactionAsync();
         await DisposeConnectionAsync();
     }
 
@@ -61,15 +50,6 @@ public sealed class PostgresUnitOfWork : IUnitOfWork
         {
             await _connection.DisposeAsync();
             _connection = null;
-        }
-    }
-    
-    private async ValueTask DisposeTransactionAsync()
-    {
-        if (_transaction is not null)
-        {
-            await _transaction.DisposeAsync();
-            _transaction = null;
         }
     }
 }

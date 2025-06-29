@@ -1,4 +1,5 @@
-﻿using ContextDrivenDevelopment.Api.Domain.Inventory;
+﻿using System.Data.Common;
+using ContextDrivenDevelopment.Api.Domain.Inventory;
 using ContextDrivenDevelopment.Api.Domain.Products;
 using ContextDrivenDevelopment.Api.Messaging;
 
@@ -25,13 +26,8 @@ public interface IUnitOfWork : IAsyncDisposable
     IInventoryRepository Inventory { get; }
 
     /// <summary>
-    /// Commits all changes made within the unit of work to the database.
+    /// Begins a new transaction for the unit of work, allowing multiple operations to be executed as a single atomic operation.
     /// </summary>
-    /// <param name="cancellationToken">
-    /// A cancellation token that can be used to cancel the commit operation.
-    /// </param>
-    /// <returns>
-    /// A task that represents the asynchronous commit operation.
-    /// </returns>
-    Task CommitAsync(CancellationToken cancellationToken = default);
+    /// <returns>The created transaction.</returns>
+    DbTransaction BeginTransaction();
 }

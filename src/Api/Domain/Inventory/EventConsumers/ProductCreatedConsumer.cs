@@ -6,11 +6,11 @@ namespace ContextDrivenDevelopment.Api.Domain.Inventory.EventConsumers;
 
 public sealed class ProductCreatedConsumer : IConsumer<ProductCreated>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IInventoryRepository _inventory;
 
-    public ProductCreatedConsumer(IUnitOfWork unitOfWork)
+    public ProductCreatedConsumer(IInventoryRepository inventory)
     {
-        _unitOfWork = unitOfWork;
+        _inventory = inventory;
     }
 
     public async Task Consume(ConsumeContext<ProductCreated> context)
@@ -21,6 +21,6 @@ public sealed class ProductCreatedConsumer : IConsumer<ProductCreated>
             QuantityAvailable = 0
         };
 
-        await _unitOfWork.Inventory.UpsertAsync(item);
+        await _inventory.UpsertAsync(item, context.CancellationToken);
     }
 }

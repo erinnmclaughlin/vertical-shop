@@ -1,6 +1,5 @@
 ﻿using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Npgsql;
 
 namespace ContextDrivenDevelopment.Api.Persistence.Postgres;
 
@@ -22,6 +21,7 @@ public static class DependencyInjectionExtensions
     {
         services.TryAddSingleton(new NpgsqlDataSourceBuilder(connectionString).Build());
         services.TryAddScoped<IUnitOfWork, PostgresUnitOfWork>();
+        services.TryAddTransient<PostgresDatabaseInitializer>();
         
         services
             .AddFluentMigratorCore()

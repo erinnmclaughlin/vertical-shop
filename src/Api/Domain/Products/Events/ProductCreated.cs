@@ -1,6 +1,7 @@
 ﻿namespace ContextDrivenDevelopment.Api.Domain.Products.Events;
 
-public sealed record ProductCreated
-{
-    public required string ProductSlug { get; init; }
-}
+/// <summary>
+/// An integration event that is published when a new product is created.
+/// </summary>
+/// <param name="ProductSlug">The pruduct slug.</param>
+public sealed record ProductCreated(string ProductSlug);

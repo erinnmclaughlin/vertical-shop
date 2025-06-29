@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using ContextDrivenDevelopment.Api.Persistence.Postgres;
+﻿using ContextDrivenDevelopment.Api.Persistence.Postgres;
 
 namespace ContextDrivenDevelopment.Api.Messaging;
 
@@ -27,7 +26,7 @@ public sealed class PostgresOutbox : IOutbox
             payload = JsonSerializer.Serialize(message)
         };
         
-        await _unitOfWork.ExecuteAsync(sql, parameters, cancellationToken);
+        await _unitOfWork.Connection.ExecuteAsync(sql, parameters);
     }
     
     /// <inheritdoc />
@@ -39,7 +38,7 @@ public sealed class PostgresOutbox : IOutbox
                            where type = @type limit 1
                            """;
         
-        var result = await _unitOfWork.QueryFirstOrDefaultAsync<dynamic>(sql, new { type = typeof(T).Name }, cancellationToken);
+        var result = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<dynamic>(sql, new { type = typeof(T).FullName });
 
         if (result is null)
             return null;
@@ -49,7 +48,7 @@ public sealed class PostgresOutbox : IOutbox
             Id = result.id,
             Type = result.type,
             Message = JsonSerializer.Deserialize<T>(result.payload),
-            CreatedAt = result.created_at
+            CreatedAt = result.created_on_utc
         };
     }
 }

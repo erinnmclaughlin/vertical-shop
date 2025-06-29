@@ -1,12 +1,14 @@
 ﻿using ContextDrivenDevelopment.Api.Persistence;
 using ContextDrivenDevelopment.Api.Persistence.Postgres;
 using FluentMigrator.Runner;
+using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
+using NSubstitute;
 
 namespace ContextDrivenDevelopment.Api.Tests;
 
@@ -18,7 +20,8 @@ namespace ContextDrivenDevelopment.Api.Tests;
 public sealed class ApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly NpgsqlDataSource _dataSource;
-    
+
+    private IBus Bus { get; }
     private DatabaseFixture Database { get; }
     public IUnitOfWork UnitOfWork { get; }
 
@@ -26,6 +29,7 @@ public sealed class ApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
     {
         _dataSource = new NpgsqlDataSourceBuilder(database.GetConnectionString()).Build();
         
+        Bus = Substitute.For<IBus>();
         Database = database;
         UnitOfWork = new PostgresUnitOfWork(_dataSource);
     }
@@ -41,6 +45,9 @@ public sealed class ApiFixture : WebApplicationFactory<Program>, IAsyncLifetime
             services
                 .RemoveAll<IUnitOfWork>()
                 .AddSingleton(UnitOfWork);
+
+            services
+                .RemoveAll<PostgresDatabaseInitializer>();
             
             services
                 .ConfigureRunner(rb => rb.WithGlobalConnectionString(Database.GetConnectionString()))

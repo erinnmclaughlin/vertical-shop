@@ -5,10 +5,10 @@ using ContextDrivenDevelopment.Api.Persistence;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ContextDrivenDevelopment.Api.Tests.Domain.Products.Commands.CreateProduct;
+using Command = ContextDrivenDevelopment.Api.Domain.Products.Commands.CreateProduct.Command;
+using CommandHandler = ContextDrivenDevelopment.Api.Domain.Products.Commands.CreateProduct.CommandHandler;
 
-using Command = Api.Domain.Products.Commands.CreateProduct.Command;
-using CommandHandler = Api.Domain.Products.Commands.CreateProduct.CommandHandler;
+namespace ContextDrivenDevelopment.Api.Tests.Domain.Products.Commands.CreateProduct;
 
 public sealed class CreateProductHandlerTests(ApiFixture api) : IClassFixture<ApiFixture>
 {
@@ -48,7 +48,7 @@ public sealed class CreateProductHandlerTests(ApiFixture api) : IClassFixture<Ap
         var outbox = scope.ServiceProvider.GetRequiredService<IOutbox>();
         var message = await outbox.GetNextMessageOfType<ProductCreated>(TestContext.Current.CancellationToken);
         Assert.NotNull(message);
-        Assert.Equivalent(new ProductCreated { ProductSlug = slug }, message.Message);
+        Assert.Equivalent(new ProductCreated(slug), message.Message);
     }
 
     [Fact]

@@ -15,22 +15,15 @@ internal sealed class PostgresProductRepository : IProductRepository
     /// <inheritdoc />
     public async Task CreateAsync(Product product, CancellationToken cancellationToken = default)
     {
-        const string sql =
-            """
-            INSERT INTO products.products (id, name, slug)
-            VALUES (@id, @name, @slug)
-            """;
-
+        const string sql = "insert into products.products (id, name, slug) values (@id, @name, @slug)";
         var parameters = new { id = product.Id.Value, name = product.Name, slug = product.Slug.Value };
-        await _unitOfWork.ExecuteAsync(sql, parameters, cancellationToken);
+        await _unitOfWork.Connection.ExecuteAsync(sql, parameters);
 
         if (product.Attributes is { Count: > 0 } attributes)
         {
-            
-            var productId = await _unitOfWork.QuerySingleAsync<string>(
+            var productId = await _unitOfWork.Connection.QuerySingleAsync<string>(
                 "select id from products.products where slug = @slug",
-                new { slug = product.Slug.Value }, 
-                cancellationToken
+                new { slug = product.Slug.Value }
             );
 
             const string attributeSql =
@@ -40,7 +33,8 @@ internal sealed class PostgresProductRepository : IProductRepository
                 """;
         
             var attributesToInsert = attributes.Select(x => new { id = Guid.CreateVersion7(), productId, name = x.Key, value = x.Value });
-            await _unitOfWork.ExecuteAsync(attributeSql, attributesToInsert, cancellationToken);
+            
+            await _unitOfWork.Connection.ExecuteAsync(attributeSql, attributesToInsert);
         }
     }
     
@@ -48,7 +42,7 @@ internal sealed class PostgresProductRepository : IProductRepository
     public async Task<OneOf<Product, NotFound>> GetByIdAsync(ProductId id, CancellationToken cancellationToken = default)
     {
         const string sql = "SELECT name, slug FROM products.products WHERE id = @id";
-        var getProductResult = await _unitOfWork.QuerySingleOrDefaultAsync<dynamic>(sql, new { id = id.Value }, cancellationToken);
+        var getProductResult = await _unitOfWork.Connection.QuerySingleOrDefaultAsync<dynamic>(sql, new { id = id.Value });
         
         if (getProductResult is null)
             return new NotFound();
@@ -66,7 +60,7 @@ internal sealed class PostgresProductRepository : IProductRepository
     public async Task<OneOf<Product, NotFound>> GetBySlugAsync(ProductSlug slug, CancellationToken cancellationToken = default)
     {
         const string sql = "SELECT id, name FROM products.products WHERE slug = @slug";
-        var getProductResult = await _unitOfWork.QuerySingleOrDefaultAsync<dynamic>(sql, new { slug = slug.Value }, cancellationToken);
+        var getProductResult = await _unitOfWork.Connection.QuerySingleOrDefaultAsync<dynamic>(sql, new { slug = slug.Value });
         
         if (getProductResult is null)
             return new NotFound();
@@ -84,10 +78,9 @@ internal sealed class PostgresProductRepository : IProductRepository
 
     private async Task<Dictionary<string, string>> GetAttributesAsync(ProductId productId, CancellationToken cancellationToken = default)
     {
-        var productAttributes = await _unitOfWork.QueryListAsync(
+        var productAttributes = await _unitOfWork.Connection.QueryListAsync(
             "SELECT name, value FROM products.product_attributes WHERE product_id = @id",
-            new { id = productId.Value },
-            cancellationToken
+            new { id = productId.Value }
         );
         
         return productAttributes

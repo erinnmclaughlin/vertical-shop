@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using NotFoundResult = Microsoft.AspNetCore.Http.HttpResults.NotFound;
-
-namespace ContextDrivenDevelopment.Api.Domain.Products.Queries;
+﻿namespace ContextDrivenDevelopment.Api.Domain.Products.Queries;
 
 using Result = Results<Ok<GetProduct.ProductDetail>, NotFoundResult>;
 
@@ -66,7 +63,7 @@ public static class GetProduct
             return MapToHttpResult(result);
         }
         
-        private static Result MapToHttpResult(OneOf<Product, OneOf.Types.NotFound> result) => result.Match<Result>(
+        private static Result MapToHttpResult(OneOf<Product, NotFound> result) => result.Match<Result>(
             p => TypedResults.Ok(new ProductDetail
             {
                 Id = p.Id,
