@@ -1,5 +1,4 @@
 using ContextDrivenDevelopment.Api.Messaging;
-using ContextDrivenDevelopment.Api.Persistence;
 using ContextDrivenDevelopment.Api.Products;
 using ContextDrivenDevelopment.Api.Products.Events;
 using Microsoft.AspNetCore.Http.HttpResults;

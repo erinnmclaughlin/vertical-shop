@@ -6,6 +6,14 @@
 public interface IInventoryRepository
 {
     /// <summary>
+    /// Retrieves the inventory item associated with the specified product slug.
+    /// </summary>
+    /// <param name="productSlug">The unique slug identifying the product.</param>
+    /// <param name="cancellationToken">The cancellation token to observe during the operation.</param>
+    /// <returns>A task containing the result, which is either the inventory item or a not found indication.</returns>
+    Task<OneOf<InventoryItem, NotFound>> GetAsync(string productSlug, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Updates an existing inventory item if it exists, otherwise inserts a new inventory item.
     /// </summary>
     /// <param name="item">The inventory item to upsert.</param>
