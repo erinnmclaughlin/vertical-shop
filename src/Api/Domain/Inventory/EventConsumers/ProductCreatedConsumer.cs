@@ -14,12 +14,7 @@ public sealed class ProductCreatedConsumer : IConsumer<ProductCreated>
 
     public async Task Consume(ConsumeContext<ProductCreated> context)
     {
-        var item = new InventoryItem
-        {
-            ProductSlug = context.Message.ProductSlug,
-            QuantityAvailable = 0
-        };
-
+        var item = InventoryItem.CreateNew(context.Message.ProductSlug);
         await _inventory.UpsertAsync(item, context.CancellationToken);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using ContextDrivenDevelopment.Api.Domain.Products.Commands;
 using ContextDrivenDevelopment.Api.Domain.Products.Queries;
-using ContextDrivenDevelopment.Api.Persistence;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace ContextDrivenDevelopment.Api.Domain.Products;
