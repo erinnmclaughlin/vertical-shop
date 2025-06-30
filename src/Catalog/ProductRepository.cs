@@ -1,6 +1,6 @@
 ﻿using Dapper;
 
-namespace VerticalShop.Products;
+namespace VerticalShop.Catalog;
 
 /// <summary>
 /// Defines the contract for a data store that manages product entities.

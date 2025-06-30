@@ -6,27 +6,26 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
-namespace VerticalShop.Products;
+namespace VerticalShop.Catalog;
 
 /// <summary>
-/// Provides extension methods for configuring product-related services and API endpoints
-/// within the application.
+/// Provides extension methods for configuring catalog-related services and API endpoints within the application.
 /// </summary>
-public static class ProductModule
+public static class CatalogModule
 {
     /// <summary>
-    /// Adds product-related services to the dependency injection container.
+    /// Adds catalog-related services to the dependency injection container.
     /// </summary>
     /// <param name="builder">
     /// The <see cref="IHostApplicationBuilder"/> used to configure the application's services.
     /// </param>
-    public static Assembly AddProductModule<T>(this T builder) where T : IHostApplicationBuilder
+    public static Assembly AddCatalogModule<T>(this T builder) where T : IHostApplicationBuilder
     {
         builder.Services.TryAddScoped<IProductRepository, ProductRepository>();
         builder.Services.TryAddTransient<CreateProduct.CommandHandler>();
         builder.Services.TryAddTransient<GetProduct.QueryHandler>();
         builder.Services.TryAddTransient<ListProducts.QueryHandler>();
-        return typeof(ProductModule).Assembly;       
+        return typeof(CatalogModule).Assembly;       
     }
 
     /// <summary>
@@ -35,11 +34,11 @@ public static class ProductModule
     /// <param name="app">
     /// The <see cref="IEndpointRouteBuilder"/> used to define and configure API routes.
     /// </param>
-    public static void MapProductApi(this IEndpointRouteBuilder app)
+    public static void MapCatalogApi(this IEndpointRouteBuilder app)
     {
         var productsApi = app
-            .MapGroup("/products")
-            .WithTags("Products API");
+            .MapGroup("/catalog")
+            .WithTags("Catalog API");
         
         productsApi
             .MapPost("/", (

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace VerticalShop.Products;
+namespace VerticalShop.Catalog;
 
 /// <summary>
 /// Provides a simplified representation of a product for API consumers,

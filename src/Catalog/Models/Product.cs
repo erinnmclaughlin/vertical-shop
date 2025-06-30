@@ -1,4 +1,4 @@
-﻿namespace VerticalShop.Products;
+﻿namespace VerticalShop.Catalog;
 
 /// <summary>
 /// Represents a product entity in the VerticalShop system.

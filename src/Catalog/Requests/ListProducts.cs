@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace VerticalShop.Products;
+namespace VerticalShop.Catalog;
 
 /// <summary>
 /// Provides functionality to query a list of products.

@@ -1,4 +1,4 @@
-﻿namespace VerticalShop.Products;
+﻿namespace VerticalShop.Catalog;
 
 /// <summary>
 /// A unique identifier for a Product in the form of a slug.
@@ -8,22 +8,12 @@ public sealed record ProductSlug
     /// <summary>
     /// The unique slug value representing the identifier for a Product.
     /// </summary>
-    public string Value { get; private init; }
+    public string Value { get; }
 
-    private ProductSlug() : this(Guid.CreateVersion7().ToString())
-    {
-    }
-    
     private ProductSlug(string value)
     {
         Value = value;
     }
-
-    /// <summary>
-    /// Creates a new instance of the <see cref="ProductSlug"/> class with a unique value.
-    /// </summary>
-    /// <returns>A new instance of <see cref="ProductSlug"/> with a generated unique identifier.</returns>
-    public static ProductSlug CreateNew() => new();
 
     /// <summary>
     /// Parses the provided string and creates a new instance of the <see cref="ProductSlug"/> class with the specified value.

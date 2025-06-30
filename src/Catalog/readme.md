@@ -1,6 +1,6 @@
-﻿# Products
+﻿# Catalog
 
-The products service manages the catalog of products available in the system.
+The catalog "slice" manages the products available in the system.
 
 ## Features
 

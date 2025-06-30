@@ -1,13 +1,13 @@
 using System.Reflection;
 using VerticalShop.Api;
+using VerticalShop.Catalog;
 using VerticalShop.Inventory;
-using VerticalShop.Products;
 
 var builder = WebApplication.CreateBuilder(args);
 
 Assembly[] moduleAssemblies = 
 [
-    builder.AddProductModule(),
+    builder.AddCatalogModule(),
     builder.AddInventoryModule()
 ];
 
@@ -28,7 +28,7 @@ app.UseHttpsRedirection();
 
 app.MapDefaultEndpoints();
 app.MapInventoryApi();
-app.MapProductApi();
+app.MapCatalogApi();
 
 // For now, just ensure the database is created during startup.
 // This will change when we move to Aspire:

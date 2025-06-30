@@ -1,11 +1,10 @@
-﻿using FluentValidation;
+﻿using System.Diagnostics.CodeAnalysis;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using VerticalShop.IntegrationEvents.Products;
 
-namespace VerticalShop.Products;
-
-using Result = Results<Created, ValidationProblem>;
+namespace VerticalShop.Catalog;
 
 /// <summary>
 /// Provides the implementation for creating a new product within the application.
@@ -15,6 +14,8 @@ public static class CreateProduct
     /// <summary>
     /// Represents a request to create a new <see cref="Product"/>.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
+    [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
     public sealed record Command
     {
         /// <summary>
@@ -39,6 +40,7 @@ public static class CreateProduct
     /// <summary>
     /// Request validator for <see cref="Command"/>.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedType.Global")]
     public sealed class CommandValidator : AbstractValidator<Command>
     {
         /// <inheritdoc />
@@ -75,15 +77,14 @@ public static class CreateProduct
         private readonly IValidator<Command> _validator = validator;
 
         /// <summary>
-        /// Handles the asynchronous execution of a product creation command.
+        /// Handles the execution of the command to create a product asynchronously.
         /// </summary>
-        /// <param name="command">The <see cref="CreateProduct.Command"/> containing product creation details.</param>
-        /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
-        /// <returns>
-        /// A <see cref="Task{TResult}"/> representing the asynchronous operation, with a result of type <see cref="Result"/>.
-        /// The result may represent a successful product creation or validation errors.
-        /// </returns>
-        public async Task<Result> HandleAsync(Command command, CancellationToken cancellationToken = default)
+        /// <param name="command">The command containing the product details to be created.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+        /// <returns>A result indicating the outcome of the product creation process.
+        /// Returns <see cref="Created"/> if successful or <see cref="ValidationProblem"/> if validation errors occur.</returns>
+        public async Task<Results<Created, ValidationProblem>> HandleAsync(Command command,
+            CancellationToken cancellationToken = default)
         {
             // validate the request
             if (await _validator.ValidateAsync(command, cancellationToken) is { IsValid: false } error)
