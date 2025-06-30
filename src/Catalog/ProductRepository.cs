@@ -40,6 +40,16 @@ public interface IProductRepository
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A task that represents the asynchronous operation, containing the product if found; otherwise, null.</returns>
     Task<Product?> GetBySlugAsync(ProductSlug slug, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates the price for a product in the data store.
+    /// </summary>
+    /// <param name="productId">The unique identifier of the product to update.</param>
+    /// <param name="price">The new price for the product.</param>
+    /// <param name="validFrom">The date from which this price becomes valid.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    Task UpdatePriceAsync(ProductId productId, decimal price, DateTimeOffset validFrom, CancellationToken cancellationToken = default);
 }
 
 /// <inheritdoc />
@@ -239,5 +249,47 @@ internal sealed class ProductRepository(
             _dbContext.CurrentTransaction);
         
         return productIds.ToDictionary(x => x, x => (decimal?)prices.SingleOrDefault(y => y.ProductId == x)?.Price);
+    }
+
+    /// <inheritdoc />
+    public async Task UpdatePriceAsync(ProductId productId, decimal price, DateTimeOffset validFrom, CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        
+        // Check if there's already a price that would conflict with the new one
+        var existingPrices = await _dbContext.Connection.QueryAsync(
+            """
+            select valid_from, valid_to 
+            from catalog.product_prices 
+            where product_id = @productId 
+            and (
+                (valid_from <= @validFrom and (valid_to is null or valid_to > @validFrom))
+                or (valid_from < @validFrom and valid_to is null)
+            )
+            """,
+            new { productId = productId.Value, validFrom = validFrom.UtcDateTime },
+            _dbContext.CurrentTransaction
+        );
+
+        if (existingPrices.Any())
+        {
+            var existingPrice = existingPrices.First();
+            var message = existingPrice.valid_to == null
+                ? $"A price is already set for this product from {existingPrice.valid_from:yyyy-MM-dd} with no end date."
+                : $"A price is already set for this product from {existingPrice.valid_from:yyyy-MM-dd} to {existingPrice.valid_to:yyyy-MM-dd}.";
+            
+            throw new InvalidOperationException(message);
+        }
+        
+        await _dbContext.Connection.ExecuteAsync(
+            "insert into catalog.product_prices (product_id, price, valid_from) values (@productId, @price, @validFrom)", 
+            new
+            {
+                productId = productId.Value,
+                price,
+                validFrom = validFrom.UtcDateTime
+            },
+            _dbContext.CurrentTransaction
+        );
     }
 }

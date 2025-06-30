@@ -25,6 +25,7 @@ public static class CatalogModule
         builder.Services.TryAddTransient<CreateProduct.CommandHandler>();
         builder.Services.TryAddTransient<GetProduct.QueryHandler>();
         builder.Services.TryAddTransient<ListProducts.QueryHandler>();
+        builder.Services.TryAddTransient<SetPrice.CommandHandler>();
         return typeof(CatalogModule).Assembly;       
     }
 
@@ -70,5 +71,16 @@ public static class CatalogModule
                 => handler.Handle(query, ct)
             )
             .WithSummary("List Products");
+
+        productsApi
+            .MapPut("/{identifier}/price", (
+                string identifier,
+                SetPrice.Command command,
+                SetPrice.CommandHandler handler,
+                [AllowedValues("id", "slug")] string identifierType = "id",
+                CancellationToken ct = default)
+                => handler.HandleAsync(command with { Identifier = identifier, IdentifierType = identifierType }, ct)
+            )
+            .WithSummary("Set Product Price");
     }
 }
