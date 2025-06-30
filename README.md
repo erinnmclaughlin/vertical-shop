@@ -20,8 +20,8 @@ The application is organized into vertical slices, each representing a business 
 
 ```
 src/
-├── Api/                    # Main API gateway and shared infrastructure
-├── Products/              # Product catalog management
+├── Api/                   # Main API gateway and shared infrastructure
+├── Catalog/               # Product catalog management
 ├── Inventory/             # Inventory and stock management
 ├── AppHost/               # Application host and configuration
 ├── ServiceDefaults/       # Shared service configuration
@@ -30,7 +30,7 @@ src/
 
 ### Modules
 
-#### Products Module
+#### Catalog Module
 Manages the product catalog with features for creating, retrieving, and listing products.
 
 - **Create Product**: Add new products with unique slugs and attributes
@@ -47,7 +47,7 @@ Manages product availability and stock levels.
 ## Architecture Patterns
 
 ### Vertical Slices
-Each module (Products, Inventory) is a complete vertical slice containing:
+Each module (Catalog, Inventory) is a complete vertical slice containing:
 - API endpoints
 - Request/Command handlers
 - Domain models
@@ -56,7 +56,7 @@ Each module (Products, Inventory) is a complete vertical slice containing:
 
 ### Event-Driven Communication
 Modules communicate through integration events:
-- Products module publishes `ProductCreated` events
+- Catalog module publishes `ProductCreated` events
 - Inventory module consumes these events to maintain consistency
 
 ### CQRS Pattern
