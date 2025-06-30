@@ -25,6 +25,11 @@ public sealed record ProductDto
     public required string Name { get; init; }
 
     /// <summary>
+    /// The current product price, or null if the product is not available for sale.
+    /// </summary>
+    public required decimal? Price { get; set; }
+    
+    /// <summary>
     /// The attributes associated with the product as key-value pairs.
     /// </summary>
     public required IReadOnlyDictionary<string, string> Attributes { get; init; }
@@ -39,6 +44,7 @@ public sealed record ProductDto
         Id = product.Id,
         Slug = product.Slug,
         Name = product.Name,
+        Price = product.Price,
         Attributes = product.Attributes
     };
 }

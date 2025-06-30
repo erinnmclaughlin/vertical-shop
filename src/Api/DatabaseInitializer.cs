@@ -27,12 +27,12 @@ internal sealed class DatabaseInitializer(
 [VersionTableMetaData]
 internal sealed class CustomVersionTableMetaData : IVersionTableMetaData
 {
-    public bool OwnsSchema => true;
+    public bool OwnsSchema => false;
     public string SchemaName => "public";
-    public string TableName => "version_info";
-    public string ColumnName => "version";
+    public string TableName => "migrations";
+    public string ColumnName => "migration_id";
     public string DescriptionColumnName => "description";
-    public string UniqueIndexName => "ux_version_info_version";
+    public string UniqueIndexName => "ux_migrations_migration_id";
     public string AppliedOnColumnName => "applied_on";
-    public bool CreateWithPrimaryKey => true;
+    public bool CreateWithPrimaryKey => false;
 }

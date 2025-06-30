@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Logging;
 
 namespace VerticalShop.Catalog;
 
@@ -42,9 +43,13 @@ public interface IProductRepository
 }
 
 /// <inheritdoc />
-internal sealed class ProductRepository(IDatabaseContext dbContext) : IProductRepository
+internal sealed class ProductRepository(
+    IDatabaseContext dbContext, 
+    ILogger<ProductRepository> logger
+) : IProductRepository
 {
     private readonly IDatabaseContext _dbContext = dbContext;
+    private readonly ILogger<ProductRepository> _logger = logger;
 
     /// <inheritdoc />
     public async Task CreateAsync(Product product, CancellationToken cancellationToken = default)
@@ -52,7 +57,7 @@ internal sealed class ProductRepository(IDatabaseContext dbContext) : IProductRe
         cancellationToken.ThrowIfCancellationRequested();
         
         await _dbContext.Connection.ExecuteAsync(
-            "insert into products.products (id, name, slug) values (@id, @name, @slug)", 
+            "insert into catalog.products (id, name, slug) values (@id, @name, @slug)", 
             new
             {
                 id = product.Id.Value, 
@@ -65,13 +70,13 @@ internal sealed class ProductRepository(IDatabaseContext dbContext) : IProductRe
         if (product.Attributes is { Count: > 0 } attributes)
         {
             var productId = await _dbContext.Connection.QuerySingleAsync<string>(
-                "select id from products.products where slug = @slug",
+                "select id from catalog.products where slug = @slug",
                 new { slug = product.Slug.Value },
                 _dbContext.CurrentTransaction
             );
             
             await _dbContext.Connection.ExecuteAsync(
-                "insert into products.product_attributes (id, product_id, name, value) values (@id, @productId, @name, @value)", 
+                "insert into catalog.product_attributes (id, product_id, name, value) values (@id, @productId, @name, @value)", 
                 attributes.Select(x => new
                 {
                     id = Guid.CreateVersion7(), 
@@ -88,7 +93,7 @@ internal sealed class ProductRepository(IDatabaseContext dbContext) : IProductRe
     public async Task<List<Product>> ListAsync(int offset, int limit, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        
+     
         var results = (await _dbContext.Connection.QueryAsync(
             """
             select 
@@ -97,8 +102,8 @@ internal sealed class ProductRepository(IDatabaseContext dbContext) : IProductRe
                 p.name as "Name", 
                 pa.name as "AttributeKey", 
                 pa.value as "AttributeValue"
-            from products.products p
-            left join products.product_attributes pa on p.id = pa.product_id
+            from catalog.products p
+            left join catalog.product_attributes pa on p.id = pa.product_id
             offset @offset
             limit @limit
             """,
@@ -110,6 +115,8 @@ internal sealed class ProductRepository(IDatabaseContext dbContext) : IProductRe
             return [];
 
         var products = new List<Product>();
+
+        var prices = await GetProductPrices(results.Select(x => (string)x.Id).Distinct().ToArray(), cancellationToken);
         
         foreach (var (_, values) in results.GroupBy(x => x.Id).ToDictionary(x => x.Key, x => x.ToList()))
         {
@@ -120,6 +127,7 @@ internal sealed class ProductRepository(IDatabaseContext dbContext) : IProductRe
                 Id = firstResult.Id,
                 Slug = firstResult.Slug,
                 Name = firstResult.Name,
+                Price = prices[firstResult.Id],
                 Attributes = values
                     .Where(x => x.AttributeKey != null)
                     .GroupBy(x => (string)x.AttributeKey)
@@ -143,8 +151,8 @@ internal sealed class ProductRepository(IDatabaseContext dbContext) : IProductRe
                 p.name as "Name", 
                 pa.name as "AttributeKey", 
                 pa.value as "AttributeValue"
-            from products.products p
-            left join products.product_attributes pa on p.id = pa.product_id
+            from catalog.products p
+            left join catalog.product_attributes pa on p.id = pa.product_id
             where p.id = @id
             """,
             new { id = id.Value },
@@ -156,11 +164,14 @@ internal sealed class ProductRepository(IDatabaseContext dbContext) : IProductRe
         if (firstResult is null)
             return null;
         
+        var prices = await GetProductPrices([firstResult.Id], cancellationToken);
+        
         return new Product
         {
             Id = firstResult.Id,
             Slug = firstResult.Slug,
             Name = firstResult.Name,
+            Price = prices[firstResult.Id],
             Attributes = results
                 .Where(x => x.AttributeKey != null)
                 .GroupBy(x => (string)x.AttributeKey)
@@ -181,8 +192,8 @@ internal sealed class ProductRepository(IDatabaseContext dbContext) : IProductRe
                 p.name as "Name", 
                 pa.name as "AttributeKey", 
                 pa.value as "AttributeValue"
-            from products.products p
-            left join products.product_attributes pa on p.id = pa.product_id
+            from catalog.products p
+            left join catalog.product_attributes pa on p.id = pa.product_id
             where p.slug = @slug
             """,
             new { slug = slug.Value },
@@ -199,12 +210,34 @@ internal sealed class ProductRepository(IDatabaseContext dbContext) : IProductRe
             .GroupBy(x => (string)x.AttributeKey)
             .ToDictionary(x => x.Key, x => string.Join(", ", x.Select(v => v.AttributeValue)));
         
+        var prices = await GetProductPrices([firstResult.Id], cancellationToken);
+        
         return new Product
         {
             Id = firstResult.Id,
             Slug = firstResult.Slug,
             Name = firstResult.Name,
-            Attributes = attributes
+            Attributes = attributes,
+            Price = prices[firstResult.Id]
         };
+    }
+
+    private async Task<Dictionary<string, decimal?>> GetProductPrices(string[] productIds, CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Retrieving product prices for {ProductIds} products", string.Join(", ", productIds));
+        
+        // todo: provide date from service
+        var now = DateTimeOffset.UtcNow;
+
+        var prices = await _dbContext.Connection.QueryAsync(
+            """
+            select product_id as "ProductId", price as "Price"
+            from catalog.product_prices
+            where product_id = any(@productIds) and valid_from <= @now and (valid_to is null or valid_to > @now)
+            """,
+            new { productIds, now },
+            _dbContext.CurrentTransaction);
+        
+        return productIds.ToDictionary(x => x, x => (decimal?)prices.SingleOrDefault(y => y.ProductId == x)?.Price);
     }
 }

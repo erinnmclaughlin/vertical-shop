@@ -60,16 +60,7 @@ public static class ListProducts
                 cancellationToken
             );
 
-            return TypedResults.Ok(
-                products.Select(p => new ProductDto
-                {
-                    Id = p.Id.Value,
-                    Name = p.Name,
-                    Slug = p.Slug.Value,
-                    Attributes = p.Attributes
-                })
-                .ToList()
-            );
+            return TypedResults.Ok(products.Select(ProductDto.FromProduct).ToList());
         }
     }
 }
