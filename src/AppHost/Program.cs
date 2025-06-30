@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Hosting;
 using Scalar.Aspire;
 
@@ -25,7 +26,10 @@ var api = builder
     .WaitFor(verticalShopDatabase)
     .WithExternalHttpEndpoints();
 
-_ = builder.AddScalarApiReference()
-    .WithApiReference(api);
+// The Scalar container for Aspire doesn't work on Mac :(
+if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+{
+    _ = builder.AddScalarApiReference().WithApiReference(api);
+}
 
 builder.Build().Run();

@@ -1,4 +1,5 @@
 using System.Reflection;
+using Scalar.AspNetCore;
 using VerticalShop.Api;
 using VerticalShop.Catalog;
 using VerticalShop.Inventory;
@@ -22,6 +23,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(o =>
+    {
+        // https://github.com/scalar/scalar/discussions/4025
+        o.Servers = [];
+    });
 }
 
 app.UseHttpsRedirection();
