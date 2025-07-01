@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Dapper;
+using FluentMigrator.Runner;
 using MassTransit;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -30,6 +31,12 @@ internal sealed class Worker(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        using (var scope = services.CreateScope())
+        {
+            scope.ServiceProvider.GetRequiredService<IMigrationRunner>().MigrateUp();
+            await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+        }
+        
         while (!stoppingToken.IsCancellationRequested)
         {
             logger.LogInformation("Processing outbox...");

@@ -15,7 +15,8 @@ if (builder.Environment.IsDevelopment())
         .WithUserName(builder.AddParameter("pg-user", "postgres"))
         .WithPassword(builder.AddParameter("pg-password", "postgres"))
         .WithHostPort(5432)
-        .WithLifetime(ContainerLifetime.Persistent);
+        .WithLifetime(ContainerLifetime.Persistent)
+        ;
 }
 
 var verticalShopDatabase = postgresServer
@@ -30,7 +31,7 @@ var api = builder
 var outboxProcessor = builder
     .AddProject<Projects.OutboxProcessor>("outbox-processor")
     .WithReference(verticalShopDatabase)
-    .WaitFor(verticalShopDatabase);
+    .WaitFor(api);
 
 // The Scalar container for Aspire doesn't work on Mac :(
 if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))

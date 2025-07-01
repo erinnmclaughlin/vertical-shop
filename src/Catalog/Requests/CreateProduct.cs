@@ -83,7 +83,7 @@ public static class CreateProduct
                 return TypedResults.Conflict();
             }
 
-            var message = new ProductCreated(productId.ToString(), command.Slug, command.Name);
+            var message = new ProductCreated(productId, command.Slug, command.Name);
             await connection.InsertOutboxMessageAsync(message, transaction, cancellationToken); 
             
             await transaction.CommitAsync(cancellationToken);

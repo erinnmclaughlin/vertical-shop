@@ -17,7 +17,7 @@ Assembly[] moduleAssemblies =
 
 builder.AddServiceDefaults();
 builder.AddNpgsqlDataSource("vertical-shop-db");
-builder.AddDatabaseInitialization([typeof(Program).Assembly, ..moduleAssemblies]);
+builder.AddDatabaseInitialization(moduleAssemblies);
 builder.AddMassTransit(x => x.AddConsumers(moduleAssemblies));
 
 builder.Services.AddOpenApi();
@@ -47,14 +47,12 @@ app.MapInventoryApi();
 app.MapCatalogApi();
 
 // For now, just ensure the database is created during startup. Eventually we can move this to a worker service or similar.
-app.MigrateCatalogSchema();
 using (var scope = app.Services.CreateScope())
 {
     var dbInitializer = scope.ServiceProvider.GetService<DatabaseInitializer>();
     if (dbInitializer is not null)
         await dbInitializer.InitializeAsync();
 }
-
 app.Run();
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member

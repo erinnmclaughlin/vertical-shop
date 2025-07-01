@@ -38,10 +38,9 @@ public static class Extensions
         cancellationToken.ThrowIfCancellationRequested();
         
         await connection.ExecuteAsync(
-            "insert into outbox_messages(id, type, payload) values (@id, @type, @payload::jsonb)", 
+            "insert into outbox_messages(type, payload) values (@type, @payload::jsonb)", 
             new
             {
-                id = Guid.CreateVersion7(),
                 type = typeof(T).FullName,
                 payload = JsonSerializer.Serialize(message)
             },

@@ -23,7 +23,6 @@ public sealed class InitialCatalogSchema : Migration
         Delete.Table("catalogs").InSchema("catalog");
         Delete.Table("product_variants").InSchema("catalog");
         Delete.Table("products").InSchema("catalog");
-        
         Delete.Schema("catalog");
     }
 

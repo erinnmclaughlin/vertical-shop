@@ -17,7 +17,6 @@
     <ItemGroup>
       <ProjectReference Include="..\Inventory\Inventory.csproj" />
       <ProjectReference Include="..\Catalog\Catalog.csproj" />
-      <ProjectReference Include="..\OutboxProcessor\OutboxProcessor.csproj" />
       <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
       <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
     </ItemGroup>
