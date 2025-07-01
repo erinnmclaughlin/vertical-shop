@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Dapper;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using VerticalShop.IntegrationEvents.Products;
 
 namespace VerticalShop.Inventory;
@@ -11,17 +13,26 @@ namespace VerticalShop.Inventory;
 /// </summary>
 [SuppressMessage("ReSharper", "UnusedType.Global")]
 public sealed class ProductCreatedConsumer(
-    IInventoryRepository inventory,
+    NpgsqlDataSource dataSource,
     ILogger<ProductCreatedConsumer> logger
 ) : IConsumer<ProductCreated>
 {
-    private readonly IInventoryRepository _inventory = inventory;
+    private readonly NpgsqlDataSource _dataSource = dataSource;
     private readonly ILogger<ProductCreatedConsumer> _logger = logger;
 
+    /// <inheritdoc />
     public async Task Consume(ConsumeContext<ProductCreated> context)
     {
         _logger.LogInformation("Consuming ProductCreated event from Inventory module. ProductSlug: {ProductSlug}", context.Message.ProductSlug);
-        var item = InventoryItem.CreateNew(context.Message.ProductSlug);
-        await _inventory.UpsertAsync(item, context.CancellationToken);
+
+        await using var connection = await _dataSource.OpenConnectionAsync(context.CancellationToken);
+
+        await connection.ExecuteAsync(
+            """
+            insert into inventory.items (product_slug, quantity)
+            values (@ProductSlug, 0)
+            on conflict (product_slug) do nothing
+            """,
+            new { context.Message.ProductSlug });
     }
 }

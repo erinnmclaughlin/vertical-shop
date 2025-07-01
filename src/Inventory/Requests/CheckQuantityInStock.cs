@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Dapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Npgsql;
 
 namespace VerticalShop.Inventory;
 
@@ -13,9 +15,9 @@ public static class CheckQuantityInStock
     /// <summary>
     /// Handles the process of querying the inventory for available quantity of a product.
     /// </summary>
-    public sealed class QueryHandler(IInventoryRepository inventory)
+    public sealed class QueryHandler(NpgsqlDataSource dataSource)
     {
-        private readonly IInventoryRepository _inventory = inventory;
+        private readonly NpgsqlDataSource _dataSource = dataSource;
 
         /// <summary>
         /// Handles the process of retrieving the quantity of a product available in inventory.
@@ -28,8 +30,19 @@ public static class CheckQuantityInStock
         /// </returns>
         public async Task<Result> Handle(string productSlug, CancellationToken cancellationToken = default)
         {
-            var item = await _inventory.GetAsync(productSlug, cancellationToken);
-            return item is null ? TypedResults.NotFound() : TypedResults.Ok(item.QuantityAvailable);
+            cancellationToken.ThrowIfCancellationRequested();
+            
+            await using var connection = _dataSource.CreateConnection();
+            var quantity = await connection.QuerySingleOrDefaultAsync<int?>(
+                """
+                select quantity
+                from inventory.items
+                where product_slug = @productSlug
+                """,
+                new { productSlug }
+            );
+            
+            return quantity is null ? TypedResults.NotFound() : TypedResults.Ok(quantity.Value);
         }
     }
 }

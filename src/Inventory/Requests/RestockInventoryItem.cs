@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Dapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Npgsql;
 
 namespace VerticalShop.Inventory;
 
@@ -46,9 +48,9 @@ public static class RestockInventoryItem
     /// <summary>
     /// Handles the execution of the <see cref="RestockInventoryItem.Command"/>.
     /// </summary>
-    public sealed class CommandHandler(IInventoryRepository inventoryRepository)
+    public sealed class CommandHandler(NpgsqlDataSource dataSource)
     {
-        private readonly IInventoryRepository _inventoryRepository = inventoryRepository;
+        private readonly NpgsqlDataSource _dataSource = dataSource;
 
         /// <summary>
         /// Handles the execution of the given command by performing inventory operations.
@@ -58,14 +60,19 @@ public static class RestockInventoryItem
         /// <returns>A result indicating the outcome of the command, either success with no content or a not-found result.</returns>
         public async Task<Result> HandleAsync(Command command, CancellationToken cancellationToken = default)
         {
-            var item = await _inventoryRepository.GetAsync(command.ProductSlug, cancellationToken);
-
-            if (item is null)
-                return TypedResults.NotFound();
+            cancellationToken.ThrowIfCancellationRequested();
             
-            item.QuantityAvailable += command.Quantity;
-            await _inventoryRepository.UpsertAsync(item, cancellationToken);
-            return TypedResults.NoContent();
+            await using var connection = _dataSource.CreateConnection();
+            var affectedRowCount = await connection.ExecuteAsync(
+                """
+                update inventory.items
+                set quantity = items.quantity + @quantityToAdd
+                where product_slug = @productSlug
+                """, 
+                new { productSlug = command.ProductSlug, quantityToAdd = command.Quantity }
+            );
+            
+            return affectedRowCount == 0 ? TypedResults.NotFound() : TypedResults.NoContent();
         }
     }
 }
