@@ -40,8 +40,9 @@ public static class CatalogModule
             .MapGroup("/catalog")
             .WithTags("Catalog API");
         
+        // POST /catalog/products
         productsApi
-            .MapPost("/", (
+            .MapPost("/products", (
                 CreateProduct.Command command, 
                 CreateProduct.CommandHandler handler, 
                 CancellationToken ct)
@@ -49,8 +50,9 @@ public static class CatalogModule
             )
             .WithSummary("Create Product");
 
+        // GET /catalog/products/{identifier}
         productsApi
-            .MapGet("/{identifier}", (
+            .MapGet("/products/{identifier}", (
                 string identifier,
                 GetProduct.QueryHandler handler,
                 [AllowedValues("id", "slug")] // TODO: Figure out how to get OpenAPI to pick up on this
@@ -62,8 +64,9 @@ public static class CatalogModule
             )
             .WithSummary("Get Product");
 
+        // GET /catalog/products
         productsApi
-            .MapGet("/", (
+            .MapGet("/products", (
                 [AsParameters] ListProducts.Query query,
                 ListProducts.QueryHandler handler,
                 CancellationToken ct)

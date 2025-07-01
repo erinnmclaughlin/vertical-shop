@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 namespace VerticalShop.Catalog;
 
 /// <summary>
-/// Provides functionality to query a list of products.
+/// Provides the implementation for getting a paginated list of products.
 /// </summary>
 public static class ListProducts
 {

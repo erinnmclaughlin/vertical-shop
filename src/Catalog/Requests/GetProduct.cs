@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Http.HttpResults;
 namespace VerticalShop.Catalog;
 
 /// <summary>
-/// Provides functionality for handling product retrieval operations.
+/// Provides the implementation for retrieving product details.
 /// </summary>
 public static class GetProduct
 {
     /// <summary>
-    /// Handles queries related to product retrieval operations.
+    /// Handles requests to get a specific product.
     /// </summary>
     public sealed class QueryHandler(IProductRepository products)
     {
