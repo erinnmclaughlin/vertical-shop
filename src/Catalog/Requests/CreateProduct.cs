@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Dapper;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -7,9 +8,7 @@ using VerticalShop.IntegrationEvents.Products;
 
 namespace VerticalShop.Catalog;
 
-/// <summary>
-/// Provides the implementation for creating a new product within the application.
-/// </summary>
+/// <summary></summary>
 public static class CreateProduct
 {
     /// <summary>
@@ -38,44 +37,40 @@ public static class CreateProduct
                 .MaximumLength(200);
         }
     }
-
+    
     internal sealed class CommandHandler(
-        IDatabaseContext databaseContext,
-        IProductRepository productRepository, 
-        IValidator<Command> validator)
+        IDatabaseContext dbContext,
+        IValidator<Command> validator
+    )
     {
-        private readonly IDatabaseContext _databaseContext = databaseContext;
-        private readonly IProductRepository _productRepository = productRepository;
-        private readonly IValidator<Command> _validator = validator;
-
         public async Task<Results<Created, ValidationProblem, Conflict>> HandleAsync(Command command, CancellationToken cancellationToken = default)
         {
-            if (await _validator.ValidateAsync(command, cancellationToken) is { IsValid: false } error)
+            if (await validator.ValidateAsync(command, cancellationToken) is { IsValid: false } error)
             {
                 return TypedResults.ValidationProblem(error.ToDictionary());
             }
             
-            await _databaseContext.BeginTransactionAsync(cancellationToken);
+            await dbContext.BeginTransactionAsync(cancellationToken);
 
-            var product = new Product
-            {
-                Slug = ProductSlug.Parse(command.Slug),
-                Name = command.Name
-            };
+            var productId = Guid.CreateVersion7();
             
             try
             {
-                await _productRepository.CreateAsync(product, cancellationToken);
+                await dbContext.Connection.ExecuteAsync(
+                    "insert into catalog.products (id, name, slug) values (@Id, @Name, @Slug)", 
+                    new { Id = productId, command.Name, command.Slug },
+                    dbContext.CurrentTransaction
+                );
             }
             catch (PostgresException ex) when (ex.IsUniqueConstraintViolationOnColumn("slug"))
             {
                 return TypedResults.Conflict();
             }
+
+            var message = new ProductCreated(productId.ToString(), command.Slug, command.Name);
+            await dbContext.InsertOutboxMessageAsync(message, cancellationToken); 
             
-            var message = new ProductCreated(product.Id.Value.ToString(), command.Slug, command.Name);
-            await _databaseContext.InsertOutboxMessageAsync(message, cancellationToken);
-            
-            await _databaseContext.CommitTransactionAsync(cancellationToken);
+            await dbContext.CommitTransactionAsync(cancellationToken);
             
             return TypedResults.Created();
         }

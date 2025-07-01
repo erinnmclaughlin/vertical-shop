@@ -23,16 +23,4 @@ public sealed record ProductDto
     /// The name of the product.
     /// </summary>
     public required string Name { get; init; }
-
-    /// <summary>
-    /// Creates a new instance of <see cref="ProductDto"/> from a given <see cref="Product"/>.
-    /// </summary>
-    /// <param name="product">The product entity from which to create the DTO.</param>
-    /// <returns>An instance of <see cref="ProductDto"/> populated with data from the provided product.</returns>
-    public static ProductDto FromProduct(Product product) => new()
-    {
-        Id = product.Id.Value,
-        Slug = product.Slug,
-        Name = product.Name
-    };
 }

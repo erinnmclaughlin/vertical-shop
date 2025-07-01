@@ -6,12 +6,6 @@
 public sealed record ProductId(Guid Value)
 {
     /// <summary>
-    /// Creates a new, unique <see cref="ProductId"/> instance using a version 7 GUID.
-    /// </summary>
-    /// <returns>A unique <see cref="ProductId"/> instance.</returns>
-    public static ProductId CreateNew() => new(Guid.CreateVersion7());
-    
-    /// <summary>
     /// Parses the specified string value into a new <see cref="ProductId"/> instance.
     /// </summary>
     /// <param name="value">The string representation of the product ID to parse.</param>

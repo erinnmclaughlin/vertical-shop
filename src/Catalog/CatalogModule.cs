@@ -2,6 +2,7 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -21,10 +22,10 @@ public static class CatalogModule
     /// </param>
     public static Assembly AddCatalogModule<T>(this T builder) where T : IHostApplicationBuilder
     {
-        builder.Services.TryAddScoped<IProductRepository, ProductRepository>();
         builder.Services.TryAddTransient<CreateProduct.CommandHandler>();
         builder.Services.TryAddTransient<GetProduct.QueryHandler>();
         builder.Services.TryAddTransient<ListProducts.QueryHandler>();
+        builder.Services.TryAddTransient<CreateProductVariant.CommandHandler>();
         return typeof(CatalogModule).Assembly;       
     }
 
@@ -55,12 +56,9 @@ public static class CatalogModule
             .MapGet("/products/{identifier}", (
                 string identifier,
                 GetProduct.QueryHandler handler,
-                [AllowedValues("id", "slug")] // TODO: Figure out how to get OpenAPI to pick up on this
-                string identifierType = "id",
+                [FromQuery] ProductIdentifierType identifierType = ProductIdentifierType.Slug,
                 CancellationToken ct = default)
-                => identifierType is "slug" 
-                    ? handler.GetBySlug(ProductSlug.Parse(identifier), ct) 
-                    : handler.GetById(ProductId.Parse(identifier), ct)
+                => handler.GetProduct(identifier, identifierType, ct)
             )
             .WithSummary("Get Product");
 
@@ -73,5 +71,15 @@ public static class CatalogModule
                 => handler.Handle(query, ct)
             )
             .WithSummary("List Products");
+        
+        productsApi
+            .MapPost("/products/{productId:guid}/variants", (
+                Guid productId,
+                CreateProductVariant.RequestBody request,
+                CreateProductVariant.CommandHandler handler,
+                CancellationToken ct)
+                => handler.Handle(new CreateProductVariant.Command(productId, request.Name, request.Attributes), ct)
+            )
+            .WithSummary("Create Product Variant");
     }
 }

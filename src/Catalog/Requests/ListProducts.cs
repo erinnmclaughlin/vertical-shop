@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -42,9 +43,9 @@ public static class ListProducts
     /// <summary>
     /// Handles queries related to retrieving a list of products.
     /// </summary>
-    public sealed class QueryHandler(IProductRepository productRepository)
+    public sealed class QueryHandler(IDatabaseContext dbContext)
     {
-        private readonly IProductRepository _productRepository = productRepository;
+        private readonly IDatabaseContext _dbContext = dbContext;
 
         /// <summary>
         /// Handles the product list query operation, retrieving a list of products based on the provided query parameters.
@@ -54,13 +55,22 @@ public static class ListProducts
         /// <returns>A task representing the asynchronous operation, containing an HTTP result wrapping a list of <see cref="ProductDto"/> objects.</returns>
         public async Task<Ok<List<ProductDto>>> Handle(Query query, CancellationToken cancellationToken = default)
         {
-            var products = await _productRepository.ListAsync(
-                query.Offset ?? DefaultOffset,
-                query.Limit ?? DefaultLimit,
-                cancellationToken
+            cancellationToken.ThrowIfCancellationRequested();
+            
+            var products = await _dbContext.Connection.QueryAsync<ProductDto>(
+                """
+                select 
+                    p.id as "Id", 
+                    p.name as "Name",
+                    p.slug as "Slug"
+                from catalog.products p
+                offset @Offset
+                limit @Limit
+                """,
+                new { query.Offset, query.Limit }
             );
 
-            return TypedResults.Ok(products.Select(ProductDto.FromProduct).ToList());
+            return TypedResults.Ok(products.ToList());
         }
     }
 }

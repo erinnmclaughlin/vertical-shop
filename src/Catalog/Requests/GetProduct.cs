@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Dapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace VerticalShop.Catalog;
@@ -11,32 +12,35 @@ public static class GetProduct
     /// <summary>
     /// Handles requests to get a specific product.
     /// </summary>
-    public sealed class QueryHandler(IProductRepository products)
+    public sealed class QueryHandler(IDatabaseContext dbContext)
     {
-        private readonly IProductRepository _products = products;
-
         /// <summary>
-        /// Retrieves a product by its unique identifier.
+        /// 
         /// </summary>
-        /// <param name="id">The unique identifier of the product to retrieve.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-        /// <returns>A task representing the asynchronous operation, containing a result which could either be the product details if found, or a not found result.</returns>
-        public async Task<Results<Ok<ProductDto>, NotFound>> GetById(ProductId id, CancellationToken cancellationToken = default)
+        /// <param name="identifier"></param>
+        /// <param name="identifierType"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<Results<Ok<ProductDto>, NotFound>> GetProduct(
+            string identifier,
+            ProductIdentifierType identifierType, 
+            CancellationToken cancellationToken = default)
         {
-            var result = await _products.GetByIdAsync(id, cancellationToken);
-            return result is null ? TypedResults.NotFound() : TypedResults.Ok(ProductDto.FromProduct(result));
-        }
+            cancellationToken.ThrowIfCancellationRequested();
 
-        /// <summary>
-        /// Retrieves a product by its unique slug.
-        /// </summary>
-        /// <param name="slug">The unique slug of the product to retrieve.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-        /// <returns>A task representing the asynchronous operation, containing a result which could either be the product details if found, or a not found result.</returns>
-        public async Task<Results<Ok<ProductDto>, NotFound>> GetBySlug(ProductSlug slug, CancellationToken cancellationToken = default)
-        {
-            var result = await _products.GetBySlugAsync(slug, cancellationToken);
-            return result is null ? TypedResults.NotFound() : TypedResults.Ok(ProductDto.FromProduct(result));
+            var result = await dbContext.Connection.QuerySingleOrDefaultAsync<ProductDto>(
+                $"""
+                select 
+                    p.id as "Id", 
+                    p.slug as "Slug", 
+                    p.name as "Name"
+                from catalog.products p
+                where p.{identifierType.ToString().ToLower()} = @identifier
+                """,
+                new { identifier }
+            );
+
+            return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);
         }
     }
 }
