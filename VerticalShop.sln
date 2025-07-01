@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aspire", "aspire", "{22679A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Catalog", "src\Catalog\Catalog.csproj", "{844909D4-476C-4320-B7CE-3DC106A2AE5C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OutboxProcessor", "src\OutboxProcessor\OutboxProcessor.csproj", "{7F4F3383-1C23-4D62-B820-D807FA155433}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{844909D4-476C-4320-B7CE-3DC106A2AE5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{844909D4-476C-4320-B7CE-3DC106A2AE5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{844909D4-476C-4320-B7CE-3DC106A2AE5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F4F3383-1C23-4D62-B820-D807FA155433}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F4F3383-1C23-4D62-B820-D807FA155433}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F4F3383-1C23-4D62-B820-D807FA155433}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F4F3383-1C23-4D62-B820-D807FA155433}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{DFE79566-11B8-4BA8-94EB-758BEC8A58E0} = {22679ABB-EC75-4C0C-A9C3-CBB510F661F4}

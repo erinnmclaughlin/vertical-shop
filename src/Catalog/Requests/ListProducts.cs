@@ -3,6 +3,7 @@ using Dapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Npgsql;
 
 namespace VerticalShop.Catalog;
 
@@ -44,10 +45,8 @@ public static class ListProducts
     /// <summary>
     /// Handles queries related to retrieving a list of products.
     /// </summary>
-    public sealed class QueryHandler(IDatabaseContext dbContext) : IRequestHandler<Query, Ok<List<ProductDto>>>
+    public sealed class QueryHandler(NpgsqlDataSource dataSource) : IRequestHandler<Query, Ok<List<ProductDto>>>
     {
-        private readonly IDatabaseContext _dbContext = dbContext;
-
         /// <summary>
         /// Handles the product list query operation, retrieving a list of products based on the provided query parameters.
         /// </summary>
@@ -56,9 +55,9 @@ public static class ListProducts
         /// <returns>A task representing the asynchronous operation, containing an HTTP result wrapping a list of <see cref="ProductDto"/> objects.</returns>
         public async Task<Ok<List<ProductDto>>> Handle(Query query, CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
             
-            var products = await _dbContext.Connection.QueryAsync<ProductDto>(
+            var products = await connection.QueryAsync<ProductDto>(
                 """
                 select 
                     p.id as "Id", 

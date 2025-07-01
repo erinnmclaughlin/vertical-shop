@@ -1,5 +1,8 @@
 using System.Reflection;
+using FluentValidation;
+using MassTransit;
 using Scalar.AspNetCore;
+using VerticalShop;
 using VerticalShop.Api;
 using VerticalShop.Catalog;
 using VerticalShop.Inventory;
@@ -9,20 +12,21 @@ var builder = WebApplication.CreateBuilder(args);
 Assembly[] moduleAssemblies = 
 [
     typeof(CatalogApi).Assembly,
-    typeof(InventoryApi).Assembly,
+    typeof(InventoryApi).Assembly
 ];
 
-builder.Services.AddOpenApi();
 builder.AddServiceDefaults();
-builder.AddPostgres(moduleAssemblies);
-builder.AddMessaging(moduleAssemblies);
-builder.AddValidation(moduleAssemblies);
+builder.AddNpgsqlDataSource("vertical-shop-db");
+builder.AddDatabaseInitialization([typeof(Program).Assembly, ..moduleAssemblies]);
+builder.AddMassTransit(x => x.AddConsumers(moduleAssemblies));
 
+builder.Services.AddOpenApi();
 builder.Services.AddMediatR(x =>
 {
     x.RegisterServicesFromAssemblies(moduleAssemblies);
     x.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });
+builder.Services.AddValidatorsFromAssemblies(moduleAssemblies, includeInternalTypes: true);
 
 var app = builder.Build();
 
@@ -42,8 +46,8 @@ app.MapDefaultEndpoints();
 app.MapInventoryApi();
 app.MapCatalogApi();
 
-// For now, just ensure the database is created during startup.
-// This will change when we move to Aspire:
+// For now, just ensure the database is created during startup. Eventually we can move this to a worker service or similar.
+app.MigrateCatalogSchema();
 using (var scope = app.Services.CreateScope())
 {
     var dbInitializer = scope.ServiceProvider.GetService<DatabaseInitializer>();

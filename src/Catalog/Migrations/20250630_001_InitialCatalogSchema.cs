@@ -9,7 +9,6 @@ public sealed class InitialCatalogSchema : Migration
     /// <inheritdoc />
     public override void Up()
     {
-        Execute.Sql("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";\n");
         Create.Schema("catalog");
         CreateProductsTable();
         CreateProductVariantsTable();

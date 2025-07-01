@@ -1,10 +1,13 @@
-﻿using System.Reflection;
+﻿using FluentMigrator.Runner;
+using FluentMigrator.Runner.VersionTableInfo;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using VerticalShop.Catalog.Migrations;
 
 namespace VerticalShop.Catalog;
 
@@ -13,6 +16,25 @@ namespace VerticalShop.Catalog;
 /// </summary>
 public static class CatalogApi
 {
+    public static void MigrateCatalogSchema(this IEndpointRouteBuilder app)
+    {
+        var configuration = app.ServiceProvider.GetRequiredService<IConfiguration>();
+        
+        var services = new ServiceCollection()
+            .AddScoped<IVersionTableMetaData, CatalogVersionTableMetaData>()
+            .AddFluentMigratorCore()
+            .ConfigureRunner(rb =>
+            {
+                rb.AddPostgres();
+                rb.WithGlobalConnectionString(configuration.GetConnectionString("vertical-shop-db"));
+                rb.ScanIn(typeof(CatalogApi).Assembly).For.All();
+            })
+            .AddLogging(lb => lb.AddFluentMigratorConsole());
+
+        using var scope = services.BuildServiceProvider().CreateScope();
+        scope.ServiceProvider.GetRequiredService<IMigrationRunner>().MigrateUp();
+    }
+    
     /// <summary>
     /// Configures the product-related API endpoints for the application.
     /// </summary>

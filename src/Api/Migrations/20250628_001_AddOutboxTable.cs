@@ -1,6 +1,9 @@
-﻿using FluentMigrator;
+using FluentMigrator;
 
-namespace VerticalShop.Api.Migrations;
+// TODO: Ideally this would live in the "OutboxProcessor" assembly, but waiting until
+// there's a dedicated worker service for initializing / migrating the database
+
+namespace VerticalShop.OutboxProcessor.Migrations;
 
 /// <inheritdoc />
 [Migration(20250628_005)]
@@ -10,7 +13,7 @@ public sealed class AddOutboxTable : Migration
     public override void Up()
     {
         Create.Table("outbox_messages")
-            .WithColumn("id").AsGuid().PrimaryKey().NotNullable()
+            .WithColumn("id").AsGuid().WithDefault(SystemMethods.NewSequentialId).PrimaryKey()
             .WithColumn("type").AsString(200).NotNullable()
             .WithColumn("payload").AsCustom("jsonb").NotNullable()
             .WithColumn("created_on_utc").AsDateTimeOffset().NotNullable().WithDefault(SystemMethods.CurrentDateTimeOffset)

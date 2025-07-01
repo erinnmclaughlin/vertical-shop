@@ -18,9 +18,12 @@ internal sealed class DatabaseInitializer(
 
     public async Task InitializeAsync()
     {
-        _migrationRunner.MigrateUp();
+        // Create the MassTransit db schema & tables (only applicable the first time the application runs):
         await _massTransitMigrator.CreateSchemaIfNotExist(_massTransitOptions, CancellationToken.None);
         await _massTransitMigrator.CreateInfrastructure(_massTransitOptions, CancellationToken.None);
+        
+        // Apply migrations:
+        _migrationRunner.MigrateUp();
     }
 }
 

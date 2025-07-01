@@ -54,29 +54,28 @@ public static class CreateProduct
     }
     
     internal sealed class CommandHandler(
-        IDatabaseContext dbContext, 
+        NpgsqlDataSource dataSource, 
         IValidator<Command> validator
     ) : IRequestHandler<Command, Result>
     {
-        public async Task<Result> Handle(
-            Command command, 
-            CancellationToken cancellationToken = default)
+        public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
         {
             if (await validator.ValidateAsync(command, cancellationToken) is { IsValid: false } error)
             {
                 return TypedResults.ValidationProblem(error.ToDictionary());
             }
             
-            await dbContext.BeginTransactionAsync(cancellationToken);
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+            await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
 
             var productId = Guid.CreateVersion7();
             
             try
             {
-                await dbContext.Connection.ExecuteAsync(
+                await connection.ExecuteAsync(
                     "insert into catalog.products (id, name, slug) values (@Id, @Name, @Slug)", 
                     new { Id = productId, command.Name, command.Slug },
-                    dbContext.CurrentTransaction
+                    transaction
                 );
             }
             catch (PostgresException ex) when (ex.IsUniqueConstraintViolationOnColumn("slug"))
@@ -85,9 +84,9 @@ public static class CreateProduct
             }
 
             var message = new ProductCreated(productId.ToString(), command.Slug, command.Name);
-            await dbContext.InsertOutboxMessageAsync(message, cancellationToken); 
+            await connection.InsertOutboxMessageAsync(message, transaction, cancellationToken); 
             
-            await dbContext.CommitTransactionAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
             
             return TypedResults.Created();
         }

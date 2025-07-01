@@ -37,7 +37,9 @@ public static class InventoryApi
                 string productSlug,
                 IMediator mediator, 
                 CancellationToken cancellationToken) 
-                => mediator.Send(productSlug, cancellationToken)
+                => mediator.Send(
+                    new CheckQuantityInStock.Query(productSlug), 
+                    cancellationToken)
             )
             .WithSummary("Check Quantity In Stock");
     }

@@ -20,6 +20,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Api\Api.csproj" />
+      <ProjectReference Include="..\OutboxProcessor\OutboxProcessor.csproj" />
     </ItemGroup>
 
 </Project>

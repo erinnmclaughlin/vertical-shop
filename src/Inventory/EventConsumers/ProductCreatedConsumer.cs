@@ -29,10 +29,10 @@ public sealed class ProductCreatedConsumer(
 
         await connection.ExecuteAsync(
             """
-            insert into inventory.items (product_slug, quantity)
-            values (@ProductSlug, 0)
-            on conflict (product_slug) do nothing
+            insert into inventory.items (product_id, product_slug, quantity)
+            values (@ProductId, @ProductSlug, 0)
+            on conflict (product_id) do nothing
             """,
-            new { context.Message.ProductSlug });
+            new { context.Message.ProductId, context.Message.ProductSlug });
     }
 }

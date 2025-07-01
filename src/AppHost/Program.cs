@@ -27,6 +27,11 @@ var api = builder
     .WaitFor(verticalShopDatabase)
     .WithExternalHttpEndpoints();
 
+var outboxProcessor = builder
+    .AddProject<Projects.OutboxProcessor>("outbox-processor")
+    .WithReference(verticalShopDatabase)
+    .WaitFor(verticalShopDatabase);
+
 // The Scalar container for Aspire doesn't work on Mac :(
 if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
 {

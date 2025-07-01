@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Npgsql;
 
 namespace VerticalShop.Catalog;
 
@@ -19,15 +20,15 @@ public static class GetProduct
     /// <param name="IdentifierType">The identifier type (e.g., id or slug)</param>
     public sealed record Query(string Identifier, ProductIdentifierType IdentifierType) : IRequest<Result>;
     
-    internal sealed class QueryHandler(IDatabaseContext dbContext) : IRequestHandler<Query, Result>
+    internal sealed class QueryHandler(NpgsqlDataSource dataSource) : IRequestHandler<Query, Result>
     {
         public async Task<Result> Handle(
             Query query,
             CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            var result = await dbContext.Connection.QuerySingleOrDefaultAsync<ProductDto>(
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+            
+            var result = await connection.QuerySingleOrDefaultAsync<ProductDto>(
                 $"""
                 select 
                     p.id as "Id", 

@@ -10,16 +10,14 @@
 
     <ItemGroup>
         <PackageReference Include="Aspire.Npgsql" Version="9.3.1" />
-        <PackageReference Include="FluentMigrator" Version="7.1.0" />
-        <PackageReference Include="FluentMigrator.Runner.Postgres" Version="7.1.0" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
-        <PackageReference Include="MassTransit.SqlTransport.PostgreSQL" Version="8.5.0" />
         <PackageReference Include="Scalar.AspNetCore" Version="2.5.3" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Inventory\Inventory.csproj" />
       <ProjectReference Include="..\Catalog\Catalog.csproj" />
+      <ProjectReference Include="..\OutboxProcessor\OutboxProcessor.csproj" />
       <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
       <ProjectReference Include="..\SharedKernel\SharedKernel.csproj" />
     </ItemGroup>

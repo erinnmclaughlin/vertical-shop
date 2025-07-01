@@ -12,7 +12,8 @@ public sealed class AddInventoryItemsTable : Migration
         Create.Schema("inventory");
         Create.Table("items")
             .InSchema("inventory")
-            .WithColumn("id").AsInt32().PrimaryKey().NotNullable().PrimaryKey().Identity()
+            .WithColumn("id").AsGuid().WithDefault(SystemMethods.NewSequentialId).PrimaryKey()
+            .WithColumn("product_id").AsGuid().NotNullable().Unique()
             .WithColumn("product_slug").AsString(200).NotNullable().Unique()
             .WithColumn("quantity").AsInt32().NotNullable();
     }

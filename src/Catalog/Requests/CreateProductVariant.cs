@@ -4,6 +4,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Npgsql;
 
 namespace VerticalShop.Catalog;
 
@@ -60,32 +61,26 @@ public static class CreateProductVariant
     }
 
     internal sealed class CommandHandler(
-        IDatabaseContext dbContext,
+        NpgsqlDataSource dataSource,
         IValidator<Command> validator
     ) : IRequestHandler<Command, Result>
     {
-        private readonly IDatabaseContext _dbContext = dbContext;
-        private readonly IValidator<Command> _validator = validator;
-        
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            
-            if (await _validator.ValidateAsync(command, cancellationToken) is { IsValid: false } error)
+            if (await validator.ValidateAsync(command, cancellationToken) is { IsValid: false } error)
             {
                 return TypedResults.ValidationProblem(error.ToDictionary());
             }
-
-            var variantId = Guid.CreateVersion7();
             
-            await _dbContext.Connection.ExecuteAsync(
+            await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
+
+            await connection.ExecuteAsync(
                 """
                 INSERT INTO catalog.product_variants (id, product_id, name, attributes) 
-                VALUES (@Id, @ProductId, @Name, @Attributes::jsonb)
+                VALUES (@ProductId, @Name, @Attributes::jsonb)
                 """,
                  new
                  {
-                     Id = variantId,
                      command.ProductId,
                      command.Name,
                      Attributes = JsonSerializer.Serialize(command.Attributes)
