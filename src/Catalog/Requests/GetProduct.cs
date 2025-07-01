@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -9,21 +10,12 @@ namespace VerticalShop.Catalog;
 /// </summary>
 public static class GetProduct
 {
-    /// <summary>
-    /// Handles requests to get a specific product.
-    /// </summary>
-    public sealed class QueryHandler(IDatabaseContext dbContext)
+    public sealed record Query(string Identifier, ProductIdentifierType IdentifierType) : IRequest<Results<Ok<ProductDto>, NotFound>>;
+    
+    internal sealed class QueryHandler(IDatabaseContext dbContext) : IRequestHandler<Query, Results<Ok<ProductDto>, NotFound>>
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="identifier"></param>
-        /// <param name="identifierType"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public async Task<Results<Ok<ProductDto>, NotFound>> GetProduct(
-            string identifier,
-            ProductIdentifierType identifierType, 
+        public async Task<Results<Ok<ProductDto>, NotFound>> Handle(
+            Query query,
             CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -35,9 +27,9 @@ public static class GetProduct
                     p.slug as "Slug", 
                     p.name as "Name"
                 from catalog.products p
-                where p.{identifierType.ToString().ToLower()} = @identifier
+                where p.{query.IdentifierType.ToString().ToLower()} = @Identifier
                 """,
-                new { identifier }
+                new { query.Identifier }
             );
 
             return result is null ? TypedResults.NotFound() : TypedResults.Ok(result);

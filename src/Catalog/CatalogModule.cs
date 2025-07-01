@@ -1,10 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Reflection;
+﻿using System.Reflection;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace VerticalShop.Catalog;
@@ -22,10 +21,7 @@ public static class CatalogModule
     /// </param>
     public static Assembly AddCatalogModule<T>(this T builder) where T : IHostApplicationBuilder
     {
-        builder.Services.TryAddTransient<CreateProduct.CommandHandler>();
-        builder.Services.TryAddTransient<GetProduct.QueryHandler>();
-        builder.Services.TryAddTransient<ListProducts.QueryHandler>();
-        builder.Services.TryAddTransient<CreateProductVariant.CommandHandler>();
+        // nothing to do here yet
         return typeof(CatalogModule).Assembly;       
     }
 
@@ -45,9 +41,9 @@ public static class CatalogModule
         productsApi
             .MapPost("/products", (
                 CreateProduct.Command command, 
-                CreateProduct.CommandHandler handler, 
-                CancellationToken ct)
-                => handler.HandleAsync(command, ct)
+                IMediator mediator, 
+                CancellationToken cancellationToken)
+                => mediator.Send(command, cancellationToken)
             )
             .WithSummary("Create Product");
 
@@ -55,10 +51,10 @@ public static class CatalogModule
         productsApi
             .MapGet("/products/{identifier}", (
                 string identifier,
-                GetProduct.QueryHandler handler,
-                [FromQuery] ProductIdentifierType identifierType = ProductIdentifierType.Slug,
-                CancellationToken ct = default)
-                => handler.GetProduct(identifier, identifierType, ct)
+                IMediator mediator,
+                [FromQuery] ProductIdentifierType identifierType,
+                CancellationToken cancellationToken)
+                => mediator.Send(new GetProduct.Query(identifier, identifierType), cancellationToken)
             )
             .WithSummary("Get Product");
 
@@ -66,9 +62,9 @@ public static class CatalogModule
         productsApi
             .MapGet("/products", (
                 [AsParameters] ListProducts.Query query,
-                ListProducts.QueryHandler handler,
+                IMediator mediator,
                 CancellationToken ct)
-                => handler.Handle(query, ct)
+                => mediator.Send(query, ct)
             )
             .WithSummary("List Products");
         
@@ -76,9 +72,9 @@ public static class CatalogModule
             .MapPost("/products/{productId:guid}/variants", (
                 Guid productId,
                 CreateProductVariant.RequestBody request,
-                CreateProductVariant.CommandHandler handler,
+                IMediator mediator,
                 CancellationToken ct)
-                => handler.Handle(new CreateProductVariant.Command(productId, request.Name, request.Attributes), ct)
+                => mediator.Send(new CreateProductVariant.Command(productId, request.Name, request.Attributes), ct)
             )
             .WithSummary("Create Product Variant");
     }

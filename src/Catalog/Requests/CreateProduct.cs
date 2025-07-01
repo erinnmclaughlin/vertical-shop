@@ -1,12 +1,15 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Dapper;
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Npgsql;
 using VerticalShop.IntegrationEvents.Products;
 
 namespace VerticalShop.Catalog;
+
+using Result = Results<Created, ValidationProblem, Conflict>;
 
 /// <summary></summary>
 public static class CreateProduct
@@ -16,7 +19,7 @@ public static class CreateProduct
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-    public sealed record Command(string Slug, string Name);
+    public sealed record Command(string Slug, string Name) : IRequest<Result>;
 
     /// <summary>
     /// A validator for <see cref="CreateProduct.Command"/> instances.
@@ -39,11 +42,13 @@ public static class CreateProduct
     }
     
     internal sealed class CommandHandler(
-        IDatabaseContext dbContext,
+        IDatabaseContext dbContext, 
         IValidator<Command> validator
-    )
+    ) : IRequestHandler<Command, Result>
     {
-        public async Task<Results<Created, ValidationProblem, Conflict>> HandleAsync(Command command, CancellationToken cancellationToken = default)
+        public async Task<Result> Handle(
+            Command command, 
+            CancellationToken cancellationToken = default)
         {
             if (await validator.ValidateAsync(command, cancellationToken) is { IsValid: false } error)
             {

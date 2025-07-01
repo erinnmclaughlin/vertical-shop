@@ -20,6 +20,11 @@ builder.AddPostgres(moduleAssemblies);
 builder.AddMessaging(moduleAssemblies);
 builder.AddValidation(moduleAssemblies);
 
+builder.Services.AddMediatR(x =>
+{
+    x.RegisterServicesFromAssemblies(moduleAssemblies);
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

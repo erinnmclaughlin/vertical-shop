@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Dapper;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -18,7 +19,7 @@ public static class ListProducts
     /// </summary>
     [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
     [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
-    public sealed record Query
+    public sealed record Query : IRequest<Ok<List<ProductDto>>>
     {
         /// <summary>
         /// The offset used for paginating query results.
@@ -43,7 +44,7 @@ public static class ListProducts
     /// <summary>
     /// Handles queries related to retrieving a list of products.
     /// </summary>
-    public sealed class QueryHandler(IDatabaseContext dbContext)
+    public sealed class QueryHandler(IDatabaseContext dbContext) : IRequestHandler<Query, Ok<List<ProductDto>>>
     {
         private readonly IDatabaseContext _dbContext = dbContext;
 

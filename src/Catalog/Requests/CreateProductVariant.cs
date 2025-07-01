@@ -1,10 +1,13 @@
 using System.Text.Json;
 using Dapper;
 using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace VerticalShop.Catalog;
+
+using Result = Results<Created, ValidationProblem>;
 
 /// <summary>
 /// Provides the implementation for creating a new product variant.
@@ -18,7 +21,7 @@ public static class CreateProductVariant
         string Name,
         IReadOnlyDictionary<string, string>? Attributes = null
     );
-    
+
     /// <summary>
     /// A request to create a new product.
     /// </summary>
@@ -26,7 +29,7 @@ public static class CreateProductVariant
         Guid ProductId,
         string Name,
         IReadOnlyDictionary<string, string>? Attributes = null
-    );
+    ) : IRequest<Result>;
     
     /// <summary>
     /// A validator for <see cref="CreateProductVariant.Command"/> instances.
@@ -47,12 +50,13 @@ public static class CreateProductVariant
 
     internal sealed class CommandHandler(
         IDatabaseContext dbContext,
-        IValidator<Command> validator)
+        IValidator<Command> validator
+    ) : IRequestHandler<Command, Result>
     {
         private readonly IDatabaseContext _dbContext = dbContext;
         private readonly IValidator<Command> _validator = validator;
         
-        public async Task<Results<Created, ValidationProblem>> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             
