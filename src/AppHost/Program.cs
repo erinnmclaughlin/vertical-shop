@@ -14,7 +14,8 @@ if (builder.Environment.IsDevelopment())
     postgresServer
         .WithUserName(builder.AddParameter("pg-user", "postgres"))
         .WithPassword(builder.AddParameter("pg-password", "postgres"))
-        .WithHostPort(53441);
+        .WithHostPort(5432)
+        .WithLifetime(ContainerLifetime.Persistent);
 }
 
 var verticalShopDatabase = postgresServer

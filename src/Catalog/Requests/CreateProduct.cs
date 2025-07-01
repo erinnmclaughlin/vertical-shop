@@ -2,6 +2,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Npgsql;
 using VerticalShop.IntegrationEvents.Products;
 
 namespace VerticalShop.Catalog;
@@ -12,51 +13,25 @@ namespace VerticalShop.Catalog;
 public static class CreateProduct
 {
     /// <summary>
-    /// Represents a request to create a new <see cref="Product"/>.
+    /// A request to create a new product.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
     [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
-    public sealed record Command
-    {
-        /// <summary>
-        /// The product slug.
-        /// </summary>
-        /// <remarks>
-        /// Note that this value cannot be changed.
-        /// </remarks>
-        public required string Slug { get; init; }
-        
-        /// <summary>
-        /// The product name.
-        /// </summary>
-        public required string Name { get; init; }
-
-        /// <summary>
-        /// A collection of key-value pairs representing additional attributes of the product.
-        /// </summary>
-        public IReadOnlyDictionary<string, string>? Attributes { get; init; }
-    }
+    public sealed record Command(string Slug, string Name);
 
     /// <summary>
-    /// Request validator for <see cref="Command"/>.
+    /// A validator for <see cref="CreateProduct.Command"/> instances.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedType.Global")]
-    public sealed class CommandValidator : AbstractValidator<Command>
+    public sealed class RequestValidator : AbstractValidator<Command>
     {
         /// <inheritdoc />
-        public CommandValidator(IProductRepository productRepository)
+        public RequestValidator()
         {
             RuleFor(x => x.Slug)
-                .NotEmpty()
-                .MaximumLength(200)
-                .CustomAsync(async (slug, context, ct) =>
-                {
-                    var product = await productRepository.GetBySlugAsync(ProductSlug.Parse(slug), ct);
-                    if (product is not null)
-                    {
-                        context.AddFailure($"A product with the slug '{slug}' already exists.");
-                    }
-                });
+                .NotEmpty().WithMessage("A unique product slug must be specified.")
+                .MaximumLength(200).WithMessage("The product slug must not exceed 200 characters.")
+                .Must(slug => ProductSlug.TryParse(slug, out _)).WithMessage("The product slug must be a valid slug.");
             
             RuleFor(x => x.Name)
                 .NotEmpty()
@@ -64,10 +39,7 @@ public static class CreateProduct
         }
     }
 
-    /// <summary>
-    /// Request handler for <see cref="Command"/>.
-    /// </summary>
-    public sealed class CommandHandler(
+    internal sealed class CommandHandler(
         IDatabaseContext databaseContext,
         IProductRepository productRepository, 
         IValidator<Command> validator)
@@ -76,41 +48,33 @@ public static class CreateProduct
         private readonly IProductRepository _productRepository = productRepository;
         private readonly IValidator<Command> _validator = validator;
 
-        /// <summary>
-        /// Handles the execution of the command to create a product asynchronously.
-        /// </summary>
-        /// <param name="command">The command containing the product details to be created.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A result indicating the outcome of the product creation process.
-        /// Returns <see cref="Created"/> if successful or <see cref="ValidationProblem"/> if validation errors occur.</returns>
-        public async Task<Results<Created, ValidationProblem>> HandleAsync(Command command,
-            CancellationToken cancellationToken = default)
+        public async Task<Results<Created, ValidationProblem, Conflict>> HandleAsync(Command command, CancellationToken cancellationToken = default)
         {
-            // validate the request
             if (await _validator.ValidateAsync(command, cancellationToken) is { IsValid: false } error)
             {
                 return TypedResults.ValidationProblem(error.ToDictionary());
             }
+            
+            await _databaseContext.BeginTransactionAsync(cancellationToken);
 
-            // build the product entity from the command
             var product = new Product
             {
                 Slug = ProductSlug.Parse(command.Slug),
-                Name = command.Name,
-                Attributes = command.Attributes?.ToDictionary() ?? []
+                Name = command.Name
             };
             
-            // start a database transaction
-            await _databaseContext.BeginTransactionAsync(cancellationToken);
-
-            // persist the product to the database
-            await _productRepository.CreateAsync(product, cancellationToken);
+            try
+            {
+                await _productRepository.CreateAsync(product, cancellationToken);
+            }
+            catch (PostgresException ex) when (ex.IsUniqueConstraintViolationOnColumn("slug"))
+            {
+                return TypedResults.Conflict();
+            }
             
-            // insert an outbox message to notify other services about the product creation
-            var message = new ProductCreated(product.Id, product.Slug, product.Name);
+            var message = new ProductCreated(product.Id.Value.ToString(), command.Slug, command.Name);
             await _databaseContext.InsertOutboxMessageAsync(message, cancellationToken);
             
-            // commit the changes
             await _databaseContext.CommitTransactionAsync(cancellationToken);
             
             return TypedResults.Created();

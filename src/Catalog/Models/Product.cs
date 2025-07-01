@@ -22,14 +22,4 @@ public sealed class Product
     /// The product name.
     /// </summary>
     public required string Name { get; set; }
-
-    /// <summary>
-    /// The current product price, or null if the product is not available for sale.
-    /// </summary>
-    public decimal? Price { get; set; }
-    
-    /// <summary>
-    /// A collection of attributes associated with the product, defining additional details or characteristics.
-    /// </summary>
-    public Dictionary<string, string> Attributes { get; init; } = [];
 }

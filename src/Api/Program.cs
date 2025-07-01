@@ -1,4 +1,6 @@
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
+using Npgsql;
 using Scalar.AspNetCore;
 using VerticalShop.Api;
 using VerticalShop.Catalog;
