@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using MediatR;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
@@ -23,9 +24,9 @@ public static class InventoryApi
             .MapPost("/items/{productSlug}/restock", (
                 string productSlug,
                 RestockInventoryItem.RequestBody body,
-                RestockInventoryItem.CommandHandler handler, 
+                IMediator mediator, 
                 CancellationToken cancellationToken) 
-                => handler.HandleAsync(
+                => mediator.Send(
                     new RestockInventoryItem.Command(productSlug, body.Quantity), 
                     cancellationToken)
             )
@@ -34,9 +35,9 @@ public static class InventoryApi
         inventoryApi
             .MapGet("/items/{productSlug}/quantity", (
                 string productSlug,
-                CheckQuantityInStock.QueryHandler handler,
+                IMediator mediator, 
                 CancellationToken cancellationToken) 
-                => handler.Handle(productSlug, cancellationToken)
+                => mediator.Send(productSlug, cancellationToken)
             )
             .WithSummary("Check Quantity In Stock");
     }

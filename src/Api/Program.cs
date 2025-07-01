@@ -1,6 +1,4 @@
 using System.Reflection;
-using Microsoft.AspNetCore.Mvc;
-using Npgsql;
 using Scalar.AspNetCore;
 using VerticalShop.Api;
 using VerticalShop.Catalog;
@@ -23,6 +21,7 @@ builder.AddValidation(moduleAssemblies);
 builder.Services.AddMediatR(x =>
 {
     x.RegisterServicesFromAssemblies(moduleAssemblies);
+    x.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });
 
 var app = builder.Build();
