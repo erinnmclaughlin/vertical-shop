@@ -5,16 +5,23 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace VerticalShop.Catalog;
 
+using Result = Results<Ok<ProductDto>, NotFound>;
+
 /// <summary>
 /// Provides the implementation for retrieving product details.
 /// </summary>
 public static class GetProduct
 {
-    public sealed record Query(string Identifier, ProductIdentifierType IdentifierType) : IRequest<Results<Ok<ProductDto>, NotFound>>;
+    /// <summary>
+    /// Represents a request to retrieve a product by its identifier.
+    /// </summary>
+    /// <param name="Identifier">The product identifier.</param>
+    /// <param name="IdentifierType">The identifier type (e.g., id or slug)</param>
+    public sealed record Query(string Identifier, ProductIdentifierType IdentifierType) : IRequest<Result>;
     
-    internal sealed class QueryHandler(IDatabaseContext dbContext) : IRequestHandler<Query, Results<Ok<ProductDto>, NotFound>>
+    internal sealed class QueryHandler(IDatabaseContext dbContext) : IRequestHandler<Query, Result>
     {
-        public async Task<Results<Ok<ProductDto>, NotFound>> Handle(
+        public async Task<Result> Handle(
             Query query,
             CancellationToken cancellationToken = default)
         {

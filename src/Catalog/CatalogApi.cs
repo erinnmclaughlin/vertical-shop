@@ -11,20 +11,8 @@ namespace VerticalShop.Catalog;
 /// <summary>
 /// Provides extension methods for configuring catalog-related services and API endpoints within the application.
 /// </summary>
-public static class CatalogModule
+public static class CatalogApi
 {
-    /// <summary>
-    /// Adds catalog-related services to the dependency injection container.
-    /// </summary>
-    /// <param name="builder">
-    /// The <see cref="IHostApplicationBuilder"/> used to configure the application's services.
-    /// </param>
-    public static Assembly AddCatalogModule<T>(this T builder) where T : IHostApplicationBuilder
-    {
-        // nothing to do here yet
-        return typeof(CatalogModule).Assembly;       
-    }
-
     /// <summary>
     /// Configures the product-related API endpoints for the application.
     /// </summary>
@@ -74,7 +62,7 @@ public static class CatalogModule
                 CreateProductVariant.RequestBody request,
                 IMediator mediator,
                 CancellationToken ct)
-                => mediator.Send(new CreateProductVariant.Command(productId, request.Name, request.Attributes), ct)
+                => mediator.Send(request.ToCommand(productId), ct)
             )
             .WithSummary("Create Product Variant");
     }

@@ -1,28 +1,14 @@
-﻿using System.Reflection;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 
 namespace VerticalShop.Inventory;
 
 /// <summary>
 /// Provides extension methods to add inventory services and map inventory API endpoints.
 /// </summary>
-public static class InventoryModule
+public static class InventoryApi
 {
-    /// <summary>
-    /// Adds inventory-related services to the specified <see cref="IHostApplicationBuilder"/> instance.
-    /// </summary>
-    /// <param name="builder">The <see cref="IHostApplicationBuilder"/> to which the inventory services will be added.</param>
-    public static Assembly AddInventoryModule<T>(this T builder) where T : IHostApplicationBuilder
-    {
-        builder.Services.TryAddTransient<RestockInventoryItem.CommandHandler>();
-        builder.Services.TryAddTransient<CheckQuantityInStock.QueryHandler>();
-        return typeof(InventoryModule).Assembly;
-    }
-
     /// <summary>
     /// Maps the inventory API endpoints to the specified endpoint route builder.
     /// </summary>

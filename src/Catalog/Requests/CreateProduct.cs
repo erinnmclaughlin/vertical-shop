@@ -11,7 +11,9 @@ namespace VerticalShop.Catalog;
 
 using Result = Results<Created, ValidationProblem, Conflict>;
 
-/// <summary></summary>
+/// <summary>
+/// Provides the implementation for creating a new product.
+/// </summary>
 public static class CreateProduct
 {
     /// <summary>
@@ -33,11 +35,21 @@ public static class CreateProduct
             RuleFor(x => x.Slug)
                 .NotEmpty().WithMessage("A unique product slug must be specified.")
                 .MaximumLength(200).WithMessage("The product slug must not exceed 200 characters.")
-                .Must(slug => ProductSlug.TryParse(slug, out _)).WithMessage("The product slug must be a valid slug.");
+                .Must(IsValidSlug).WithMessage("The product slug must be a valid slug.");
             
             RuleFor(x => x.Name)
                 .NotEmpty()
                 .MaximumLength(200);
+        }
+        
+        private static bool IsValidSlug(string value)
+        {
+            // Slug should only contain lowercase letters, numbers, and hyphens
+            // It should not start or end with a hyphen
+            return !string.IsNullOrWhiteSpace(value) &&
+                   !value.StartsWith('-') 
+                   && !value.EndsWith('-') 
+                   && value.All(c => char.IsLetterOrDigit(c) || c == '-');
         }
     }
     

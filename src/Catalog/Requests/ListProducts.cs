@@ -65,10 +65,10 @@ public static class ListProducts
                     p.name as "Name",
                     p.slug as "Slug"
                 from catalog.products p
-                offset @Offset
-                limit @Limit
+                offset @offset
+                limit @limit
                 """,
-                new { query.Offset, query.Limit }
+                new { offset = query.Offset ?? DefaultOffset, limit = query.Limit ?? DefaultLimit }
             );
 
             return TypedResults.Ok(products.ToList());

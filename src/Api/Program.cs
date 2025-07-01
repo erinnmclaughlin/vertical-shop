@@ -10,8 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 Assembly[] moduleAssemblies = 
 [
-    builder.AddCatalogModule(),
-    builder.AddInventoryModule()
+    typeof(CatalogApi).Assembly,
+    typeof(InventoryApi).Assembly,
 ];
 
 builder.Services.AddOpenApi();

@@ -15,16 +15,27 @@ using Result = Results<Created, ValidationProblem>;
 public static class CreateProductVariant
 {
     /// <summary>
-    /// A request to create a new product.
+    /// Represents a request to create a new product variant.
     /// </summary>
+    /// <param name="Name">The name of the product variant</param>
+    /// <param name="Attributes">Attributes associated with the product variant</param>
     public sealed record RequestBody(
         string Name,
         IReadOnlyDictionary<string, string>? Attributes = null
-    );
+    )
+    {
+        /// <summary>
+        /// Creates a new <see cref="Command"/> instance from the request body,
+        /// </summary>
+        public Command ToCommand(Guid productId) => new(productId, Name, Attributes);
+    }
 
     /// <summary>
-    /// A request to create a new product.
+    /// Represents a request to create a new product variant.
     /// </summary>
+    /// <param name="ProductId">The product ID</param>
+    /// <param name="Name">The name of the product variant</param>
+    /// <param name="Attributes">Attributes associated with the product variant</param>
     public sealed record Command(
         Guid ProductId,
         string Name,
