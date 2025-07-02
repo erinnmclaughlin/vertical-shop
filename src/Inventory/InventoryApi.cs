@@ -1,14 +1,7 @@
-﻿using System.Reflection;
-using FluentMigrator.Runner;
-using FluentMigrator.Runner.Processors;
-using FluentMigrator.Runner.VersionTableInfo;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace VerticalShop.Inventory;
 

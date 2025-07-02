@@ -1,6 +1,5 @@
 using Dapper;
 using FluentMigrator.Runner;
-using FluentMigrator.Runner.VersionTableInfo;
 using MassTransit;
 using MassTransit.SqlTransport;
 using Microsoft.Extensions.Options;
