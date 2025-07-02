@@ -8,12 +8,10 @@ var postgresServer = builder
     .AddPostgres("postgres")
     .WithPgWeb();
 
-if (builder.Configuration["TestMode"] != "true")
-    postgresServer.WithDataVolume();
-
-if (builder.Environment.IsDevelopment() && builder.Configuration["TestMode"] != "true")
+if (builder.Environment.IsDevelopment() && builder.Configuration["KeepPostgresContainerAlive"] == "true")
 {
     postgresServer
+        .WithDataVolume()
         .WithUserName(builder.AddParameter("pg-user", "postgres"))
         .WithPassword(builder.AddParameter("pg-password", "postgres"))
         .WithHostPort(5432)

@@ -9,7 +9,7 @@ public sealed class ApiFixture : IAsyncLifetime
 
     public async ValueTask InitializeAsync()
     {
-        Environment.SetEnvironmentVariable("TestMode", "true");
+        Environment.SetEnvironmentVariable("KeepPostgresContainerAlive", "false");
         var builder = await DistributedApplicationTestingBuilder.CreateAsync<Projects.AppHost>();
         
         _app = await builder.BuildAsync();
