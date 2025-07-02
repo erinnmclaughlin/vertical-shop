@@ -6,17 +6,18 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var postgresServer = builder
     .AddPostgres("postgres")
-    .WithDataVolume()
     .WithPgWeb();
 
-if (builder.Environment.IsDevelopment())
+if (builder.Configuration["TestMode"] != "true")
+    postgresServer.WithDataVolume();
+
+if (builder.Environment.IsDevelopment() && builder.Configuration["TestMode"] != "true")
 {
     postgresServer
         .WithUserName(builder.AddParameter("pg-user", "postgres"))
         .WithPassword(builder.AddParameter("pg-password", "postgres"))
         .WithHostPort(5432)
-        .WithLifetime(ContainerLifetime.Persistent)
-        ;
+        .WithLifetime(ContainerLifetime.Persistent);
 }
 
 var verticalShopDatabase = postgresServer
