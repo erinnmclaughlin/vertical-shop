@@ -3,7 +3,7 @@ using VerticalShop.Catalog.Features.CreateProduct;
 
 namespace VerticalShop.EndToEndTests;
 
-public class ProductsApiTests : IClassFixture<ApiFixture>
+public sealed class ProductsApiTests : IClassFixture<ApiFixture>
 {
     private readonly ApiFixture _fixture;
 

@@ -2,7 +2,6 @@
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http.HttpResults;
 using NSubstitute;
-using OneOf.Types;
 using VerticalShop.Catalog.ErrorTypes;
 using VerticalShop.Catalog.Features.CreateProduct;
 
@@ -36,7 +35,7 @@ public sealed class CreateProductRequestHandlerTests
         var request = new CreateProductRequest { Slug = "apple", Name = "Apple" };
 
         _dataService
-            .CreateProduct(Arg.Any<Guid>(), request.Slug, request.Name, Arg.Any<CancellationToken>())
+            .CreateProduct(request.Slug, request.Name, Arg.Any<CancellationToken>())
             .Returns(new DuplicateSlug(request.Slug));
 
         var handler = new CreateProductRequestHandler(_dataService, _validator);
@@ -51,8 +50,8 @@ public sealed class CreateProductRequestHandlerTests
         var request = new CreateProductRequest { Slug = "apple", Name = "Apple" };
 
         _dataService
-            .CreateProduct(Arg.Any<Guid>(), request.Slug, request.Name, Arg.Any<CancellationToken>())
-            .Returns(new Success());
+            .CreateProduct(request.Slug, request.Name, Arg.Any<CancellationToken>())
+            .Returns(Guid.NewGuid());
 
         var handler = new CreateProductRequestHandler(_dataService, _validator);
         var result = await handler.Handle(request, TestContext.Current.CancellationToken);

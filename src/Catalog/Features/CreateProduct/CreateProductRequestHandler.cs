@@ -23,7 +23,7 @@ internal sealed class CreateProductRequestHandler : IRequestHandler<CreateProduc
             return TypedResults.ValidationProblem(error.ToDictionary());
         }
 
-        var result = await _dataService.CreateProduct(Guid.CreateVersion7(), request.Slug, request.Name, cancellationToken);
+        var result = await _dataService.CreateProduct(request.Slug, request.Name, cancellationToken);
 
         return result.Match<Results<Created, ValidationProblem, Conflict>>(
             _ => TypedResults.Created(),

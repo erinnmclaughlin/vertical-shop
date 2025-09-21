@@ -13,7 +13,7 @@ public sealed class CreateProductNpgsqlDataServiceTests
         var dataStore = Substitute.For<INpgsqlDataStore>();
 
         var service = new CreateProductNpgsqlDataService(dataStore);
-        await service.CreateProduct(Guid.NewGuid(), "test-slug", "Test Product", TestContext.Current.CancellationToken);
+        await service.CreateProduct("test-slug", "Test Product", TestContext.Current.CancellationToken);
 
         Received.InOrder(() =>
         {
@@ -39,7 +39,7 @@ public sealed class CreateProductNpgsqlDataServiceTests
                 columnName: "slug"));
 
         var service = new CreateProductNpgsqlDataService(dataStore);
-        await service.CreateProduct(Guid.NewGuid(), "test-slug", "Test Product", TestContext.Current.CancellationToken);
+        await service.CreateProduct("test-slug", "Test Product", TestContext.Current.CancellationToken);
 
         await dataStore.DidNotReceive().InsertOutboxMessageAsync(Arg.Any<IntegrationEvents.Products.ProductCreated>(), TestContext.Current.CancellationToken);
         await dataStore.DidNotReceive().CommitTransactionAsync(TestContext.Current.CancellationToken);
