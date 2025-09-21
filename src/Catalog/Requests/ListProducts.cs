@@ -20,7 +20,7 @@ public static class ListProducts
     /// </summary>
     [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
     [SuppressMessage("ReSharper", "AutoPropertyCanBeMadeGetOnly.Global")]
-    public sealed record Query : IRequest<Ok<List<ProductDto>>>
+    public sealed record Query : IRequest<Ok<List<ProductReference>>>
     {
         /// <summary>
         /// The offset used for paginating query results.
@@ -45,19 +45,19 @@ public static class ListProducts
     /// <summary>
     /// Handles queries related to retrieving a list of products.
     /// </summary>
-    public sealed class QueryHandler(NpgsqlDataSource dataSource) : IRequestHandler<Query, Ok<List<ProductDto>>>
+    public sealed class QueryHandler(NpgsqlDataSource dataSource) : IRequestHandler<Query, Ok<List<ProductReference>>>
     {
         /// <summary>
         /// Handles the product list query operation, retrieving a list of products based on the provided query parameters.
         /// </summary>
         /// <param name="query">The query object containing parameters for offset and limit.</param>
         /// <param name="cancellationToken">A token to cancel the operation.</param>
-        /// <returns>A task representing the asynchronous operation, containing an HTTP result wrapping a list of <see cref="ProductDto"/> objects.</returns>
-        public async Task<Ok<List<ProductDto>>> Handle(Query query, CancellationToken cancellationToken = default)
+        /// <returns>A task representing the asynchronous operation, containing an HTTP result wrapping a list of <see cref="ProductReference"/> objects.</returns>
+        public async Task<Ok<List<ProductReference>>> Handle(Query query, CancellationToken cancellationToken = default)
         {
             await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
             
-            var products = await connection.QueryAsync<ProductDto>(
+            var products = await connection.QueryAsync<ProductReference>(
                 """
                 select 
                     p.id as "Id", 

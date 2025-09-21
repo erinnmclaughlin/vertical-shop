@@ -4,6 +4,9 @@ using Scalar.Aspire;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+var storage = builder.AddAzureStorage("storage").RunAsEmulator(azurite => azurite.WithDataVolume());
+var blobs = storage.AddBlobs("blobs");
+
 var postgresServer = builder
     .AddPostgres("postgres")
     .WithPgWeb();
@@ -24,6 +27,8 @@ var verticalShopDatabase = postgresServer
 var api = builder
     .AddProject<Projects.Api>("api")
     .WithReference(verticalShopDatabase)
+    //.WithReference(blobs)
+    //.WaitFor(blobs)
     .WaitFor(verticalShopDatabase)
     .WithExternalHttpEndpoints();
 

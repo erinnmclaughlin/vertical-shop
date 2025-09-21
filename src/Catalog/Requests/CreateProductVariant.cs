@@ -76,7 +76,7 @@ public static class CreateProductVariant
 
             await connection.ExecuteAsync(
                 """
-                INSERT INTO catalog.product_variants (id, product_id, name, attributes) 
+                INSERT INTO catalog.product_variants (product_id, name, attributes) 
                 VALUES (@ProductId, @Name, @Attributes::jsonb)
                 """,
                  new

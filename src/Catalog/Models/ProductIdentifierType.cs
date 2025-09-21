@@ -11,12 +11,10 @@ public enum ProductIdentifierType
     /// <summary>
     /// The product is identified by its unique identifier (ID).
     /// </summary>
-    [JsonStringEnumMemberName("id")]
     Id,
     
     /// <summary>
     /// The product is identified by its URL-friendly slug.
     /// </summary>
-    [JsonStringEnumMemberName("slug")]
     Slug
 }

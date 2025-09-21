@@ -20,6 +20,7 @@ builder.AddNpgsqlDataSource("vertical-shop-db");
 builder.AddDatabaseInitialization(moduleAssemblies);
 builder.AddMassTransit(x => x.AddConsumers(moduleAssemblies));
 
+builder.Services.AddSharedServices();
 builder.Services.AddOpenApi();
 builder.Services.AddMediatR(x =>
 {

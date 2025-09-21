@@ -4,6 +4,7 @@ using VerticalShop;
 using VerticalShop.OutboxProcessor;
 
 var builder = Host.CreateApplicationBuilder(args);
+builder.Services.AddSharedServices();
 builder.Services.AddHostedService<Worker>();
 builder.AddNpgsqlDataSource("vertical-shop-db");
 builder.AddMassTransit();

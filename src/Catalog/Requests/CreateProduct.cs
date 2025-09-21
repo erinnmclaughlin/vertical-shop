@@ -24,7 +24,7 @@ public static class CreateProduct
     public sealed record Command(string Slug, string Name) : IRequest<Result>;
 
     /// <summary>
-    /// A validator for <see cref="CreateProduct.Command"/> instances.
+    /// A validator for <see cref="Command"/> instances.
     /// </summary>
     [SuppressMessage("ReSharper", "UnusedType.Global")]
     public sealed class RequestValidator : AbstractValidator<Command>

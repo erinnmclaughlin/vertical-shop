@@ -23,6 +23,7 @@ internal sealed record OutboxMessage
 }
 
 internal sealed class Worker(
+    IDateProvider dateProvider,
     NpgsqlDataSource dataSource,
     ILogger<Worker> logger,
     IOptionsMonitor<OutboxProcessorOptions> optionsMonitor,
@@ -78,7 +79,7 @@ internal sealed class Worker(
                         SET processed_on_utc = @ProcessedOnUtc
                         WHERE id = @Id
                         """,
-                        new { ProcessedOnUtc = DateTimeOffset.UtcNow, message.Id },
+                        new { ProcessedOnUtc = dateProvider.UtcNow, message.Id },
                         transaction);
                 }
                 catch (Exception ex)
@@ -91,7 +92,7 @@ internal sealed class Worker(
                         SET processed_on_utc = @ProcessedOnUtc, error_message = @Error
                         WHERE id = @Id
                         """,
-                        new { ProcessedOnUtc = DateTimeOffset.UtcNow, Error = ex.Message, message.Id },
+                        new { ProcessedOnUtc = dateProvider.UtcNow, Error = ex.Message, message.Id },
                         transaction);
                 }
             }

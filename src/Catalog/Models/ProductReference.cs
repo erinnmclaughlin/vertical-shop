@@ -7,7 +7,7 @@ namespace VerticalShop.Catalog;
 /// containing only the fields that are relevant for external interactions.
 /// </summary>
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
-public sealed record ProductDto
+public sealed record ProductReference
 {
     /// <summary>
     /// The unique identifier of the product.
