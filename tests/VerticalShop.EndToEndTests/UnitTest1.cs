@@ -1,5 +1,5 @@
 using System.Net.Http.Json;
-using VerticalShop.Catalog;
+using VerticalShop.Catalog.Features.CreateProduct;
 
 namespace VerticalShop.EndToEndTests;
 
@@ -19,7 +19,7 @@ public class ProductsApiTests : IClassFixture<ApiFixture>
         using var client = _fixture.CreateHttpClient("api");
         
         // Act
-        var request = new CreateProduct.Command("test-product-1", "Test Product");
+        var request = new CreateProductRequest { Slug = "test-product-1", Name = "Test Product" };
         var response = await client.PostAsJsonAsync("catalog/products", request, TestContext.Current.CancellationToken);
         
         // Assert
@@ -33,7 +33,7 @@ public class ProductsApiTests : IClassFixture<ApiFixture>
         using var client = _fixture.CreateHttpClient("api");
         
         // Act
-        var request = new CreateProduct.Command("test-product-2", "Test Product");
+        var request = new CreateProductRequest { Slug = "test-product-2", Name = "Test Product" };
         var response = await client.PostAsJsonAsync("catalog/products", request, TestContext.Current.CancellationToken);
 
         // Assert

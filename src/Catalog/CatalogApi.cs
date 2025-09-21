@@ -1,8 +1,14 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.Reflection;
+using VerticalShop.Catalog.Features.CreateProduct;
+using VerticalShop.Catalog.Features.CreateProductVariant;
+using VerticalShop.Catalog.Features.GetProduct;
+using VerticalShop.Catalog.Features.ListProducts;
 
 namespace VerticalShop.Catalog;
 
@@ -11,6 +17,17 @@ namespace VerticalShop.Catalog;
 /// </summary>
 public static class CatalogApi
 {
+    /// <summary>
+    /// Adds the necessary services for the catalog API to the application's dependency injection container.
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <returns></returns>
+    public static Assembly AddCatalogApi(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddTransient<ICreateProductDataService, CreateProductNpgsqlDataService>();
+        return typeof(CatalogApi).Assembly;
+    }
+
     /// <summary>
     /// Configures the product-related API endpoints for the application.
     /// </summary>
@@ -26,7 +43,7 @@ public static class CatalogApi
         // POST /catalog/products
         productsApi
             .MapPost("/products", (
-                CreateProduct.Command command, 
+                CreateProductRequest command, 
                 IMediator mediator, 
                 CancellationToken cancellationToken)
                 => mediator.Send(command, cancellationToken)
@@ -36,31 +53,30 @@ public static class CatalogApi
         // GET /catalog/products/{identifier}
         productsApi
             .MapGet("/products/{identifier}", (
-                string identifier,
+                [AsParameters] GetProductRequest request,
                 IMediator mediator,
-                [FromQuery] ProductIdentifierType identifierType,
                 CancellationToken cancellationToken)
-                => mediator.Send(new GetProduct.Query(identifier, identifierType), cancellationToken)
+                => mediator.Send(request, cancellationToken)
             )
             .WithSummary("Get Product");
 
         // GET /catalog/products
         productsApi
             .MapGet("/products", (
-                [AsParameters] ListProducts.Query query,
+                [AsParameters] ListProductsRequest request,
                 IMediator mediator,
                 CancellationToken ct)
-                => mediator.Send(query, ct)
+                => mediator.Send(request, ct)
             )
             .WithSummary("List Products");
-        
+
+        // POST /catalog/product-variants
         productsApi
-            .MapPost("/products/{productId:guid}/variants", (
-                Guid productId,
-                CreateProductVariant.RequestBody request,
+            .MapPost("/product-variants", (
+                CreateProductVariantRequest request,
                 IMediator mediator,
                 CancellationToken ct)
-                => mediator.Send(request.ToCommand(productId), ct)
+                => mediator.Send(request, ct)
             )
             .WithSummary("Create Product Variant");
     }

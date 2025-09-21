@@ -11,5 +11,6 @@ public static class SharedKernel
     public static void AddSharedServices(this IServiceCollection services)
     {
         services.TryAddSingleton<IDateProvider, SystemDateProvider>();
+        services.TryAddTransient<INpgsqlDataStore, NpgsqlDataStore>();
     }
 }

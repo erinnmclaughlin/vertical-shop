@@ -1,12 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace VerticalShop.Catalog;
+﻿namespace VerticalShop.Catalog;
 
 /// <summary>
 /// Provides a simplified representation of a product for API consumers,
 /// containing only the fields that are relevant for external interactions.
 /// </summary>
-[SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 public sealed record ProductReference
 {
     /// <summary>

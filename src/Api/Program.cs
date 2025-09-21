@@ -11,7 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 Assembly[] moduleAssemblies = 
 [
-    typeof(CatalogApi).Assembly,
+    builder.AddCatalogApi(),
     typeof(InventoryApi).Assembly
 ];
 

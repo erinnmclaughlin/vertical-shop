@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using Dapper;
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,25 +24,6 @@ public static class Extensions
     }
 
     public static bool IsUniqueConstraintViolationOnColumn(this PostgresException ex, string columnName) =>
-        ex.ErrorCode.ToString() == PostgresErrorCodes.UniqueViolation &&
+        ex.SqlState == PostgresErrorCodes.UniqueViolation &&
         ex.ColumnName == columnName;
-
-    public static async Task InsertOutboxMessageAsync<T>(
-        this NpgsqlConnection connection,
-        T message, 
-        NpgsqlTransaction transaction, 
-        CancellationToken cancellationToken = default)
-    {
-        cancellationToken.ThrowIfCancellationRequested();
-        
-        await connection.ExecuteAsync(
-            "insert into outbox_messages(type, payload) values (@type, @payload::jsonb)", 
-            new
-            {
-                type = typeof(T).FullName,
-                payload = JsonSerializer.Serialize(message)
-            },
-            transaction
-        );
-    }
 }

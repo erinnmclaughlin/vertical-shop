@@ -1,7 +1,7 @@
 ﻿namespace VerticalShop.Catalog.Models;
 
 /// <summary>
-/// Represents detailed information about a product.
+/// Detailed product information.
 /// variants.
 /// </summary>
 public sealed record ProductDetail
@@ -27,7 +27,7 @@ public sealed record ProductDetail
     public required IReadOnlyList<ProductVariant> Variants { get; init; }
 
     /// <summary>
-    /// Represents a specific variant of a product, identified by a unique identifier and name.
+    /// A specific variant of a product, identified by a unique identifier and name.
     /// </summary>
     public sealed record ProductVariant
     {
