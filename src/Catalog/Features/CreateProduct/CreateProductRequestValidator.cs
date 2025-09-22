@@ -18,8 +18,6 @@ internal sealed class CreateProductRequestValidator : AbstractValidator<CreatePr
 
     private static bool IsValidSlug(string value)
     {
-        // Slug should only contain lowercase letters, numbers, and hyphens
-        // It should not start or end with a hyphen
         return !string.IsNullOrWhiteSpace(value) &&
                !value.StartsWith('-')
                && !value.EndsWith('-')

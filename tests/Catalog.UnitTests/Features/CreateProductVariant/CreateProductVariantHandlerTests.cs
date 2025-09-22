@@ -17,7 +17,7 @@ public sealed class CreateProductVariantHandlerTests
         var request = new CreateProductVariantRequest
         {
             ProductId = Guid.NewGuid(),
-            Name = ""
+            Name = "Some Variant"
         };
 
         _validator
@@ -30,5 +30,20 @@ public sealed class CreateProductVariantHandlerTests
         var validationProblem = Assert.IsType<ValidationProblem>(result.Result);
         Assert.True(validationProblem.ProblemDetails.Errors.TryGetValue("Name", out var errors));
         Assert.Contains("Name is required", errors);
+    }
+
+    [Fact]
+    public async Task Handle_ReturnsCreated_WhenSuccessful()
+    {
+        var request = new CreateProductVariantRequest
+        {
+            ProductId = Guid.NewGuid(),
+            Name = "Some Variant"
+        };
+
+        var handler = new CreateProductVariantRequestHandler(_dataService, _validator);
+        var result = await handler.Handle(request, TestContext.Current.CancellationToken);
+
+        Assert.IsType<Created>(result.Result);
     }
 }

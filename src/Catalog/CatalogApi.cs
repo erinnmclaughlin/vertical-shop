@@ -26,6 +26,8 @@ public static class CatalogApi
     {
         builder.Services.AddTransient<ICreateProductDataService, CreateProductNpgsqlDataService>();
         builder.Services.AddTransient<ICreateProductVariantDataService, CreateProductVariantNpgsqlDataService>();
+        builder.Services.AddTransient<IGetProductDataService, GetProductNpgsqlDataService>();
+        builder.Services.AddTransient<IListProductsDataService, ListProductsNpgsqlDataService>();
         return typeof(CatalogApi).Assembly;
     }
 
